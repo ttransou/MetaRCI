@@ -1,3 +1,4 @@
+from argparse import ArgumentParser, Namespace
 from datetime import date, datetime
 from pathlib import Path
 import sys
@@ -5,7 +6,7 @@ import sys
 import yaml
 
 
-FILES = {
+DEFAULT_FILES = {
     "base": Path("schemas/metarci-base.yaml"),
     "profile": Path("profiles/example-profile.yaml"),
     "record": Path("examples/example-record.yaml"),
@@ -44,11 +45,48 @@ VALID_FIELD_ATTRIBUTES = {
     "item_properties",
 }
 
+VALID_BASE_ATTRIBUTES = {
+    "name",
+    "version",
+    "status",
+    "description",
+    "principles",
+    "tiers",
+}
+
+REQUIRED_BASE_ATTRIBUTES = {
+    "name",
+    "version",
+    "status",
+    "description",
+    "tiers",
+}
+
+VALID_BASE_STATUSES = {
+    "draft",
+    "active",
+    "deprecated",
+    "retired",
+}
+
+VALID_TIER_ATTRIBUTES = {
+    "name",
+    "description",
+    "fields",
+}
+
+REQUIRED_TIER_ATTRIBUTES = {
+    "name",
+    "description",
+    "fields",
+}
+
 VALID_PROFILE_ATTRIBUTES = {
     "name",
     "version",
     "status",
     "extends",
+    "base_version",
     "description",
     "implementation",
     "tier_overrides",
@@ -60,6 +98,7 @@ REQUIRED_PROFILE_ATTRIBUTES = {
     "version",
     "status",
     "extends",
+    "base_version",
 }
 
 VALID_PROFILE_STATUSES = {
@@ -75,19 +114,101 @@ VALID_IMPLEMENTATION_ATTRIBUTES = {
     "use_case",
 }
 
+VALID_RECORD_ATTRIBUTES = {
+    "profile",
+    "profile_version",
+    "reference",
+    "context",
+    "interpretive",
+}
+
+REQUIRED_RECORD_ATTRIBUTES = {
+    "profile",
+    "profile_version",
+    "reference",
+    "context",
+    "interpretive",
+}
+
+
+def parse_arguments() -> Namespace:
+    """
+    Parse command-line file arguments.
+
+    Each argument has a default, so running `python validate.py`
+    continues to validate the repository's example files.
+    """
+    parser = ArgumentParser(
+        description=(
+            "Validate a MetaRCI base schema, implementation profile, "
+            "and metadata record."
+        )
+    )
+
+    parser.add_argument(
+        "--base",
+        type=Path,
+        default=DEFAULT_FILES["base"],
+        help=(
+            "Path to the MetaRCI base-schema YAML file. "
+            f"Default: {DEFAULT_FILES['base']}"
+        ),
+    )
+
+    parser.add_argument(
+        "--profile",
+        type=Path,
+        default=DEFAULT_FILES["profile"],
+        help=(
+            "Path to the MetaRCI profile YAML file. "
+            f"Default: {DEFAULT_FILES['profile']}"
+        ),
+    )
+
+    parser.add_argument(
+        "--record",
+        type=Path,
+        default=DEFAULT_FILES["record"],
+        help=(
+            "Path to the MetaRCI record YAML file. "
+            f"Default: {DEFAULT_FILES['record']}"
+        ),
+    )
+
+    return parser.parse_args()
+
 
 def load_yaml(path: Path) -> dict:
     """Load one YAML file and confirm its root is a mapping."""
     if not path.exists():
         raise FileNotFoundError(f"Missing file: {path}")
 
+    if not path.is_file():
+        raise ValueError(f"Expected a file path, but received: {path}")
+
     with path.open("r", encoding="utf-8") as file:
         data = yaml.safe_load(file)
 
     if not isinstance(data, dict):
-        raise ValueError(f"Expected a YAML mapping in {path}")
+        raise ValueError(
+            f"Expected a YAML mapping in {path}"
+        )
 
     return data
+
+
+def print_errors(
+    stage_name: str,
+    errors: list[str],
+) -> None:
+    """Print all errors collected during one validation stage."""
+    print(
+        f"VALIDATION FAILED: {stage_name} "
+        f"reported {len(errors)} error(s)."
+    )
+
+    for index, error in enumerate(errors, start=1):
+        print(f"  {index}. {error}")
 
 
 def is_valid_date(value: object) -> bool:
@@ -109,7 +230,7 @@ def is_valid_date(value: object) -> bool:
 
 
 def is_valid_datetime(value: object) -> bool:
-    """Accept a parsed YAML datetime or an ISO 8601 datetime string."""
+    """Accept a parsed YAML datetime or ISO 8601 datetime string."""
     if isinstance(value, datetime):
         return True
 
@@ -123,14 +244,20 @@ def is_valid_datetime(value: object) -> bool:
     return False
 
 
-def value_matches_type(value: object, declared_type: str) -> bool:
-    """Compare a value with a MetaRCI field type."""
+def value_matches_type(
+    value: object,
+    declared_type: str,
+) -> bool:
+    """Compare a Python value with a declared MetaRCI type."""
     if declared_type == "string":
         return isinstance(value, str)
 
     if declared_type == "integer":
-        # bool is a subclass of int, so reject booleans explicitly.
-        return isinstance(value, int) and not isinstance(value, bool)
+        # Python treats bool as a subclass of int.
+        return (
+            isinstance(value, int)
+            and not isinstance(value, bool)
+        )
 
     if declared_type == "list":
         return isinstance(value, list)
@@ -151,18 +278,21 @@ def validate_allowed_values(
     path_name: str,
     value: object,
     definition: dict,
-) -> str | None:
+) -> list[str]:
     """Validate a value against allowed_values when declared."""
+    errors = []
+
     allowed_values = definition.get("allowed_values")
 
     if allowed_values is None:
-        return None
+        return errors
 
     if not isinstance(allowed_values, list):
-        return (
+        errors.append(
             f"Schema definition for '{path_name}' declares "
             "allowed_values, but allowed_values is not a list."
         )
+        return errors
 
     if value not in allowed_values:
         allowed_display = ", ".join(
@@ -170,182 +300,466 @@ def validate_allowed_values(
             for allowed_value in allowed_values
         )
 
-        return (
+        errors.append(
             f"Value for '{path_name}' must be one of: "
             f"{allowed_display}. Received {value!r}."
         )
 
-    return None
+    return errors
+
+
+def validate_base_document(
+    base_data: dict,
+) -> list[str]:
+    """Validate the base schema's top-level document structure."""
+    errors = []
+
+    if not isinstance(base_data, dict):
+        return ["The metarci value must be a mapping."]
+
+    unknown_attributes = (
+        set(base_data)
+        - VALID_BASE_ATTRIBUTES
+    )
+
+    if unknown_attributes:
+        errors.append(
+            "Unknown base-schema attributes: "
+            + ", ".join(sorted(unknown_attributes))
+        )
+
+    missing_attributes = (
+        REQUIRED_BASE_ATTRIBUTES
+        - set(base_data)
+    )
+
+    if missing_attributes:
+        errors.append(
+            "Base schema is missing required attributes: "
+            + ", ".join(sorted(missing_attributes))
+        )
+
+    for attribute_name in (
+        "name",
+        "version",
+        "status",
+        "description",
+    ):
+        if attribute_name not in base_data:
+            continue
+
+        attribute_value = base_data[attribute_name]
+
+        if not isinstance(attribute_value, str):
+            errors.append(
+                f"Base-schema attribute '{attribute_name}' "
+                "must be a string."
+            )
+        elif not attribute_value.strip():
+            errors.append(
+                f"Base-schema attribute '{attribute_name}' "
+                "cannot be empty."
+            )
+
+    status = base_data.get("status")
+
+    if (
+        isinstance(status, str)
+        and status not in VALID_BASE_STATUSES
+    ):
+        allowed_display = ", ".join(
+            sorted(VALID_BASE_STATUSES)
+        )
+
+        errors.append(
+            f"Base-schema status must be one of: "
+            f"{allowed_display}. Received {status!r}."
+        )
+
+    principles = base_data.get("principles", [])
+
+    if not isinstance(principles, list):
+        errors.append(
+            "Base-schema principles must be a list."
+        )
+    else:
+        for index, principle in enumerate(principles):
+            if not isinstance(principle, str):
+                errors.append(
+                    f"Base-schema principle {index} "
+                    "must be a string."
+                )
+            elif not principle.strip():
+                errors.append(
+                    f"Base-schema principle {index} "
+                    "cannot be empty."
+                )
+
+    tiers = base_data.get("tiers")
+
+    if tiers is None:
+        return errors
+
+    if not isinstance(tiers, dict):
+        errors.append(
+            "Base-schema tiers must be a mapping."
+        )
+        return errors
+
+    tier_names = set(tiers)
+
+    missing_tiers = REQUIRED_TIERS - tier_names
+    unknown_tiers = tier_names - REQUIRED_TIERS
+
+    if missing_tiers:
+        errors.append(
+            "Base schema is missing tiers: "
+            + ", ".join(sorted(missing_tiers))
+        )
+
+    if unknown_tiers:
+        errors.append(
+            "Base schema contains unknown tiers: "
+            + ", ".join(sorted(unknown_tiers))
+        )
+
+    for tier_name in sorted(
+        REQUIRED_TIERS & tier_names
+    ):
+        tier_definition = tiers[tier_name]
+
+        if not isinstance(tier_definition, dict):
+            errors.append(
+                f"Base tier '{tier_name}' must be a mapping."
+            )
+            continue
+
+        unknown_tier_attributes = (
+            set(tier_definition)
+            - VALID_TIER_ATTRIBUTES
+        )
+
+        if unknown_tier_attributes:
+            errors.append(
+                f"Unknown attributes in base tier "
+                f"'{tier_name}': "
+                + ", ".join(
+                    sorted(unknown_tier_attributes)
+                )
+            )
+
+        missing_tier_attributes = (
+            REQUIRED_TIER_ATTRIBUTES
+            - set(tier_definition)
+        )
+
+        if missing_tier_attributes:
+            errors.append(
+                f"Base tier '{tier_name}' is missing "
+                "attributes: "
+                + ", ".join(
+                    sorted(missing_tier_attributes)
+                )
+            )
+
+        for attribute_name in ("name", "description"):
+            if attribute_name not in tier_definition:
+                continue
+
+            attribute_value = tier_definition[
+                attribute_name
+            ]
+
+            if not isinstance(attribute_value, str):
+                errors.append(
+                    f"Base tier '{tier_name}' attribute "
+                    f"'{attribute_name}' must be a string."
+                )
+            elif not attribute_value.strip():
+                errors.append(
+                    f"Base tier '{tier_name}' attribute "
+                    f"'{attribute_name}' cannot be empty."
+                )
+
+        fields = tier_definition.get("fields")
+
+        if fields is None:
+            continue
+
+        if not isinstance(fields, dict):
+            errors.append(
+                f"Base tier '{tier_name}' fields "
+                "must be a mapping."
+            )
+        elif not fields:
+            errors.append(
+                f"Base tier '{tier_name}' must declare "
+                "at least one field."
+            )
+
+    return errors
 
 
 def validate_profile_document(
     profile_data: dict,
     profile_path: Path,
     expected_base_path: Path,
-) -> str | None:
-    """
-    Validate the profile's own top-level structure.
+) -> list[str]:
+    """Validate the profile's top-level document structure."""
+    errors = []
 
-    This happens before the profile is used to modify or extend
-    the base schema.
-    """
     if not isinstance(profile_data, dict):
-        return "The metarci_profile value must be a mapping."
+        return [
+            "The metarci_profile value must be a mapping."
+        ]
 
-    # Reject misspelled or unsupported top-level profile keys.
     unknown_attributes = (
         set(profile_data)
         - VALID_PROFILE_ATTRIBUTES
     )
 
     if unknown_attributes:
-        return (
+        errors.append(
             "Unknown profile attributes: "
             + ", ".join(sorted(unknown_attributes))
         )
 
-    # Confirm all required profile metadata is present.
     missing_attributes = (
         REQUIRED_PROFILE_ATTRIBUTES
         - set(profile_data)
     )
 
     if missing_attributes:
-        return (
+        errors.append(
             "Profile is missing required attributes: "
             + ", ".join(sorted(missing_attributes))
         )
 
-    # Required profile metadata must contain non-empty strings.
-    for attribute_name in sorted(REQUIRED_PROFILE_ATTRIBUTES):
-        attribute_value = profile_data.get(attribute_name)
+    for attribute_name in sorted(
+        REQUIRED_PROFILE_ATTRIBUTES
+    ):
+        if attribute_name not in profile_data:
+            continue
+
+        attribute_value = profile_data[attribute_name]
 
         if not isinstance(attribute_value, str):
-            return (
+            errors.append(
                 f"Profile attribute '{attribute_name}' "
                 "must be a string."
             )
-
-        if not attribute_value.strip():
-            return (
+        elif not attribute_value.strip():
+            errors.append(
                 f"Profile attribute '{attribute_name}' "
                 "cannot be empty."
             )
 
-    # Status is a controlled value.
-    status = profile_data["status"]
+    status = profile_data.get("status")
 
-    if status not in VALID_PROFILE_STATUSES:
+    if (
+        isinstance(status, str)
+        and status not in VALID_PROFILE_STATUSES
+    ):
         allowed_display = ", ".join(
             sorted(VALID_PROFILE_STATUSES)
         )
 
-        return (
-            f"Profile status must be one of: {allowed_display}. "
-            f"Received {status!r}."
+        errors.append(
+            f"Profile status must be one of: "
+            f"{allowed_display}. Received {status!r}."
         )
 
-    # Description is optional, but must be a string when present.
     description = profile_data.get("description")
 
-    if description is not None and not isinstance(description, str):
-        return "Profile description must be a string."
-
-    # Confirm that the profile's extends path resolves to the
-    # same base schema loaded by this validator.
-    extends_value = profile_data["extends"]
-
-    declared_base_path = (
-        profile_path.parent / extends_value
-    ).resolve()
-
-    loaded_base_path = expected_base_path.resolve()
-
-    if declared_base_path != loaded_base_path:
-        return (
-            "Profile extends path does not match the base schema "
-            f"loaded by the validator. Profile resolves to "
-            f"'{declared_base_path}', but validator loaded "
-            f"'{loaded_base_path}'."
+    if (
+        description is not None
+        and not isinstance(description, str)
+    ):
+        errors.append(
+            "Profile description must be a string."
         )
 
-    # Validate the implementation descriptor.
-    implementation = profile_data.get("implementation", {})
+    extends_value = profile_data.get("extends")
 
-    if not isinstance(implementation, dict):
-        return "Profile implementation must be a mapping."
+    if isinstance(extends_value, str) and extends_value:
+        declared_base_path = (
+            profile_path.parent / extends_value
+        ).resolve()
 
-    unknown_implementation_attributes = (
-        set(implementation)
-        - VALID_IMPLEMENTATION_ATTRIBUTES
+        loaded_base_path = expected_base_path.resolve()
+
+        if declared_base_path != loaded_base_path:
+            errors.append(
+                "Profile extends path does not match the "
+                "base schema loaded by the validator. "
+                f"Profile resolves to '{declared_base_path}', "
+                f"but validator loaded '{loaded_base_path}'."
+            )
+
+    implementation = profile_data.get(
+        "implementation",
+        {},
     )
 
-    if unknown_implementation_attributes:
-        return (
-            "Unknown implementation attributes: "
-            + ", ".join(
-                sorted(unknown_implementation_attributes)
-            )
+    if not isinstance(implementation, dict):
+        errors.append(
+            "Profile implementation must be a mapping."
+        )
+    else:
+        unknown_implementation_attributes = (
+            set(implementation)
+            - VALID_IMPLEMENTATION_ATTRIBUTES
         )
 
-    # Each implementation value may be a string or null.
-    for attribute_name, attribute_value in implementation.items():
-        if attribute_value is not None and not isinstance(
-            attribute_value,
-            str,
-        ):
-            return (
-                f"Profile implementation.{attribute_name} "
-                "must be a string or null."
+        if unknown_implementation_attributes:
+            errors.append(
+                "Unknown implementation attributes: "
+                + ", ".join(
+                    sorted(
+                        unknown_implementation_attributes
+                    )
+                )
             )
 
-    # These sections are optional, but must be mappings when present.
-    tier_overrides = profile_data.get("tier_overrides", {})
+        for (
+            attribute_name,
+            attribute_value,
+        ) in implementation.items():
+            if (
+                attribute_value is not None
+                and not isinstance(attribute_value, str)
+            ):
+                errors.append(
+                    f"Profile implementation."
+                    f"{attribute_name} must be "
+                    "a string or null."
+                )
+
+    tier_overrides = profile_data.get(
+        "tier_overrides",
+        {},
+    )
 
     if not isinstance(tier_overrides, dict):
-        return "Profile tier_overrides must be a mapping."
+        errors.append(
+            "Profile tier_overrides must be a mapping."
+        )
 
-    custom_fields = profile_data.get("custom_fields", {})
+    custom_fields = profile_data.get(
+        "custom_fields",
+        {},
+    )
 
     if not isinstance(custom_fields, dict):
-        return "Profile custom_fields must be a mapping."
-
-    return None
-
-
-def validate_property_definitions(
-    path_name: str,
-    property_definitions: object,
-) -> str | None:
-    """Validate schema definitions for nested object properties."""
-    if not isinstance(property_definitions, dict):
-        return (
-            f"Schema properties for '{path_name}' "
-            "must be a mapping."
+        errors.append(
+            "Profile custom_fields must be a mapping."
         )
 
-    for property_name, property_definition in property_definitions.items():
-        error = validate_field_definition(
-            f"{path_name}.{property_name}",
-            property_definition,
+    return errors
+
+
+def validate_record_document(
+    record_data: dict,
+    record_path: Path,
+    expected_profile_path: Path,
+) -> list[str]:
+    """Validate the record's top-level document structure."""
+    errors = []
+
+    if not isinstance(record_data, dict):
+        return [
+            "The metarci_record value must be a mapping."
+        ]
+
+    unknown_attributes = (
+        set(record_data)
+        - VALID_RECORD_ATTRIBUTES
+    )
+
+    if unknown_attributes:
+        errors.append(
+            "Unknown record attributes: "
+            + ", ".join(sorted(unknown_attributes))
         )
 
-        if error:
-            return error
+    missing_attributes = (
+        REQUIRED_RECORD_ATTRIBUTES
+        - set(record_data)
+    )
 
-    return None
+    if missing_attributes:
+        errors.append(
+            "Record is missing required attributes: "
+            + ", ".join(sorted(missing_attributes))
+        )
+
+    for attribute_name in (
+        "profile",
+        "profile_version",
+    ):
+        if attribute_name not in record_data:
+            continue
+
+        attribute_value = record_data[attribute_name]
+
+        if not isinstance(attribute_value, str):
+            errors.append(
+                f"Record attribute '{attribute_name}' "
+                "must be a string."
+            )
+        elif not attribute_value.strip():
+            errors.append(
+                f"Record attribute '{attribute_name}' "
+                "cannot be empty."
+            )
+
+    profile_value = record_data.get("profile")
+
+    if isinstance(profile_value, str) and profile_value:
+        declared_profile_path = (
+            record_path.parent / profile_value
+        ).resolve()
+
+        loaded_profile_path = (
+            expected_profile_path.resolve()
+        )
+
+        if declared_profile_path != loaded_profile_path:
+            errors.append(
+                "Record profile path does not match the "
+                "profile loaded by the validator. "
+                f"Record resolves to "
+                f"'{declared_profile_path}', but validator "
+                f"loaded '{loaded_profile_path}'."
+            )
+
+    for tier_name in sorted(REQUIRED_TIERS):
+        if tier_name not in record_data:
+            continue
+
+        tier_value = record_data[tier_name]
+
+        if not isinstance(tier_value, dict):
+            errors.append(
+                f"Record tier '{tier_name}' "
+                "must be a mapping."
+            )
+
+    return errors
 
 
 def validate_field_definition(
     path_name: str,
     field_definition: object,
-) -> str | None:
-    """Validate one base or custom field definition."""
+) -> list[str]:
+    """Recursively validate one schema field definition."""
+    errors = []
+
     if not isinstance(field_definition, dict):
-        return (
+        return [
             f"Schema definition for '{path_name}' "
             "must be a mapping."
-        )
+        ]
 
     unknown_attributes = (
         set(field_definition)
@@ -353,283 +767,367 @@ def validate_field_definition(
     )
 
     if unknown_attributes:
-        return (
-            f"Unknown schema attributes for '{path_name}': "
+        errors.append(
+            f"Unknown schema attributes for "
+            f"'{path_name}': "
             + ", ".join(sorted(unknown_attributes))
         )
 
     declared_type = field_definition.get("type")
 
     if declared_type not in VALID_TYPES:
-        return (
-            f"Schema field '{path_name}' must declare one of "
-            f"{sorted(VALID_TYPES)} as its type. "
+        errors.append(
+            f"Schema field '{path_name}' must declare "
+            f"one of {sorted(VALID_TYPES)} as its type. "
             f"Received {declared_type!r}."
         )
 
     requirement = field_definition.get("requirement")
 
     if requirement not in VALID_REQUIREMENTS:
-        return (
-            f"Schema field '{path_name}' must declare one of "
-            f"{sorted(VALID_REQUIREMENTS)} as its requirement. "
+        errors.append(
+            f"Schema field '{path_name}' must declare "
+            f"one of {sorted(VALID_REQUIREMENTS)} "
+            f"as its requirement. "
             f"Received {requirement!r}."
         )
 
     nullable = field_definition.get("nullable")
 
     if not isinstance(nullable, bool):
-        return (
-            f"Schema field '{path_name}' must declare nullable "
-            "as true or false."
+        errors.append(
+            f"Schema field '{path_name}' must declare "
+            "nullable as true or false."
         )
 
     description = field_definition.get("description")
 
-    if description is not None and not isinstance(description, str):
-        return (
-            f"Schema field '{path_name}' has a description "
-            "that is not a string."
+    if (
+        description is not None
+        and not isinstance(description, str)
+    ):
+        errors.append(
+            f"Schema field '{path_name}' has a "
+            "description that is not a string."
         )
 
-    allowed_values = field_definition.get("allowed_values")
+    allowed_values = field_definition.get(
+        "allowed_values"
+    )
 
-    if allowed_values is not None and not isinstance(
-        allowed_values,
-        list,
+    if (
+        allowed_values is not None
+        and not isinstance(allowed_values, list)
     ):
-        return (
-            f"Schema field '{path_name}' declares allowed_values, "
-            "but allowed_values is not a list."
+        errors.append(
+            f"Schema field '{path_name}' declares "
+            "allowed_values, but allowed_values "
+            "is not a list."
         )
 
     if declared_type == "list":
         item_type = field_definition.get("item_type")
 
         if item_type not in VALID_TYPES:
-            return (
-                f"List field '{path_name}' must declare a valid "
-                f"item_type. Received {item_type!r}."
+            errors.append(
+                f"List field '{path_name}' must declare "
+                f"a valid item_type. "
+                f"Received {item_type!r}."
             )
 
-        item_properties = field_definition.get("item_properties")
+        item_properties = field_definition.get(
+            "item_properties"
+        )
 
         if item_type == "object":
-            if item_properties is None:
-                return (
-                    f"Object-list field '{path_name}' must declare "
-                    "item_properties."
+            if not isinstance(item_properties, dict):
+                errors.append(
+                    f"Object-list field '{path_name}' "
+                    "must declare item_properties "
+                    "as a mapping."
                 )
-
-            error = validate_property_definitions(
-                f"{path_name}[]",
-                item_properties,
-            )
-
-            if error:
-                return error
+            else:
+                for (
+                    property_name,
+                    property_definition,
+                ) in item_properties.items():
+                    errors.extend(
+                        validate_field_definition(
+                            (
+                                f"{path_name}[]"
+                                f".{property_name}"
+                            ),
+                            property_definition,
+                        )
+                    )
 
         elif item_properties is not None:
-            return (
-                f"List field '{path_name}' declares item_properties, "
-                "but its item_type is not 'object'."
+            errors.append(
+                f"List field '{path_name}' declares "
+                "item_properties, but its item_type "
+                "is not 'object'."
             )
 
-    elif "item_type" in field_definition:
-        return (
-            f"Non-list field '{path_name}' cannot declare item_type."
-        )
+    else:
+        if "item_type" in field_definition:
+            errors.append(
+                f"Non-list field '{path_name}' "
+                "cannot declare item_type."
+            )
 
-    elif "item_properties" in field_definition:
-        return (
-            f"Non-list field '{path_name}' cannot declare "
-            "item_properties."
-        )
+        if "item_properties" in field_definition:
+            errors.append(
+                f"Non-list field '{path_name}' "
+                "cannot declare item_properties."
+            )
 
     if declared_type == "object":
         properties = field_definition.get("properties")
 
         if properties is not None:
-            error = validate_property_definitions(
-                path_name,
-                properties,
-            )
-
-            if error:
-                return error
+            if not isinstance(properties, dict):
+                errors.append(
+                    f"Object field '{path_name}' must "
+                    "declare properties as a mapping."
+                )
+            else:
+                for (
+                    property_name,
+                    property_definition,
+                ) in properties.items():
+                    errors.extend(
+                        validate_field_definition(
+                            (
+                                f"{path_name}."
+                                f"{property_name}"
+                            ),
+                            property_definition,
+                        )
+                    )
 
     elif "properties" in field_definition:
-        return (
-            f"Non-object field '{path_name}' cannot declare properties."
+        errors.append(
+            f"Non-object field '{path_name}' "
+            "cannot declare properties."
         )
 
-    return None
+    return errors
 
 
 def validate_schema_definitions(
     base_data: dict,
     profile_data: dict,
-) -> str | None:
-    """
-    Validate base fields, custom profile fields, and profile overrides.
-
-    The profile document itself has already been validated before
-    this function runs.
-    """
-    for tier_name in sorted(REQUIRED_TIERS):
-        tier_definition = base_data["tiers"].get(tier_name)
-
-        if not isinstance(tier_definition, dict):
-            return (
-                f"Base tier '{tier_name}' must be a mapping."
-            )
-
-        fields = tier_definition.get("fields")
-
-        if not isinstance(fields, dict):
-            return (
-                f"Base tier '{tier_name}' must declare a fields mapping."
-            )
-
-        for field_name, field_definition in fields.items():
-            error = validate_field_definition(
-                f"{tier_name}.{field_name}",
-                field_definition,
-            )
-
-            if error:
-                return error
-
-    custom_fields = profile_data.get("custom_fields", {})
-
-    unknown_custom_tiers = (
-        set(custom_fields)
-        - REQUIRED_TIERS
-    )
-
-    if unknown_custom_tiers:
-        return (
-            "Unknown custom-field tiers: "
-            + ", ".join(sorted(unknown_custom_tiers))
-        )
+) -> list[str]:
+    """Validate base fields, custom fields, and overrides."""
+    errors = []
 
     for tier_name in sorted(REQUIRED_TIERS):
-        tier_custom_fields = custom_fields.get(tier_name, {})
+        fields = (
+            base_data["tiers"][tier_name]["fields"]
+        )
 
-        if not isinstance(tier_custom_fields, dict):
-            return (
-                f"Profile custom_fields.{tier_name} "
-                "must be a mapping."
+        for (
+            field_name,
+            field_definition,
+        ) in fields.items():
+            errors.extend(
+                validate_field_definition(
+                    f"{tier_name}.{field_name}",
+                    field_definition,
+                )
             )
 
-        for field_name, field_definition in tier_custom_fields.items():
-            error = validate_field_definition(
-                f"{tier_name}.{field_name}",
-                field_definition,
-            )
-
-            if error:
-                return error
-
-    tier_overrides = profile_data.get("tier_overrides", {})
-
-    unknown_override_tiers = (
-        set(tier_overrides)
-        - REQUIRED_TIERS
+    custom_fields = profile_data.get(
+        "custom_fields",
+        {},
     )
 
-    if unknown_override_tiers:
-        return (
-            "Unknown override tiers: "
-            + ", ".join(sorted(unknown_override_tiers))
+    if isinstance(custom_fields, dict):
+        unknown_custom_tiers = (
+            set(custom_fields)
+            - REQUIRED_TIERS
         )
 
-    for tier_name, overrides in tier_overrides.items():
-        if not isinstance(overrides, dict):
-            return (
-                f"Profile tier_overrides.{tier_name} "
-                "must be a mapping."
+        if unknown_custom_tiers:
+            errors.append(
+                "Unknown custom-field tiers: "
+                + ", ".join(
+                    sorted(unknown_custom_tiers)
+                )
             )
 
-        base_fields = (
-            base_data["tiers"][tier_name]
-            .get("fields", {})
-        )
-
-        unknown_override_fields = (
-            set(overrides)
-            - set(base_fields)
-        )
-
-        if unknown_override_fields:
-            return (
-                f"Unknown field overrides in {tier_name} tier: "
-                + ", ".join(sorted(unknown_override_fields))
+        for tier_name in sorted(REQUIRED_TIERS):
+            tier_custom_fields = custom_fields.get(
+                tier_name,
+                {},
             )
 
-        for field_name, override_definition in overrides.items():
-            override_path = f"{tier_name}.{field_name}"
-
-            if not isinstance(override_definition, dict):
-                return (
-                    f"Override for '{override_path}' "
+            if not isinstance(tier_custom_fields, dict):
+                errors.append(
+                    f"Profile custom_fields.{tier_name} "
                     "must be a mapping."
                 )
+                continue
 
-            unknown_override_attributes = (
-                set(override_definition)
-                - VALID_FIELD_ATTRIBUTES
+            for (
+                field_name,
+                field_definition,
+            ) in tier_custom_fields.items():
+                errors.extend(
+                    validate_field_definition(
+                        f"{tier_name}.{field_name}",
+                        field_definition,
+                    )
+                )
+
+    tier_overrides = profile_data.get(
+        "tier_overrides",
+        {},
+    )
+
+    if isinstance(tier_overrides, dict):
+        unknown_override_tiers = (
+            set(tier_overrides)
+            - REQUIRED_TIERS
+        )
+
+        if unknown_override_tiers:
+            errors.append(
+                "Unknown override tiers: "
+                + ", ".join(
+                    sorted(unknown_override_tiers)
+                )
             )
 
-            if unknown_override_attributes:
-                return (
-                    f"Unknown override attributes for "
-                    f"'{override_path}': "
-                    + ", ".join(sorted(unknown_override_attributes))
+        for tier_name, overrides in (
+            tier_overrides.items()
+        ):
+            if tier_name not in REQUIRED_TIERS:
+                continue
+
+            if not isinstance(overrides, dict):
+                errors.append(
+                    f"Profile tier_overrides."
+                    f"{tier_name} must be a mapping."
+                )
+                continue
+
+            base_fields = (
+                base_data["tiers"][tier_name]["fields"]
+            )
+
+            unknown_override_fields = (
+                set(overrides)
+                - set(base_fields)
+            )
+
+            if unknown_override_fields:
+                errors.append(
+                    f"Unknown field overrides in "
+                    f"{tier_name} tier: "
+                    + ", ".join(
+                        sorted(unknown_override_fields)
+                    )
                 )
 
-            if "type" in override_definition:
-                override_type = override_definition["type"]
+            for (
+                field_name,
+                override_definition,
+            ) in overrides.items():
+                if field_name not in base_fields:
+                    continue
 
-                if override_type not in VALID_TYPES:
-                    return (
-                        f"Override for '{override_path}' declares "
-                        f"invalid type {override_type!r}."
-                    )
-
-            if "requirement" in override_definition:
-                override_requirement = (
-                    override_definition["requirement"]
+                override_path = (
+                    f"{tier_name}.{field_name}"
                 )
 
-                if override_requirement not in VALID_REQUIREMENTS:
-                    return (
-                        f"Override for '{override_path}' declares "
-                        "invalid requirement "
-                        f"{override_requirement!r}."
-                    )
-
-            if "nullable" in override_definition:
                 if not isinstance(
-                    override_definition["nullable"],
-                    bool,
+                    override_definition,
+                    dict,
                 ):
-                    return (
-                        f"Override for '{override_path}' must declare "
-                        "nullable as true or false."
+                    errors.append(
+                        f"Override for '{override_path}' "
+                        "must be a mapping."
+                    )
+                    continue
+
+                unknown_override_attributes = (
+                    set(override_definition)
+                    - VALID_FIELD_ATTRIBUTES
+                )
+
+                if unknown_override_attributes:
+                    errors.append(
+                        f"Unknown override attributes for "
+                        f"'{override_path}': "
+                        + ", ".join(
+                            sorted(
+                                unknown_override_attributes
+                            )
+                        )
                     )
 
-            if "allowed_values" in override_definition:
-                if not isinstance(
-                    override_definition["allowed_values"],
-                    list,
-                ):
-                    return (
-                        f"Override for '{override_path}' declares "
-                        "allowed_values that is not a list."
+                if "type" in override_definition:
+                    override_type = (
+                        override_definition["type"]
                     )
 
-    return None
+                    if override_type not in VALID_TYPES:
+                        errors.append(
+                            f"Override for "
+                            f"'{override_path}' declares "
+                            f"invalid type "
+                            f"{override_type!r}."
+                        )
+
+                if "requirement" in override_definition:
+                    override_requirement = (
+                        override_definition[
+                            "requirement"
+                        ]
+                    )
+
+                    if (
+                        override_requirement
+                        not in VALID_REQUIREMENTS
+                    ):
+                        errors.append(
+                            f"Override for "
+                            f"'{override_path}' declares "
+                            "invalid requirement "
+                            f"{override_requirement!r}."
+                        )
+
+                if "nullable" in override_definition:
+                    if not isinstance(
+                        override_definition["nullable"],
+                        bool,
+                    ):
+                        errors.append(
+                            f"Override for "
+                            f"'{override_path}' must "
+                            "declare nullable as "
+                            "true or false."
+                        )
+
+                if (
+                    "allowed_values"
+                    in override_definition
+                    and not isinstance(
+                        override_definition[
+                            "allowed_values"
+                        ],
+                        list,
+                    )
+                ):
+                    errors.append(
+                        f"Override for "
+                        f"'{override_path}' declares "
+                        "allowed_values that is not "
+                        "a list."
+                    )
+
+    return errors
 
 
 def resolve_field_definitions(
@@ -637,181 +1135,217 @@ def resolve_field_definitions(
     profile_data: dict,
     tier_name: str,
 ) -> dict:
-    """
-    Combine base fields, profile overrides, and custom profile fields.
-
-    Overrides modify existing base-field definitions.
-    Custom fields add new fields to the resolved tier schema.
-    """
+    """Resolve base fields, profile overrides, and custom fields."""
     base_fields = (
-        base_data["tiers"][tier_name]
-        .get("fields", {})
+        base_data["tiers"][tier_name]["fields"]
     )
 
     tier_overrides = (
-        profile_data.get("tier_overrides", {})
+        profile_data
+        .get("tier_overrides", {})
         .get(tier_name, {})
     )
 
     custom_fields = (
-        profile_data.get("custom_fields", {})
+        profile_data
+        .get("custom_fields", {})
         .get(tier_name, {})
     )
 
     resolved_fields = {}
 
-    for field_name, field_definition in base_fields.items():
-        resolved_definition = dict(field_definition)
+    for (
+        field_name,
+        field_definition,
+    ) in base_fields.items():
+        resolved_definition = dict(
+            field_definition
+        )
 
         if field_name in tier_overrides:
             resolved_definition.update(
                 tier_overrides[field_name]
             )
 
-        resolved_fields[field_name] = resolved_definition
+        resolved_fields[field_name] = (
+            resolved_definition
+        )
 
     resolved_fields.update(custom_fields)
 
     return resolved_fields
 
 
-def validate_object_against_properties(
+def validate_value(
     path_name: str,
-    value: dict,
-    property_definitions: dict,
-) -> str | None:
-    """Validate one object against its declared property definitions."""
-    unknown_properties = set(value) - set(property_definitions)
+    value: object,
+    definition: dict,
+) -> list[str]:
+    """Recursively validate one record value."""
+    errors = []
 
-    if unknown_properties:
-        return (
-            f"Unknown properties in '{path_name}': "
-            + ", ".join(sorted(unknown_properties))
+    nullable = definition["nullable"]
+
+    if value is None:
+        if not nullable:
+            errors.append(
+                f"Value '{path_name}' is null but "
+                "is not nullable."
+            )
+
+        return errors
+
+    declared_type = definition["type"]
+
+    if not value_matches_type(
+        value,
+        declared_type,
+    ):
+        errors.append(
+            f"Value '{path_name}' must be type "
+            f"'{declared_type}', but received "
+            f"'{type(value).__name__}'."
         )
 
-    required_properties = {
-        property_name
-        for property_name, property_definition
-        in property_definitions.items()
-        if property_definition.get("requirement") == "required"
-    }
+        return errors
 
-    missing_required_properties = {
-        property_name
-        for property_name in required_properties
-        if property_name not in value
-        or value[property_name] is None
-    }
+    errors.extend(
+        validate_allowed_values(
+            path_name,
+            value,
+            definition,
+        )
+    )
 
-    if missing_required_properties:
-        return (
-            f"Missing required properties in '{path_name}': "
-            + ", ".join(sorted(missing_required_properties))
+    if declared_type == "list":
+        item_type = definition["item_type"]
+        item_properties = definition.get(
+            "item_properties",
+            {},
         )
 
-    for property_name, property_value in value.items():
-        property_definition = property_definitions[property_name]
-        property_path = f"{path_name}.{property_name}"
-        nullable = property_definition["nullable"]
+        for index, item in enumerate(value):
+            item_path = f"{path_name}[{index}]"
 
-        if property_value is None:
-            if not nullable:
-                return (
-                    f"Property '{property_path}' "
-                    "is null but is not nullable."
+            item_definition = {
+                "type": item_type,
+                "requirement": "required",
+                "nullable": False,
+            }
+
+            if item_type == "object":
+                item_definition["properties"] = (
+                    item_properties
                 )
 
-            continue
-
-        declared_type = property_definition["type"]
-
-        if not value_matches_type(property_value, declared_type):
-            return (
-                f"Property '{property_path}' "
-                f"must be type '{declared_type}', but received "
-                f"'{type(property_value).__name__}'."
+            errors.extend(
+                validate_value(
+                    item_path,
+                    item,
+                    item_definition,
+                )
             )
 
-        allowed_values_error = validate_allowed_values(
-            property_path,
-            property_value,
-            property_definition,
+    if declared_type == "object":
+        property_definitions = definition.get(
+            "properties",
+            {},
         )
 
-        if allowed_values_error:
-            return allowed_values_error
+        # Objects without declared properties are open objects.
+        if not property_definitions:
+            return errors
 
-        if declared_type == "list":
-            item_type = property_definition["item_type"]
+        unknown_properties = (
+            set(value)
+            - set(property_definitions)
+        )
 
-            for index, item in enumerate(property_value):
-                if not value_matches_type(item, item_type):
-                    return (
-                        f"Item {index} in '{property_path}' "
-                        f"must be type '{item_type}', but received "
-                        f"'{type(item).__name__}'."
+        if unknown_properties:
+            errors.append(
+                f"Unknown properties in '{path_name}': "
+                + ", ".join(
+                    sorted(unknown_properties)
+                )
+            )
+
+        required_properties = {
+            property_name
+            for (
+                property_name,
+                property_definition,
+            ) in property_definitions.items()
+            if (
+                property_definition.get("requirement")
+                == "required"
+            )
+        }
+
+        missing_required_properties = {
+            property_name
+            for property_name in required_properties
+            if (
+                property_name not in value
+                or value[property_name] is None
+            )
+        }
+
+        if missing_required_properties:
+            errors.append(
+                f"Missing required properties in "
+                f"'{path_name}': "
+                + ", ".join(
+                    sorted(
+                        missing_required_properties
                     )
-
-    return None
-
-
-def validate_list_items(
-    tier_name: str,
-    field_name: str,
-    value: list,
-    field_definition: dict,
-) -> str | None:
-    """Validate every item in a list field."""
-    item_type = field_definition["item_type"]
-    item_properties = field_definition.get("item_properties", {})
-
-    for index, item in enumerate(value):
-        if not value_matches_type(item, item_type):
-            return (
-                f"Item {index} in '{tier_name}.{field_name}' "
-                f"must be type '{item_type}', but received "
-                f"'{type(item).__name__}'."
+                )
             )
 
-        if item_type == "object":
-            error = validate_object_against_properties(
-                f"{tier_name}.{field_name}[{index}]",
-                item,
-                item_properties,
+        for (
+            property_name,
+            property_value,
+        ) in value.items():
+            if property_name not in property_definitions:
+                continue
+
+            property_definition = (
+                property_definitions[property_name]
             )
 
-            if error:
-                return error
+            errors.extend(
+                validate_value(
+                    (
+                        f"{path_name}."
+                        f"{property_name}"
+                    ),
+                    property_value,
+                    property_definition,
+                )
+            )
 
-    return None
-
-
-def validate_object_properties(
-    tier_name: str,
-    field_name: str,
-    value: dict,
-    field_definition: dict,
-) -> str | None:
-    """Validate nested properties declared for an object field."""
-    property_definitions = field_definition.get("properties", {})
-
-    if not property_definitions:
-        return None
-
-    return validate_object_against_properties(
-        f"{tier_name}.{field_name}",
-        value,
-        property_definitions,
-    )
+    return errors
 
 
 def main() -> int:
+    args = parse_arguments()
+
+    files = {
+        "base": args.base,
+        "profile": args.profile,
+        "record": args.record,
+    }
+
     try:
         documents = {
             name: load_yaml(path)
-            for name, path in FILES.items()
+            for name, path in files.items()
         }
-    except (FileNotFoundError, ValueError, yaml.YAMLError) as error:
+    except (
+        FileNotFoundError,
+        ValueError,
+        yaml.YAMLError,
+        OSError,
+    ) as error:
         print(f"ERROR: {error}")
         return 1
 
@@ -819,83 +1353,124 @@ def main() -> int:
     profile = documents["profile"]
     record = documents["record"]
 
-    # Confirm the expected root keys exist.
+    # Root errors can be collected across all three documents.
+    root_errors = []
+
     if "metarci" not in base:
-        print("ERROR: Base schema is missing the 'metarci' root.")
-        return 1
+        root_errors.append(
+            "Base schema is missing the 'metarci' root."
+        )
 
     if "metarci_profile" not in profile:
-        print("ERROR: Example profile is missing the 'metarci_profile' root.")
-        return 1
+        root_errors.append(
+            "Profile is missing the "
+            "'metarci_profile' root."
+        )
 
     if "metarci_record" not in record:
-        print("ERROR: Example record is missing the 'metarci_record' root.")
+        root_errors.append(
+            "Record is missing the "
+            "'metarci_record' root."
+        )
+
+    if root_errors:
+        print_errors(
+            "Root validation",
+            root_errors,
+        )
         return 1
 
     base_data = base["metarci"]
     profile_data = profile["metarci_profile"]
     record_data = record["metarci_record"]
 
-    # Confirm all three tiers exist in the base schema and record.
-    base_tiers = set(base_data.get("tiers", {}))
+    # Stage 1: validate document structures.
+    document_errors = []
 
-    record_tiers = {
-        tier_name
-        for tier_name in record_data
-        if tier_name in REQUIRED_TIERS
-    }
-
-    missing_base_tiers = REQUIRED_TIERS - base_tiers
-    missing_record_tiers = REQUIRED_TIERS - record_tiers
-
-    if missing_base_tiers:
-        print(
-            "ERROR: Base schema is missing tiers: "
-            + ", ".join(sorted(missing_base_tiers))
-        )
-        return 1
-
-    if missing_record_tiers:
-        print(
-            "ERROR: Example record is missing tiers: "
-            + ", ".join(sorted(missing_record_tiers))
-        )
-        return 1
-
-    # Validate the profile document before using its instructions.
-    profile_error = validate_profile_document(
-        profile_data,
-        FILES["profile"],
-        FILES["base"],
+    document_errors.extend(
+        validate_base_document(base_data)
     )
 
-    if profile_error:
-        print(f"ERROR: {profile_error}")
+    document_errors.extend(
+        validate_profile_document(
+            profile_data,
+            files["profile"],
+            files["base"],
+        )
+    )
+
+    document_errors.extend(
+        validate_record_document(
+            record_data,
+            files["record"],
+            files["profile"],
+        )
+    )
+
+    if document_errors:
+        print_errors(
+            "Document validation",
+            document_errors,
+        )
         return 1
 
-    # Validate the base schema and profile field definitions.
-    schema_error = validate_schema_definitions(
+    # Stage 2: validate field definitions and overrides.
+    schema_errors = validate_schema_definitions(
         base_data,
         profile_data,
     )
 
-    if schema_error:
-        print(f"ERROR: {schema_error}")
-        return 1
-
-    # Confirm that the record uses the declared profile version.
-    declared_profile_version = profile_data["version"]
-    record_profile_version = record_data.get("profile_version")
-
-    if declared_profile_version != record_profile_version:
-        print(
-            "ERROR: Record profile_version does not match "
-            f"the profile version. Expected '{declared_profile_version}', "
-            f"got '{record_profile_version}'."
+    if schema_errors:
+        print_errors(
+            "Schema-definition validation",
+            schema_errors,
         )
         return 1
 
-    # Resolve base fields, overrides, and custom profile fields.
+    # Stage 3: validate version compatibility.
+    compatibility_errors = []
+
+    declared_base_version = (
+        profile_data["base_version"]
+    )
+
+    loaded_base_version = base_data["version"]
+
+    if declared_base_version != loaded_base_version:
+        compatibility_errors.append(
+            "Profile base_version does not match "
+            "the loaded base-schema version. "
+            f"Expected '{loaded_base_version}', got "
+            f"'{declared_base_version}'."
+        )
+
+    declared_profile_version = (
+        profile_data["version"]
+    )
+
+    record_profile_version = (
+        record_data["profile_version"]
+    )
+
+    if (
+        declared_profile_version
+        != record_profile_version
+    ):
+        compatibility_errors.append(
+            "Record profile_version does not match "
+            "the profile version. "
+            f"Expected '{declared_profile_version}', "
+            f"got '{record_profile_version}'."
+        )
+
+    if compatibility_errors:
+        print_errors(
+            "Version compatibility",
+            compatibility_errors,
+        )
+        return 1
+
+    # Stage 4: resolve the effective schema.
     resolved_schemas = {
         tier_name: resolve_field_definitions(
             base_data,
@@ -905,126 +1480,124 @@ def main() -> int:
         for tier_name in REQUIRED_TIERS
     }
 
-    # Confirm required fields across all resolved tiers.
+    # Stage 5: validate record structure.
+    record_structure_errors = []
+
     for tier_name in sorted(REQUIRED_TIERS):
         tier_schema = resolved_schemas[tier_name]
-        tier_record = record_data.get(tier_name, {})
+        tier_record = record_data[tier_name]
 
         required_fields = {
             field_name
-            for field_name, field_definition in tier_schema.items()
-            if field_definition.get("requirement") == "required"
+            for (
+                field_name,
+                field_definition,
+            ) in tier_schema.items()
+            if (
+                field_definition.get("requirement")
+                == "required"
+            )
         }
 
         missing_required_fields = {
             field_name
             for field_name in required_fields
-            if field_name not in tier_record
-            or tier_record[field_name] is None
+            if (
+                field_name not in tier_record
+                or tier_record[field_name] is None
+            )
         }
 
         if missing_required_fields:
-            print(
-                f"ERROR: Missing required fields in {tier_name} tier: "
-                + ", ".join(sorted(missing_required_fields))
+            record_structure_errors.append(
+                f"Missing required fields in "
+                f"{tier_name} tier: "
+                + ", ".join(
+                    sorted(missing_required_fields)
+                )
             )
-            return 1
 
-    # Confirm each record field exists in the resolved schema.
-    for tier_name in sorted(REQUIRED_TIERS):
-        allowed_fields = set(resolved_schemas[tier_name])
-        record_fields = set(record_data.get(tier_name, {}))
+        allowed_fields = set(tier_schema)
+        record_fields = set(tier_record)
 
-        unknown_fields = record_fields - allowed_fields
+        unknown_fields = (
+            record_fields
+            - allowed_fields
+        )
 
         if unknown_fields:
-            print(
-                f"ERROR: Unknown fields in {tier_name} tier: "
+            record_structure_errors.append(
+                f"Unknown fields in "
+                f"{tier_name} tier: "
                 + ", ".join(sorted(unknown_fields))
             )
-            return 1
 
-    # Validate record values against the resolved schema.
+    if record_structure_errors:
+        print_errors(
+            "Record structure",
+            record_structure_errors,
+        )
+        return 1
+
+    # Stage 6: recursively validate record values.
+    value_errors = []
+
     for tier_name in sorted(REQUIRED_TIERS):
-        field_definitions = resolved_schemas[tier_name]
-        tier_record = record_data.get(tier_name, {})
+        field_definitions = (
+            resolved_schemas[tier_name]
+        )
 
-        for field_name, value in tier_record.items():
-            field_definition = field_definitions[field_name]
-            field_path = f"{tier_name}.{field_name}"
-            nullable = field_definition["nullable"]
+        tier_record = record_data[tier_name]
 
-            if value is None:
-                if not nullable:
-                    print(
-                        f"ERROR: Field '{field_path}' "
-                        "is null but is not nullable."
-                    )
-                    return 1
-
-                continue
-
-            declared_type = field_definition["type"]
-
-            if not value_matches_type(value, declared_type):
-                print(
-                    f"ERROR: Field '{field_path}' "
-                    f"must be type '{declared_type}', "
-                    f"but received '{type(value).__name__}'."
+        for (
+            field_name,
+            value,
+        ) in tier_record.items():
+            value_errors.extend(
+                validate_value(
+                    f"{tier_name}.{field_name}",
+                    value,
+                    field_definitions[field_name],
                 )
-                return 1
-
-            allowed_values_error = validate_allowed_values(
-                field_path,
-                value,
-                field_definition,
             )
 
-            if allowed_values_error:
-                print(f"ERROR: {allowed_values_error}")
-                return 1
-
-            if declared_type == "list":
-                error = validate_list_items(
-                    tier_name,
-                    field_name,
-                    value,
-                    field_definition,
-                )
-
-                if error:
-                    print(f"ERROR: {error}")
-                    return 1
-
-            if declared_type == "object":
-                error = validate_object_properties(
-                    tier_name,
-                    field_name,
-                    value,
-                    field_definition,
-                )
-
-                if error:
-                    print(f"ERROR: {error}")
-                    return 1
+    if value_errors:
+        print_errors(
+            "Record-value validation",
+            value_errors,
+        )
+        return 1
 
     print("OK: All YAML files parsed successfully.")
     print("OK: Expected MetaRCI roots are present.")
+    print("OK: Base-schema document structure is valid.")
+    print("OK: Base-schema metadata and lifecycle status are valid.")
+    print("OK: Base-schema principles are valid.")
     print("OK: Reference, Context, and Interpretive tiers are present.")
+    print("OK: Base-tier document structures are valid.")
     print("OK: Profile document structure is valid.")
     print("OK: Profile extends the loaded base schema.")
     print("OK: Profile implementation metadata is valid.")
+    print("OK: Record document structure is valid.")
+    print("OK: Record references the loaded profile.")
+    print("OK: Record tiers are valid mappings.")
     print("OK: Base and profile schema definitions are valid.")
     print("OK: Profile overrides target declared base fields.")
     print("OK: Profile overrides and custom fields were resolved.")
-    print("OK: Record profile version matches the profile.")
+    print("OK: Profile base_version matches the base schema.")
+    print("OK: Record profile_version matches the profile.")
     print("OK: Required fields are present across all tiers.")
     print("OK: Record fields are declared by the resolved profile.")
-    print("OK: Record field values match their declared types.")
+    print("OK: Record values passed recursive type validation.")
     print("OK: Declared allowed values are satisfied.")
-    print("OK: List items match their declared item types.")
-    print("OK: Nested object properties match their declared schemas.")
-    print("OK: Object items in lists match their declared schemas.")
+    print("OK: Nested lists and objects match their schemas.")
+    print("OK: Recursive record validation completed successfully.")
+    print("OK: Validation completed with no errors.")
+    print()
+    print("Validated files:")
+    print(f"  Base:    {files['base'].resolve()}")
+    print(f"  Profile: {files['profile'].resolve()}")
+    print(f"  Record:  {files['record'].resolve()}")
 
     return 0
 

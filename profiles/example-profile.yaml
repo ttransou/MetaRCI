@@ -3,6 +3,7 @@ metarci_profile:
   version: "0.1.0"
   status: draft
   extends: ../schemas/metarci-base.yaml
+  base_version: "0.1.0"
 
   description: >
     Example MetaRCI profile demonstrating how an implementation
