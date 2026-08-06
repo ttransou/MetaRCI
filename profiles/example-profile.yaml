@@ -1,1 +1,25 @@
+metarci_profile:
+  name: example-profile
+  version: "0.1.0"
+  status: draft
 
+  extends: ../schemas/metarci-base.yaml
+
+  description: >
+    Example MetaRCI profile demonstrating how an implementation
+    can select, require, and extend fields from the base schema.
+
+  implementation:
+    domain: null
+    corpus: null
+    use_case: null
+
+  tier_overrides:
+    reference: {}
+    context: {}
+    interpretive: {}
+
+  custom_fields:
+    reference: {}
+    context: {}
+    interpretive: {}
