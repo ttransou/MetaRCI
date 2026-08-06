@@ -44,8 +44,8 @@ flowchart LR
     I --> U
 ```
 
-MetaRCI progressively organizes metadata according to how it is obtained and how it supports the use case. Implementations may adopt one, two, or all three tiers.
-    
+MetaRCI progressively organizes metadata according to how it is obtained and how it supports the use case. Implementations may adopt one, two, or all three tiers. 
+
 SCARAG [https://github.com/ttransou/SCARAG] serves as one reference implementation of MetaRCI rather than the framework for which MetaRCI was exclusively designed. Within SCARAG, MetaRCI can provide a structured approach to defining Reference, Context, and Interpretive metadata. Other systems may adopt the same model independently, adapting its YAML schemas and domain profiles to their own corpus, use case, and architecture.
 
 
@@ -135,6 +135,7 @@ flowchart TD
     J -- No --> L
 ```
 A field should not be included merely because it can be modeled.
+
 ---
 
 # 3. Why MetaRCI Is Relevant to RAG
@@ -553,7 +554,7 @@ SKOS provides a common model for sharing taxonomies, thesauri, classification sc
 
 IFLA LRM provides a high-level entity-relationship model for bibliographic information. It is most relevant to domain profiles involving editions, manifestations, related works, agents, places, and time periods rather than to the MetaRCI base model as a whole.
 
-```
+```mermaid
 flowchart LR
     DC[Dublin Core<br/>Resource description]
     PROV[W3C PROV<br/>Provenance]
