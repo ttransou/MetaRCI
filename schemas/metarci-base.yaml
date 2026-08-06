@@ -1,1 +1,39 @@
-TBD
+metarci:
+  name: MetaRCI
+  version: "0.1.0"
+  status: draft
+
+  description: >
+    A progressive metadata model that organizes metadata into
+    Reference, Context, and Interpretive tiers.
+
+  principles:
+    domain_agnostic: true
+    use_case_driven: true
+    nullable_fields_allowed: true
+    custom_fields_allowed: true
+
+  tiers:
+    reference:
+      name: Reference
+      description: >
+        Metadata extracted or generated from the source, file,
+        or ingestion process with minimal human curation.
+
+      fields: {}
+
+    context:
+      name: Context
+      description: >
+        Curated or externally supplied metadata that situates
+        the source within its broader domain or corpus.
+
+      fields: {}
+
+    interpretive:
+      name: Interpretive
+      description: >
+        Corpus-specific metadata that expresses analytical,
+        semantic, or relational meaning.
+
+      fields: {}
