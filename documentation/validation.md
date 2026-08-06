@@ -27,12 +27,12 @@ The validator performs both structural and value-level validation. It also repor
 The validator requires:
 
 * Python 3.10 or later
-* PyYAML
+* the dependencies listed in `requirements.txt`
 
 Install PyYAML with:
 
 ```bash
-python -m pip install PyYAML
+python -m pip install -r requirements.txt
 ```
 
 ---
