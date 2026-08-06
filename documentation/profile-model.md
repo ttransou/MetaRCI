@@ -2,73 +2,50 @@
 
 ## Overview
 
-MetaRCI profiles define how the base metadata model is applied to materially different source structures.
+MetaRCI profiles define how the base schema is specialized for different source structures while preserving one shared three-tier model.
 
-A profile is not a domain template. It does not represent a subject area, industry, organization, or corpus. Instead, it identifies the structural behavior of the source being described and specifies the metadata rules appropriate to that source type.
+Profiles are structural classifications, not domain templates.
 
-MetaRCI begins with four profiles:
+## Position in the MetaRCI Model
 
-```text
-document
-structured-data
-media
-composite
-```
-
-These profiles are intended to remain few in number, broadly reusable, and structurally distinct.
-
-The governing principle is:
-
-> Profiles are defined by source structure and metadata behavior, not by domain.
-
-A legal memorandum and a literary work may both use the `document` profile. A scientific dataset and an inventory export may both use the `structured-data` profile. Their values, vocabularies, and implementation rules differ, but their underlying source structures are comparable.
-
----
-
-## Position Within the MetaRCI Model
-
-The MetaRCI model consists of three primary layers:
+Current contract:
 
 ```text
-Base schema → Profile → Record
+Base schema → Structural profile → Record
 ```
 
-The base schema defines the common metadata vocabulary and validation behavior available across MetaRCI.
+Current contract:
 
-A profile applies that vocabulary to a specific class of source structure. It may alter selected requirements, add structurally necessary fields, and define profile-specific constraints.
+* The base schema defines shared fields and validation expectations.
+* A structural profile may constrain or extend that shared model.
+* A record must validate against the effective schema produced from base plus profile.
 
-A record contains metadata values describing an actual source and must conform to the effective schema produced by the base schema and selected profile.
+Current guidance:
 
-Domain-specific vocabularies, organizational policies, and corpus-specific rules may be applied through implementation extensions. They do not replace the selected structural profile.
-
----
+* Domain, organizational, and corpus-specific behavior should be represented through implementation extensions, not through new structural profiles.
 
 ## Why Profiles Exist
 
-The MetaRCI base schema provides a shared foundation, but different source structures require different metadata behavior.
+Current guidance:
 
-A document, dataset, image, and collection do not merely differ by file extension. They differ in:
+* Different source structures require different metadata behavior.
+* Profiles allow controlled specialization without fragmenting the base model.
+* Profiles keep the base schema stable and reusable across implementations.
 
-* how their internal structure carries meaning;
-* how provenance should be expressed;
-* what constitutes completeness;
-* how relationships are represented;
-* what kinds of context are necessary;
-* how interpretive metadata should be governed.
+## Structural Classification
 
-Profiles provide controlled variation without fragmenting the base model.
+Current contract:
 
-They allow MetaRCI to remain broadly applicable while avoiding a single oversized schema in which every possible field applies weakly to every possible source.
+* Profiles are identified by source structure and metadata behavior.
+* Profiles are not keyed to subject domain.
 
----
+Current guidance:
 
-## Profile Design Principles
+* Domain-specific terminology and local policy should stay out of core profile definitions unless structurally required across implementations.
 
-### Structural, Not Vertical
+## MetaRCI 0.1 Profile Set
 
-Profiles describe source architecture rather than subject domain.
-
-Appropriate profile distinctions include:
+Current contract:
 
 ```text
 document
@@ -77,449 +54,57 @@ media
 composite
 ```
 
-A profile should not be created merely because a particular domain, organization, or corpus has specialized terminology or local requirements.
+Current contract:
 
-Those concerns belong in implementation extensions, controlled vocabularies, or local governance rules.
-
----
-
-### Limited in Number
-
-MetaRCI should maintain a small profile set.
-
-A new profile should not be introduced merely because an implementation needs additional fields or specialized terminology. New profiles should be justified only when an existing profile cannot represent the source without distorting its metadata behavior.
-
-The burden of proof for a new profile is therefore structural.
-
-A proposed profile should demonstrate that it introduces materially different requirements for:
-
-* identity;
-* internal organization;
-* relationships;
-* provenance;
-* completeness;
-* or interpretation.
-
----
-
-### Additive and Constrained
-
-Profiles extend the base schema in controlled ways.
-
-They may:
-
-* strengthen field requirements;
-* add source-structure-specific fields;
-* narrow allowed values;
-* define profile-specific validation rules;
-* provide additional descriptions or guidance;
-* declare which optional base fields are especially relevant.
-
-Profiles should not arbitrarily weaken the governance guarantees of the base model.
-
----
-
-### Implementation-Agnostic
-
-A profile defines metadata behavior, not the technical mechanism used to produce metadata.
-
-For example, a media profile may support visual descriptions without requiring a vision-language model. Values may be:
-
-* mechanically extracted;
-* imported from an external catalog;
-* supplied by a human;
-* generated by a model;
-* reviewed after generation;
-* or left null.
-
-MetaRCI governs the resulting metadata and its provenance. It does not prescribe the extraction or inference system.
-
----
-
-### Compatible With the Three Tiers
-
-Every profile must retain the three MetaRCI tiers:
-
-```text
-Reference
-Context
-Interpretive
-```
-
-A profile may refine the fields within each tier, but it must not collapse or remove the tier distinction.
-
-The tiers represent different epistemic and governance functions:
-
-* Reference metadata identifies the source and records mechanically grounded provenance.
-* Context metadata situates the source within a domain, corpus, organization, or historical setting.
-* Interpretive metadata records analytical, semantic, relational, or inferential assertions.
-
----
-
-## Approved Profile Set
-
-## 1. Document Profile
-
-### Purpose
-
-The `document` profile describes bounded textual or predominantly textual source artifacts.
-
-Examples include:
-
-* reports;
-* policies;
-* manuals;
-* articles;
-* literary works;
-* correspondence;
-* memoranda;
-* transcripts;
-* presentations;
-* text-bearing PDFs.
-
-The document profile should serve as the default MetaRCI profile when no more specialized structural profile is justified.
-
-### Structural Characteristics
-
-A document generally has:
-
-* a bounded source identity;
-* a title or identifying label;
-* an author, creator, or responsible organization;
-* a version, edition, or publication state;
-* an ordered textual structure;
-* a document-level purpose or audience.
-
-Its internal organization may include pages, sections, headings, chapters, clauses, or other subdivisions, but the document remains the primary descriptive unit.
-
-### Profile Emphasis
-
-The document profile emphasizes:
-
-* source identity;
-* authorship and responsibility;
-* version and edition;
-* publication or review dates;
-* document purpose;
-* audience;
-* section or page structure;
-* bibliographic or organizational context;
-* conceptual and thematic interpretation;
-* relationships to other documents.
-
-### Example Applications
-
-The same document profile may support:
-
-* a Shakespeare play;
-* a corporate procedure;
-* a legal memorandum;
-* an academic article;
-* a historical letter;
-* a technical manual.
-
-Implementation differences should be represented through values, controlled vocabularies, or extensions rather than separate structural profiles.
-
----
-
-## 2. Structured-Data Profile
-
-### Purpose
-
-The `structured-data` profile describes sources whose meaning depends substantially on an explicit data structure.
-
-Examples include:
-
-* spreadsheets;
-* tabular datasets;
-* CSV exports;
-* database extracts;
-* structured logs;
-* survey data;
-* inventories;
-* statistical tables;
-* machine-readable records.
-
-### Structural Characteristics
-
-A structured-data source generally has:
-
-* rows, records, observations, or entities;
-* columns, properties, fields, or variables;
-* declared or inferred data types;
-* units or value domains;
-* keys or identifiers;
-* an aggregation level;
-* temporal, geographic, or population coverage.
-
-The internal schema is part of the source’s meaning and cannot be treated as incidental file structure.
-
-### Profile Emphasis
-
-The structured-data profile emphasizes:
-
-* schema identity;
-* field and column definitions;
-* units of measure;
-* value domains;
-* missing-value conventions;
-* granularity;
-* keys and identifiers;
-* temporal coverage;
-* geographic coverage;
-* population or sample coverage;
-* lineage and transformation history;
-* data quality;
-* relationships among tables or datasets.
-
-### Example Applications
-
-The structured-data profile may support:
-
-* a research dataset;
-* a product inventory;
-* a financial export;
-* a spreadsheet of archival holdings;
-* a public statistical table;
-* a database extract used in a retrieval system.
-
-The implementation changes the meaning of fields, but not the source’s fundamental schema-dependent behavior.
-
----
-
-## 3. Media Profile
-
-### Purpose
-
-The `media` profile describes visual, audiovisual, spatial, or other non-textual and multimodal source artifacts.
-
-Examples include:
-
-* photographs;
-* illustrations;
-* diagrams;
-* maps;
-* audio recordings;
-* video;
-* scanned artworks;
-* presentation graphics;
-* technical drawings.
-
-### Structural Characteristics
-
-A media source generally has:
-
-* physical or digital media characteristics;
-* dimensions, duration, or resolution;
-* a creator, producer, or source;
-* depicted, recorded, or represented subjects;
-* spatial or temporal content;
-* rights and usage considerations;
-* optional captions, transcripts, or descriptions.
-
-Interpretive metadata may be especially significant because some of the source’s meaning is not directly represented as text.
-
-### Profile Emphasis
-
-The media profile emphasizes:
-
-* media format;
-* dimensions, duration, and resolution;
-* technical capture or encoding details;
-* creator or producer;
-* rights status;
-* depicted or recorded subjects;
-* spatial context;
-* temporal context;
-* captions and transcripts;
-* accessibility descriptions;
-* visual or auditory summaries;
-* provenance of generated descriptions;
-* confidence and review status for inferential metadata.
-
-### Model-Generated Metadata
-
-The media profile does not require automated vision or audio analysis.
-
-When metadata is model-generated, the implementation should preserve information such as:
-
-* generation method;
-* model or system name;
-* generation timestamp;
-* confidence;
-* review status;
-* reviewer;
-* source region or time segment;
-* relationship to human-curated metadata.
-
-A generated description should not be treated as equivalent to a mechanically extracted technical property or a reviewed curatorial assertion.
-
-### Example Applications
-
-The media profile may support:
-
-* a digitized historical photograph;
-* a corporate process diagram;
-* a map;
-* a recorded interview;
-* a training video;
-* an artwork image;
-* a document illustration extracted for multimodal retrieval.
-
----
-
-## 4. Composite Profile
-
-### Purpose
-
-The `composite` profile describes a source unit made up of multiple independently meaningful components.
-
-Examples include:
-
-* archival collections;
-* case files;
-* project folders;
-* regulatory submissions;
-* research corpora;
-* document packages;
-* multimodal bundles;
-* compound digital objects.
-
-### Structural Characteristics
-
-A composite source generally has:
-
-* a collection-level identity;
-* constituent members;
-* hierarchy or ordering;
-* component roles;
-* membership rules;
-* completeness criteria;
-* relationships among components;
-* collection-level and item-level metadata.
-
-A composite is more than a folder path. Its members form a meaningful descriptive or operational unit.
-
-### Profile Emphasis
-
-The composite profile emphasizes:
-
-* composite identity;
-* member identifiers;
-* membership type;
-* parent-child relationships;
-* component order;
-* component role;
-* expected versus present members;
-* completeness;
-* assembly history;
-* collection provenance;
-* inheritance of context;
-* conflicts between collection-level and item-level metadata.
-
-### Example Applications
-
-The composite profile may support:
-
-* a corpus of literary works;
-* a legal case file;
-* a research project package;
-* a regulatory filing with exhibits;
-* a training package containing documents and video;
-* an archival series;
-* a multimodal retrieval collection.
-
-Each constituent item may also have its own MetaRCI record using the appropriate item-level profile.
-
----
+* Each profile exists as an executable YAML file under the profiles directory.
+* Each profile currently declares draft status and base-version alignment to 0.1.0.
 
 ## Profile Selection
 
-A profile should be selected based on the primary source structure being described.
-
-The following decision logic may be used:
+Current guidance:
 
 ```text
-Is the source primarily a bounded textual artifact?
-→ document
-
-Does meaning depend on rows, fields, variables, or schema?
-→ structured-data
-
-Is the source primarily visual, audio, audiovisual, or spatial?
-→ media
-
-Is the described unit an aggregation of independently meaningful sources?
-→ composite
+Primarily bounded textual artifact?        → document
+Meaning depends on explicit data schema?   → structured-data
+Primarily visual/audio/audiovisual source? → media
+Aggregation of meaningful components?      → composite
 ```
 
-File format alone should not determine the profile.
+Current guidance:
 
-For example:
-
-* A PDF containing a narrative report is a document.
-* A PDF containing a published statistical table may still be document-like or may require a structured-data record for the extracted table.
-* A scanned photograph stored as a PDF wrapper remains media.
-* A ZIP archive is not automatically composite unless its contents form a meaningful aggregate.
-
-The profile describes the intellectual and structural source unit, not merely its container format.
-
----
+* File format alone should not determine profile choice.
+* A container such as PDF or ZIP may still map to different structural profiles depending on what the source unit is.
 
 ## Profile Declaration
 
-A MetaRCI profile document uses the `metarci_profile` root.
+Current contract:
 
-A profile should declare at least:
+* A profile document uses the metarci_profile root.
+* A record document uses the metarci_record root.
+* The validator enforces exact profile/base version linkage for the loaded documents.
 
-```yaml
-metarci_profile:
-  name: document
-  version: "0.1.0"
-  status: draft
-  extends: ../schemas/metarci-base.yaml
-  base_version: "0.1.0"
-```
-
-A record declares the profile it uses:
-
-```yaml
-metarci_record:
-  profile: ../profiles/document.yaml
-  profile_version: "0.1.0"
-```
-
-The validator must confirm that:
+Current contract:
 
 ```text
 profile.base_version == base.version
 record.profile_version == profile.version
 ```
 
-The record’s declared profile path must resolve to the profile actually loaded for validation.
+Current contract:
 
----
+* The record profile path must match the loaded profile path during validation.
 
-## Profile Overrides
+## Overrides and Custom Fields
 
-Profiles may override selected attributes of fields declared in the base schema.
+Current contract:
 
-The initial profile model supports shallow field-level overrides.
+* Profiles may define tier_overrides and custom_fields in reference, context, and interpretive tiers.
+* Override targets must exist in the base schema.
+* Custom fields must not shadow base fields.
 
-Example:
+Current contract:
 
-```yaml
-tier_overrides:
-  context:
-    intended_audiences:
-      requirement: recommended
-```
-
-The override changes the selected attribute while retaining all unspecified attributes from the base field definition.
-
-### Permitted Override Attributes
-
-MetaRCI 0.1 permits profile overrides only for:
+* Permitted shallow override attributes are:
 
 ```text
 requirement
@@ -528,188 +113,35 @@ description
 allowed_values
 ```
 
-Structural attributes—including type, `item_type`, `properties`, and `item_properties`—are not overridable in version `0.1`.
+Current contract:
 
-Changing a field from a string to an object, changing a list’s item type, or altering a nested structure would redefine the base field rather than specialize it.
+* Structural attributes such as type, item_type, properties, and item_properties are not overridable in MetaRCI 0.1.
+* Requirement weakening is invalid.
+* Making a non-nullable base field nullable is invalid.
+* allowed_values may be narrowed but not expanded beyond base declarations.
 
-A structural change requires either:
+Current guidance:
 
-- a revision to the base schema;
-- or a new custom field.
+* Custom fields should be added only when structurally reusable for a profile class.
+* Implementation-only fields should be added through extensions.
 
+## Inheritance Model
 
+Current contract:
 
-### Strengthening Requirements
+* Current executable profiles extend only the base schema.
 
-Profiles may strengthen a field requirement.
+Current guidance:
 
-Examples include:
+* Profile-to-profile inheritance is deferred in MetaRCI 0.1 to avoid conflict-resolution complexity.
 
-```text
-optional → recommended
-optional → required
-recommended → required
-conditional → required
-```
+Deferred:
 
-### Weakening Requirements
+* Multi-level profile inheritance.
 
-Profiles should not weaken field requirements established by the base schema.
+## Effective-Schema Resolution
 
-The following should be invalid:
-
-```text
-required → recommended
-required → conditional
-required → optional
-recommended → optional
-conditional → optional
-```
-
-The base schema represents the minimum MetaRCI contract.
-
-### Nullability
-
-A profile may make a nullable base field non-nullable when the source structure requires a value.
-
-Example:
-
-```yaml
-tier_overrides:
-  reference:
-    file_format:
-      nullable: false
-```
-
-A profile should not make a non-nullable base field nullable.
-
-### Allowed Values
-
-A profile may narrow a base field’s `allowed_values`.
-
-For example, if the base permits:
-
-```yaml
-allowed_values:
-  - draft
-  - active
-  - deprecated
-  - retired
-```
-
-a profile may permit only:
-
-```yaml
-allowed_values:
-  - active
-  - deprecated
-```
-
-A profile should not introduce values outside the base field’s declared set unless the base schema explicitly marks the vocabulary as extensible.
-
----
-
-## Custom Fields
-
-Profiles may add fields that are structurally necessary for their source class.
-
-Example:
-
-```yaml
-custom_fields:
-  reference:
-    pixel_width:
-      type: integer
-      requirement: recommended
-      nullable: true
-      description: >
-        Horizontal pixel dimension of a raster image.
-```
-
-Custom fields must:
-
-* belong to one of the three MetaRCI tiers;
-* use supported MetaRCI field types;
-* declare `requirement`;
-* declare `nullable`;
-* include a clear description;
-* avoid duplicating an existing base field;
-* remain structurally relevant to the profile.
-
-Custom fields should not be added merely to represent one organization’s terminology or one corpus’s local concepts.
-
-Those requirements belong in implementation extensions.
-
----
-
-## Structural Profiles and Implementation Extensions
-
-MetaRCI profiles describe source structure and metadata behavior. They are not intended to encode the full vocabulary, policy, or contextual requirements of a subject domain, organization, or corpus.
-
-Profile fields should therefore be reusable across implementations that share the same source structure.
-
-Examples include:
-
-```text
-pixel_width
-duration_seconds
-column_definitions
-member_ids
-component_role
-```
-
-Fields or rules that are specific to an implementation should be defined separately from the core profile set.
-
-MetaRCI may support these requirements through:
-
-* implementation extensions;
-* controlled vocabularies;
-* namespaced local fields;
-* local validation rules;
-* or organizational governance.
-
-Detailed rules for implementation extensions are defined in:
-
-```text
-documentation/extensions.md
-```
-
----
-
-## Profile Inheritance
-
-The initial MetaRCI profile model supports one level of inheritance:
-
-```text
-Base schema → Profile
-```
-
-Profiles should not initially extend other profiles.
-
-The following is intentionally excluded from version `0.1`:
-
-```text
-Base schema → Document profile → Specialized profile → Local profile
-```
-
-Deep profile inheritance creates ambiguity around:
-
-* override order;
-* conflict resolution;
-* compatibility;
-* weakening constraints;
-* version dependencies;
-* validation diagnostics.
-
-Implementation specialization should be handled through extensions rather than profile inheritance.
-
-Profile-to-profile inheritance may be reconsidered only if concrete implementation evidence demonstrates that it is necessary.
-
----
-
-## Effective Schema Resolution
-
-For each tier, the effective schema is resolved in the following order:
+Current contract:
 
 ```text
 1. Base fields
@@ -717,153 +149,88 @@ For each tier, the effective schema is resolved in the following order:
 3. Profile custom fields
 ```
 
-The resolution process must be deterministic.
+Current contract:
 
-A profile override modifies only a field already declared by the base schema.
-
-A custom field adds a new field to the selected tier.
-
-An effective field definition must satisfy all schema-definition rules before record validation begins.
-
----
+* Resolution is deterministic and validated before record value checks run.
 
 ## Profile Constraints
 
-A valid MetaRCI profile must not:
+Current contract:
 
-* remove a base field;
-* remove a MetaRCI tier;
-* weaken a base field requirement;
-* make a non-nullable base field nullable;
-* replace the type of a base field;
-* redefine nested base structures through shallow overrides;
-* introduce custom fields outside the three tiers;
-* target undeclared fields through overrides;
-* encode implementation-specific rules that belong in an extension;
-* depend on another profile in version `0.1`.
+* A profile cannot remove MetaRCI tiers.
+* A profile cannot remove base fields through overrides.
+* A profile cannot weaken base requirement/nullability constraints.
+* A profile cannot structurally redefine base fields through shallow overrides.
 
-These constraints preserve compatibility and keep the profile mechanism understandable.
+Current guidance:
 
-### Regression-Test Governance
+* Profile definitions should remain implementation-agnostic and avoid local policy coupling.
 
-The profile-contract regression tests are meant to protect the model contract rather than replace design judgment.
+## Lifecycle
 
-The following principles should guide profile and base-schema changes:
+Current contract:
 
-* avoid moving fields between the base schema and a profile based on a single implementation or profile alone;
-* keep the base schema as the minimum shared contract for all structural profiles;
-* use profiles to specialize structure rather than redefine the base vocabulary;
-* preserve the distinct meaning of the Reference, Context, and Interpretive tiers across all profiles;
-* record any proposed base-schema change and the evidence supporting it before implementing the change.
+* Profiles declare lifecycle status using allowed base values.
+* Current profile YAML files are all draft.
 
-These rules keep profile work evidence-driven and prevent the structural model from drifting toward implementation-specific convenience.
+Current guidance:
 
----
+* Lifecycle transitions should be tied to evidence from profile usage and validation outcomes.
 
-## Profile Lifecycle
+## Versioning
 
-Profiles use the standard lifecycle values:
+Current contract:
 
-```text
-draft
-active
-deprecated
-retired
-```
+* Profile version matching is exact in current validator behavior.
 
-### Draft
+Current guidance:
 
-The profile is under development and may change without compatibility guarantees.
+* Profile version should change when overrides, custom fields, or validation obligations change.
 
-### Active
+Deferred:
 
-The profile is approved for implementation and validation.
+* Semantic-version compatibility ranges for profile matching.
 
-### Deprecated
+## Candidate-Profile Governance
 
-The profile remains valid for existing records but should not be selected for new implementations.
+Current guidance:
 
-### Retired
+* A new profile proposal should include structural justification, reusable field rationale, and expected validation behavior.
+* Convenience for one implementation is insufficient justification for a new profile.
 
-The profile is no longer supported for current validation or implementation.
+Open question:
 
-Records should preserve the profile version against which they were created, even after a profile is deprecated or retired.
+* What minimum evidence threshold should be required before adding a fifth structural profile?
 
----
+## Relationship to Implementation Extensions
 
-## Profile Versioning
-
-Each profile has its own version.
-
-A profile version should change when:
-
-* field requirements change;
-* custom fields are added or removed;
-* allowed values change;
-* nullability changes;
-* profile-specific validation behavior changes.
-
-The initial validator uses exact version equality:
+Current contract:
 
 ```text
-record.profile_version == profile.version
+Base schema → Structural profile → Record
 ```
 
-Semantic-version compatibility rules may be added later, but exact matching is preferable during early framework development because it makes behavior explicit.
+Current contract:
 
----
+* Extensions are subordinate to the structural contract and must not silently override it.
 
-## Candidate Profile Governance
+Current guidance:
 
-A proposed new profile should include a written justification addressing:
+* Keep implementation-specific vocabularies, policy rules, authority linkages, and local validation in extension documentation.
+* See documentation/extensions.md for current extension guidance.
 
-1. What source structure does it represent?
-2. Why can the source not be represented by an existing profile?
-3. Which metadata behaviors are structurally distinct?
-4. Which custom fields are reusable across implementations?
-5. Could the requirement be handled through an extension instead?
-6. What validation behavior would the profile require?
+## Unresolved Architecture Items
 
-A new profile should not be accepted solely because it is convenient for one implementation.
+Open question:
 
----
+* Which profile-specific guidance should graduate into executable profile fields in a future revision?
 
-## Current Profile Set
+Proposed change:
 
-MetaRCI version `0.1` recognizes four profile classes:
+* Any proposal to move currently profile-specific concerns into the base schema requires explicit evidence review and human approval.
 
-```text
-document
-structured-data
-media
-composite
-```
+Deferred:
 
-This set is intentionally limited.
-
-The profiles should be tested against diverse implementations, but implementation examples should not drive unnecessary profile proliferation.
-
-For example:
-
-* SCARAG’s Shakespeare branch may test the `document` profile.
-* A dataset ingestion branch may test `structured-data`.
-* A multimodal source collection may test `media`.
-* A corpus-level record may test `composite`.
-
-These implementations serve as validation environments for the model. They do not define the model’s boundaries.
-
----
-
-## Design Principle
-
-The profile model exists to preserve a controlled balance between generality and specificity.
-
-Without profiles, the base schema risks becoming too broad and weakly governed.
-
-With too many profiles, MetaRCI risks fragmenting into implementation templates.
-
-The intended balance is:
-
-> One shared base model, a small set of structural profiles, and controlled implementation extensions where necessary.
-
-This keeps MetaRCI extensible without allowing every new corpus, organization, or subject area to become a new schema family.
+* Deep profile inheritance.
+* Automatic profile selection.
+* Model-enforced extension-schema validation.

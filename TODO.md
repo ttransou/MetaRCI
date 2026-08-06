@@ -41,6 +41,9 @@ Develop MetaRCI as a domain-agnostic, three-tier metadata model with:
 * [x] Define the initial structural profile model.
 * [x] Restrict profile overrides in MetaRCI 0.1.
 * [x] Prevent custom fields from shadowing base fields.
+* [x] Document the profile-development guidance for document, structured-data, media, and composite profiles.
+* [x] Document extension boundaries for implementation-specific metadata.
+* [x] Document the composite-profile guidance and its extension boundary questions.
 
 ---
 
@@ -59,6 +62,9 @@ When working from this file, an agent should:
 * record unresolved architectural questions rather than silently deciding them;
 * prefer full-file edits when YAML or Python structure is materially changed;
 * keep commits scoped to coherent changes.
+* distinguish current contract, guidance, open questions, and proposed changes;
+* do not treat unanswered design questions as authorization to modify schemas;
+* do not place all generated rationale into the nearest existing document;
 
 ---
 
@@ -235,18 +241,18 @@ The document should define how implementations may add local or domain-specific 
 
 Topics to cover:
 
-* [ ] namespaced custom fields;
-* [ ] controlled vocabularies;
-* [ ] authority files;
-* [ ] local validation rules;
-* [ ] organizational policy;
-* [ ] corpus-specific metadata;
-* [ ] sensitivity and access classifications;
-* [ ] compatibility with structural profiles;
-* [ ] separation between profile fields and implementation fields;
-* [ ] extension versioning;
-* [ ] extension provenance;
-* [ ] conflicts between profile rules and extension rules.
+* [x] namespaced custom fields;
+* [x] controlled vocabularies;
+* [x] authority files;
+* [x] local validation rules;
+* [x] organizational policy;
+* [x] corpus-specific metadata;
+* [x] sensitivity and access classifications;
+* [x] compatibility with structural profiles;
+* [x] separation between profile fields and implementation fields;
+* [x] extension versioning;
+* [x] extension provenance;
+* [x] conflicts between profile rules and extension rules.
 
 The extension mechanism should remain subordinate to:
 
@@ -262,42 +268,42 @@ Extensions may specialize implementation behavior, but they should not silently 
 
 ### Document
 
-* [ ] What document-structure fields are genuinely reusable?
-* [ ] Should section, page, chapter, and clause structures be represented directly?
-* [ ] How should edition and version relationships be modeled?
-* [ ] Which authorship and publication fields belong in the base versus the profile?
-* [ ] Is presentation content sufficiently document-like for this profile?
-* [ ] How should documents containing significant embedded media be represented?
+* [x] What document-structure fields are genuinely reusable?
+* [x] Should section, page, chapter, and clause structures be represented directly?
+* [x] How should edition and version relationships be modeled?
+* [x] Which authorship and publication fields belong in the base versus the profile?
+* [x] Is presentation content sufficiently document-like for this profile?
+* [x] How should documents containing significant embedded media be represented?
 
 ### Structured Data
 
-* [ ] How should column or variable definitions be represented?
-* [ ] How should units and value domains be modeled?
-* [ ] How should keys, granularity, and missing-value conventions be represented?
-* [ ] How should table-to-table and dataset-to-dataset relationships be modeled?
-* [ ] Should schema definitions be nested objects or separate related records?
-* [ ] How should inferred schemas be distinguished from declared schemas?
-* [ ] How should transformation and derivation history be represented?
+* [x] How should column or variable definitions be represented?
+* [x] How should units and value domains be modeled?
+* [x] How should keys, granularity, and missing-value conventions be represented?
+* [x] How should table-to-table and dataset-to-dataset relationships be modeled?
+* [x] Should schema definitions be nested objects or separate related records?
+* [x] How should inferred schemas be distinguished from declared schemas?
+* [x] How should transformation and derivation history be represented?
 
 ### Media
 
-* [ ] Which technical properties are common across image, audio, and video?
-* [ ] Should image, audio, and video remain one profile initially?
-* [ ] How should captions, transcripts, and accessibility descriptions be represented?
-* [ ] How should model-generated descriptions record provenance and review status?
-* [ ] How should regions, frames, or time segments be identified?
-* [ ] Which media properties belong in Reference versus Context?
-* [ ] How should manually curated and machine-generated descriptions coexist?
+* [x] Which technical properties are common across image, audio, and video?
+* [x] Should image, audio, and video remain one profile initially?
+* [x] How should captions, transcripts, and accessibility descriptions be represented?
+* [x] How should model-generated descriptions record provenance and review status?
+* [x] How should regions, frames, or time segments be identified?
+* [x] Which media properties belong in Reference versus Context?
+* [x] How should manually curated and machine-generated descriptions coexist?
 
 ### Composite
 
-* [ ] What distinguishes a meaningful composite from a simple folder or archive?
-* [ ] How should expected and present members be represented?
-* [ ] How should member roles and ordering be expressed?
-* [ ] What context may be inherited from a composite record?
-* [ ] How should conflicts between collection-level and item-level metadata be handled?
-* [ ] Can a composite contain members using different structural profiles?
-* [ ] How should completeness be represented when expected membership is unknown?
+* [x] What distinguishes a meaningful composite from a simple folder or archive?
+* [x] How should expected and present members be represented?
+* [x] How should member roles and ordering be expressed?
+* [x] What context may be inherited from a composite record?
+* [x] How should conflicts between collection-level and item-level metadata be handled?
+* [x] Can a composite contain members using different structural profiles?
+* [x] How should completeness be represented when expected membership is unknown?
 
 ---
 
@@ -400,7 +406,7 @@ Before considering MetaRCI 0.1.0 ready:
 * [ ] Profile-specific validation tests pass.
 * [x] CI passes on the default branch.
 * [ ] Core documentation is internally consistent.
-* [ ] Extension boundaries are documented.
+* [x] Extension boundaries are documented.
 * [ ] Base and profile versioning rules are documented.
 * [ ] Known limitations are listed.
 * [ ] Repository structure is reviewed.
