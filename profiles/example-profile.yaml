@@ -2,7 +2,6 @@ metarci_profile:
   name: example-profile
   version: "0.1.0"
   status: draft
-
   extends: ../schemas/metarci-base.yaml
 
   description: >
@@ -14,7 +13,7 @@ metarci_profile:
     corpus: null
     use_case: null
 
-    tier_overrides:
+  tier_overrides:
     reference:
       review_date:
         requirement: recommended
