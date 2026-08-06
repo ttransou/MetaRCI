@@ -648,6 +648,7 @@ The current suite tests:
 
 Additional tests should cover the MetaRCI 0.1 profile constraints:
 
+* valid profile/record combinations for each structural profile;
 * unsupported structural overrides;
 * weakened requirements;
 * weakened nullability;
@@ -661,12 +662,10 @@ A successful test run ends with output similar to:
 
 ```text
 ----------------------------------------------------------------------
-Ran 22 tests
+Ran 40 tests
 
 OK
 ```
-
-The test count should be updated when the new profile-constraint tests are added.
 
 ---
 

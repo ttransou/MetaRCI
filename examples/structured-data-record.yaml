@@ -1,0 +1,69 @@
+metarci_record:
+  profile: ../profiles/structured-data.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: structured-data-001
+    original_filename: example-inventory.csv
+    source_uri: null
+    file_format: csv
+    mime_type: text/csv
+    file_size_bytes: 18432
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: null
+    stated_title: Example Inventory Export
+    stated_author: Example Data Team
+    stated_version: "2026.1"
+    ingestion_timestamp: "2026-08-06T12:30:00-04:00"
+    parser_name: csv-parser
+    parser_version: "1.0.0"
+    extraction_status: success
+
+  context:
+    preferred_title: Example Inventory Export
+    alternate_titles: []
+    domains:
+      - operations
+    categories:
+      - tabular-data
+    origin_date: null
+    period_covered: null
+    related_sources:
+      - source-system-001
+    source_lineage:
+      - example-inventory-source
+    responsible_organizations:
+      - Example Organization
+    organizational_context: Example Data Platform
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - internal-analysts
+    intended_purpose: Demonstrate the structured-data structural profile.
+    sensitivity:
+      level: internal
+      categories: []
+      basis: structured-data-example
+    external_identifiers:
+      - inventory-2026-08
+
+  interpretive:
+    concepts:
+      - tabular-records
+    themes:
+      - data-organization
+    entities:
+      - inventory-table
+    analytical_categories:
+      - implementation-example
+    relationships:
+      - target_id: source-system-001
+        relationship_type: exported_from
+        notes: Example inventory export generated from a source system.
+    interpretive_notes:
+      - Demonstrates a structured-data record before profile-specific overrides are introduced.
+    corpus_role: dataset
+    extensions: {}

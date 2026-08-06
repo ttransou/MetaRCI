@@ -1,0 +1,28 @@
+metarci_profile:
+  name: composite
+  version: "0.1.0"
+  status: draft
+  extends: ../schemas/metarci-base.yaml
+  base_version: "0.1.0"
+
+  description: >
+    Structural profile for source units made up of multiple
+    independently meaningful components such as packages, case files,
+    research corpora, or multimodal bundles. This initial version
+    establishes the composite boundary before any override refinements
+    are introduced.
+
+  implementation:
+    domain: null
+    corpus: null
+    use_case: null
+
+  tier_overrides:
+    reference: {}
+    context: {}
+    interpretive: {}
+
+  custom_fields:
+    reference: {}
+    context: {}
+    interpretive: {}

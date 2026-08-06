@@ -48,75 +48,108 @@ Develop MetaRCI as a domain-agnostic, three-tier metadata model with:
 
 When working from this file, an agent should:
 
-- complete one coherent task at a time;
-- preserve the model-first design sequence;
-- avoid introducing new profiles without structural justification;
-- avoid domain-specific fields in core profiles;
-- update tests and documentation when validator behavior changes;
-- run `python validate.py` and the full test suite before marking work complete;
-- avoid changing deferred items unless explicitly instructed;
-- record unresolved architectural questions rather than silently deciding them;
-- prefer full-file edits when YAML or Python structure is materially changed;
-- keep commits scoped to coherent changes.
+* complete one coherent task at a time;
+* preserve the model-first design sequence;
+* avoid introducing new profiles without structural justification;
+* avoid domain-specific fields in core profiles;
+* treat profile YAML and example records as expressions of the model contract;
+* update tests and documentation when validator behavior changes;
+* run `python validate.py` and the full test suite before marking work complete;
+* avoid changing deferred items unless explicitly instructed;
+* record unresolved architectural questions rather than silently deciding them;
+* prefer full-file edits when YAML or Python structure is materially changed;
+* keep commits scoped to coherent changes.
 
 ---
 
 ## Immediate Priorities
 
-### 1. Add Profile-Constraint Tests
-
-Add regression tests for the stricter MetaRCI 0.1 profile contract.
-
-* [ ] Reject structural override of `type`.
-* [ ] Reject structural override of `item_type`.
-* [ ] Reject structural override of `properties`.
-* [ ] Reject structural override of `item_properties`.
-* [ ] Reject weakened field requirements.
-* [ ] Reject weakened nullability.
-* [ ] Reject expansion of base `allowed_values`.
-* [ ] Reject introduction of `allowed_values` when the base field has none.
-* [ ] Reject custom fields that duplicate base fields.
-* [ ] Confirm valid strengthened requirements still pass.
-* [ ] Confirm valid narrowed `allowed_values` still pass.
-
-After adding the tests:
-
-* [ ] Update the documented test count.
-* [ ] Update the validation guide to describe the completed coverage.
-* [ ] Confirm GitHub Actions passes.
-
----
-
-### 2. Create the Four Structural Profiles
+### 1. Create the Four Structural Profiles
 
 Create initial profile YAML files for:
 
-* [ ] `profiles/document.yaml`
-* [ ] `profiles/structured-data.yaml`
-* [ ] `profiles/media.yaml`
-* [ ] `profiles/composite.yaml`
+* [x] `profiles/document.yaml`
+* [x] `profiles/structured-data.yaml`
+* [x] `profiles/media.yaml`
+* [x] `profiles/composite.yaml`
 
 Each profile should:
 
 * extend the MetaRCI base schema;
 * preserve all three tiers;
 * use only permitted override attributes;
+* strengthen rather than weaken the base contract;
 * add only structurally reusable custom fields;
 * avoid domain-specific terminology;
 * include a clear description and lifecycle status;
+* remain implementation-agnostic;
 * validate successfully against at least one example record.
+
+Develop the profiles one at a time rather than drafting all four simultaneously.
+
+Recommended order:
+
+```text
+document
+→ structured-data
+→ media
+→ composite
+```
+
+For each profile:
+
+1. identify the source structure it represents;
+2. identify relevant inherited base fields;
+3. identify justified requirement overrides;
+4. identify structurally necessary custom fields;
+5. record unresolved questions;
+6. create a valid example record;
+7. run validation before moving to the next profile.
+
+---
+
+### 2. Create Valid Example Records
+
+Create at least one valid record for each structural profile:
+
+* [x] `examples/document-record.yaml`
+* [x] `examples/structured-data-record.yaml`
+* [x] `examples/media-record.yaml`
+* [x] `examples/composite-record.yaml`
+
+Each example should:
+
+* use neutral, non-proprietary content;
+* exercise profile-specific fields;
+* include all three tiers;
+* validate successfully;
+* demonstrate where null values are acceptable;
+* include at least one meaningful relationship where appropriate;
+* avoid domain-specific assumptions that make the profile appear narrower than intended.
+
+Example records serve two purposes:
+
+1. demonstrate how the profile is used;
+2. provide concrete fixtures for later regression tests.
+
+Invalid examples should normally be generated within the automated test suite rather than stored as canonical repository examples unless they serve a documentation purpose.
 
 ---
 
 ### 3. Review the Base Schema Against the Profile Set
 
-Determine whether fields currently in the base schema are genuinely universal.
+After drafting the profiles and example records, determine whether fields currently in the base schema are genuinely universal.
 
-* [ ] Identify fields that belong in every profile.
-* [ ] Identify fields that may belong only in one structural profile.
-* [ ] Avoid moving fields prematurely without implementation evidence.
-* [ ] Confirm the base remains a minimum shared contract.
-* [ ] Confirm profiles specialize rather than redefine the base.
+* [x] Identify fields used consistently across all four profiles.
+* [x] Identify fields that appear overly specific to one profile.
+* [x] Identify profile fields that may instead belong in the base.
+
+Current findings:
+
+* The four example records consistently use the core Reference, Context, and Interpretive fields that describe identity, ingestion, organizational context, and relationships.
+* `page_count` appears document-skewed. It applies to paginated sources, and `null` is appropriate when the source is not paginated.
+* `review_date` appears more governance-oriented than mechanically extracted and may need clearer placement or scope.
+* No base-schema edits are proposed yet; the current evidence is enough to identify candidates, not enough to move them.
 
 Questions to resolve:
 
@@ -125,10 +158,72 @@ Questions to resolve:
 * Should generated-metadata provenance be represented in the base or introduced by profiles?
 * Are collection membership relationships adequately represented by the current relationship model?
 * Does `source_lineage` need a more structured representation?
+* Are some current base fields better represented as profile custom fields?
+* Do all four profiles use `related_sources` and `relationships` consistently?
+* Is the current distinction between Context and Interpretive metadata sufficiently clear for media and composite records?
+
+Do not revise the base schema merely because one profile needs a specialized field. Base-schema changes should be supported by recurring structural evidence.
 
 ---
 
-### 4. Define Implementation Extensions
+### 4. Add Profile-Contract Regression Tests
+
+After the four profiles and their valid example records establish the working contract, add regression tests for the stricter MetaRCI 0.1 profile rules.
+
+#### Valid Profile Tests
+
+* [x] Confirm `document.yaml` and its example record pass.
+* [x] Confirm `structured-data.yaml` and its example record pass.
+* [x] Confirm `media.yaml` and its example record pass.
+* [x] Confirm `composite.yaml` and its example record pass.
+* [x] Confirm valid strengthened requirements pass.
+* [x] Confirm valid strengthened nullability passes.
+* [x] Confirm valid narrowed `allowed_values` passes.
+* [x] Confirm genuinely new profile custom fields pass.
+
+#### Invalid Override Tests
+
+* [x] Reject structural override of `type`.
+* [x] Reject structural override of `item_type`.
+* [x] Reject structural override of `properties`.
+* [x] Reject structural override of `item_properties`.
+* [x] Reject weakened field requirements.
+* [x] Reject weakened nullability.
+* [x] Reject expansion of base `allowed_values`.
+* [x] Reject introduction of `allowed_values` when the base field has none.
+* [x] Reject custom fields that duplicate base fields.
+* [x] Reject overrides targeting undeclared base fields.
+
+#### Profile-Specific Enforcement Tests
+
+* [ ] Confirm required document-profile fields are enforced.
+* [ ] Confirm required structured-data fields are enforced.
+* [ ] Confirm required media fields are enforced.
+* [ ] Confirm required composite fields are enforced.
+* [ ] Confirm profile-specific field types are enforced.
+* [ ] Confirm profile-specific nested structures are enforced.
+
+After adding the tests:
+
+* [ ] Update the documented test count.
+* [ ] Update `documentation/validation.md` to describe completed coverage.
+* [ ] Update profile documentation if tests expose ambiguity.
+* [ ] Run the complete local test suite.
+* [ ] Confirm GitHub Actions passes.
+
+The tests should protect a profile contract that has already been designed and demonstrated, not substitute for profile design.
+
+Regression-test kickoff:
+
+* [ ] Avoid moving fields based on one profile alone.
+* [ ] Confirm the base remains a minimum shared contract.
+* [ ] Confirm profiles specialize rather than redefine the base.
+* [ ] Confirm the three-tier distinction remains meaningful across all profiles.
+* [ ] Record proposed base-schema changes before implementing them.
+
+---
+
+### 5. Define Implementation Extensions
 
 Create:
 
@@ -149,13 +244,17 @@ Topics to cover:
 * [ ] sensitivity and access classifications;
 * [ ] compatibility with structural profiles;
 * [ ] separation between profile fields and implementation fields;
-* [ ] extension versioning.
+* [ ] extension versioning;
+* [ ] extension provenance;
+* [ ] conflicts between profile rules and extension rules.
 
 The extension mechanism should remain subordinate to:
 
 ```text
 Base schema → Structural profile → Record
 ```
+
+Extensions may specialize implementation behavior, but they should not silently alter the structural profile contract.
 
 ---
 
@@ -167,6 +266,8 @@ Base schema → Structural profile → Record
 * [ ] Should section, page, chapter, and clause structures be represented directly?
 * [ ] How should edition and version relationships be modeled?
 * [ ] Which authorship and publication fields belong in the base versus the profile?
+* [ ] Is presentation content sufficiently document-like for this profile?
+* [ ] How should documents containing significant embedded media be represented?
 
 ### Structured Data
 
@@ -175,6 +276,8 @@ Base schema → Structural profile → Record
 * [ ] How should keys, granularity, and missing-value conventions be represented?
 * [ ] How should table-to-table and dataset-to-dataset relationships be modeled?
 * [ ] Should schema definitions be nested objects or separate related records?
+* [ ] How should inferred schemas be distinguished from declared schemas?
+* [ ] How should transformation and derivation history be represented?
 
 ### Media
 
@@ -183,6 +286,8 @@ Base schema → Structural profile → Record
 * [ ] How should captions, transcripts, and accessibility descriptions be represented?
 * [ ] How should model-generated descriptions record provenance and review status?
 * [ ] How should regions, frames, or time segments be identified?
+* [ ] Which media properties belong in Reference versus Context?
+* [ ] How should manually curated and machine-generated descriptions coexist?
 
 ### Composite
 
@@ -191,6 +296,8 @@ Base schema → Structural profile → Record
 * [ ] How should member roles and ordering be expressed?
 * [ ] What context may be inherited from a composite record?
 * [ ] How should conflicts between collection-level and item-level metadata be handled?
+* [ ] Can a composite contain members using different structural profiles?
+* [ ] How should completeness be represented when expected membership is unknown?
 
 ---
 
@@ -198,13 +305,16 @@ Base schema → Structural profile → Record
 
 ### Near-Term
 
-* [ ] Add the remaining profile-constraint tests.
+Complete after or alongside profile-contract regression testing where the profile work supplies concrete examples.
+
 * [ ] Require non-empty descriptions for full field definitions.
 * [ ] Detect duplicate values in `allowed_values`.
 * [ ] Confirm that overridden `allowed_values` are type-compatible with the field.
 * [ ] Confirm that base requirement values are valid before comparing strength.
 * [ ] Improve diagnostics for empty profile overrides.
 * [ ] Add tests for multiple simultaneous schema-definition errors.
+* [ ] Add tests for valid and invalid profile-specific nested fields.
+* [ ] Confirm custom fields cannot collide with other custom fields after schema resolution.
 
 ### Later
 
@@ -237,29 +347,14 @@ Base schema → Structural profile → Record
 * [ ] `documentation/governance.md`
 * [ ] `documentation/implementation-guide.md`
 
-Documentation should not duplicate detailed rules unnecessarily. Each document should have a clear purpose and link to related guidance.
+### Documentation Rules
 
----
-
-## Examples and Test Records
-
-Create at least one valid record for each structural profile.
-
-* [ ] Document example record.
-* [ ] Structured-data example record.
-* [ ] Media example record.
-* [ ] Composite example record.
-
-Each example should:
-
-* use neutral, non-proprietary content;
-* exercise profile-specific fields;
-* include all three tiers;
-* validate successfully;
-* demonstrate where null values are acceptable;
-* include at least one meaningful relationship where appropriate.
-
-Invalid examples should remain generated within the automated test suite rather than stored as canonical repository examples unless they serve a documentation purpose.
+* Avoid duplicating detailed rules across multiple documents.
+* Give each document a clear purpose.
+* Link to the authoritative document when related detail belongs elsewhere.
+* Update documentation when executable validator behavior changes.
+* Distinguish current behavior from deferred or proposed behavior.
+* Keep implementation examples subordinate to the generic model.
 
 ---
 
@@ -270,7 +365,7 @@ Implementation testbeds may be used to evaluate MetaRCI without defining the fra
 Potential testbeds include:
 
 * [ ] SCARAG Shakespeare branch for `document`;
-* [ ] a tabular dataset for `structured-data`;
+* [ ] a neutral tabular dataset for `structured-data`;
 * [ ] an image or diagram collection for `media`;
 * [ ] a corpus-level package for `composite`.
 
@@ -282,9 +377,12 @@ For each testbed, record:
 * ambiguous tier placement;
 * validator limitations;
 * extension needs;
-* evidence for or against changes to the base model.
+* evidence for or against changes to the base model;
+* evidence for or against changes to the selected profile.
 
 Changes to MetaRCI should be justified by recurring structural evidence, not by one implementation alone.
+
+Testbeds should be introduced only after the corresponding generic profile and example record exist.
 
 ---
 
@@ -297,7 +395,9 @@ Before considering MetaRCI 0.1.0 ready:
 * [ ] All four structural profiles exist.
 * [ ] All four profiles validate.
 * [ ] Each profile has at least one valid example record.
-* [ ] Profile-constraint tests pass.
+* [ ] The base schema has been reviewed against all four profiles.
+* [ ] Profile-contract regression tests pass.
+* [ ] Profile-specific validation tests pass.
 * [ ] CI passes on the default branch.
 * [ ] Core documentation is internally consistent.
 * [ ] Extension boundaries are documented.
@@ -339,8 +439,10 @@ The intended sequence is:
 ```text
 Model
 → Contract
-→ Validation
 → Structural profiles
+→ Valid example records
+→ Base-model review
+→ Regression validation
 → Extensions
 → Implementation testing
 → Revision from evidence

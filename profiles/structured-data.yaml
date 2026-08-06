@@ -1,0 +1,27 @@
+metarci_profile:
+  name: structured-data
+  version: "0.1.0"
+  status: draft
+  extends: ../schemas/metarci-base.yaml
+  base_version: "0.1.0"
+
+  description: >
+    Structural profile for sources whose meaning depends substantially
+    on explicit data structure such as tables, records, datasets,
+    exports, or structured logs. This initial version establishes the
+    profile boundary before any override refinements are added.
+
+  implementation:
+    domain: null
+    corpus: null
+    use_case: null
+
+  tier_overrides:
+    reference: {}
+    context: {}
+    interpretive: {}
+
+  custom_fields:
+    reference: {}
+    context: {}
+    interpretive: {}

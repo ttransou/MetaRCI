@@ -1,0 +1,35 @@
+metarci_profile:
+  name: document
+  version: "0.1.0"
+  status: draft
+  extends: ../schemas/metarci-base.yaml
+  base_version: "0.1.0"
+
+  description: >
+    Structural profile for bounded textual or predominantly textual
+    sources such as reports, manuals, articles, and correspondence.
+    This profile strengthens selected source-identification and
+    document-structure expectations without introducing domain terms.
+
+  implementation:
+    domain: null
+    corpus: null
+    use_case: null
+
+  tier_overrides:
+    reference:
+      page_count:
+        requirement: recommended
+      stated_title:
+        requirement: recommended
+      stated_author:
+        requirement: recommended
+
+    context: {}
+
+    interpretive: {}
+
+  custom_fields:
+    reference: {}
+    context: {}
+    interpretive: {}

@@ -1,0 +1,27 @@
+metarci_profile:
+  name: media
+  version: "0.1.0"
+  status: draft
+  extends: ../schemas/metarci-base.yaml
+  base_version: "0.1.0"
+
+  description: >
+    Structural profile for non-textual and multimodal source artifacts
+    such as photographs, diagrams, audio, video, and scanned artwork.
+    This initial version establishes the media profile boundary before
+    any override refinements are introduced.
+
+  implementation:
+    domain: null
+    corpus: null
+    use_case: null
+
+  tier_overrides:
+    reference: {}
+    context: {}
+    interpretive: {}
+
+  custom_fields:
+    reference: {}
+    context: {}
+    interpretive: {}

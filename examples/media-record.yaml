@@ -1,0 +1,67 @@
+metarci_record:
+  profile: ../profiles/media.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: media-001
+    original_filename: example-diagram.png
+    source_uri: null
+    file_format: png
+    mime_type: image/png
+    file_size_bytes: 64218
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: null
+    stated_title: Example System Diagram
+    stated_author: Example Design Team
+    stated_version: "1.0"
+    ingestion_timestamp: "2026-08-06T12:45:00-04:00"
+    parser_name: example-media-parser
+    parser_version: "0.1.0"
+    extraction_status: success
+
+  context:
+    preferred_title: Example System Diagram
+    alternate_titles: []
+    domains:
+      - operations
+    categories:
+      - illustration
+    origin_date: null
+    period_covered: null
+    related_sources:
+      - document-001
+    source_lineage: []
+    responsible_organizations:
+      - Example Organization
+    organizational_context: Example Program
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - internal-users
+    intended_purpose: Demonstrate the media structural profile.
+    sensitivity:
+      level: internal
+      categories: []
+      basis: media-example
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - visual-structure
+    themes:
+      - system-overview
+    entities:
+      - example-system
+    analytical_categories:
+      - implementation-example
+    relationships:
+      - target_id: document-001
+        relationship_type: illustrates
+        notes: Example diagram accompanying a document source.
+    interpretive_notes:
+      - Demonstrates a media record before profile-specific overrides are introduced.
+    corpus_role: illustration
+    extensions: {}

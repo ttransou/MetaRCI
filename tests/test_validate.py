@@ -15,6 +15,14 @@ SOURCE_FILES = {
     "base": PROJECT_ROOT / "schemas" / "metarci-base.yaml",
     "profile": PROJECT_ROOT / "profiles" / "example-profile.yaml",
     "record": PROJECT_ROOT / "examples" / "example-record.yaml",
+    "document_profile": PROJECT_ROOT / "profiles" / "document.yaml",
+    "document_record": PROJECT_ROOT / "examples" / "document-record.yaml",
+    "structured_data_profile": PROJECT_ROOT / "profiles" / "structured-data.yaml",
+    "structured_data_record": PROJECT_ROOT / "examples" / "structured-data-record.yaml",
+    "media_profile": PROJECT_ROOT / "profiles" / "media.yaml",
+    "media_record": PROJECT_ROOT / "examples" / "media-record.yaml",
+    "composite_profile": PROJECT_ROOT / "profiles" / "composite.yaml",
+    "composite_record": PROJECT_ROOT / "examples" / "composite-record.yaml",
 }
 
 
@@ -123,6 +131,18 @@ class MetaRCIValidatorTests(unittest.TestCase):
             check=False,
         )
 
+    def stage_profile_and_record(
+        self,
+        profile_source: Path,
+        record_source: Path,
+    ) -> None:
+        """Replace the temporary profile and record with new fixtures."""
+        self.profile_path = self.profile_directory / profile_source.name
+        self.record_path = self.example_directory / record_source.name
+
+        shutil.copy(profile_source, self.profile_path)
+        shutil.copy(record_source, self.record_path)
+
     def combined_output(
         self,
         result: subprocess.CompletedProcess[str],
@@ -148,6 +168,425 @@ class MetaRCIValidatorTests(unittest.TestCase):
             "OK: Validation completed with no errors.",
             result.stdout,
         )
+
+    def test_document_profile_and_record_pass(self) -> None:
+        """The document profile and record should validate."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        result = self.run_validator()
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            msg=self.combined_output(result),
+        )
+
+    def test_structured_data_profile_and_record_pass(self) -> None:
+        """The structured-data profile and record should validate."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        result = self.run_validator()
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            msg=self.combined_output(result),
+        )
+
+    def test_media_profile_and_record_pass(self) -> None:
+        """The media profile and record should validate."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        result = self.run_validator()
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            msg=self.combined_output(result),
+        )
+
+    def test_composite_profile_and_record_pass(self) -> None:
+        """The composite profile and record should validate."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["composite_profile"],
+            SOURCE_FILES["composite_record"],
+        )
+
+        result = self.run_validator()
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            msg=self.combined_output(result),
+        )
+
+    def test_valid_strengthened_requirement_passes(self) -> None:
+        """A profile may strengthen a field requirement."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+        record = self.load_yaml(self.record_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "reference"
+        ]["page_count"]["requirement"] = "required"
+
+        self.save_yaml(self.profile_path, profile)
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            msg=self.combined_output(result),
+        )
+
+    def test_valid_strengthened_nullability_passes(self) -> None:
+        """A profile may make a nullable field non-nullable."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+        record = self.load_yaml(self.record_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "reference"
+        ].setdefault("review_date", {})["nullable"] = False
+
+        self.save_yaml(self.profile_path, profile)
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            msg=self.combined_output(result),
+        )
+
+    def test_valid_narrowed_allowed_values_passes(self) -> None:
+        """A profile may narrow an existing allowed-values set."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+        record = self.load_yaml(self.record_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "reference"
+        ].setdefault("extraction_status", {})[
+            "allowed_values"
+        ] = [
+            "success",
+            "partial",
+        ]
+
+        self.save_yaml(self.profile_path, profile)
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            msg=self.combined_output(result),
+        )
+
+    def test_genuinely_new_profile_custom_fields_pass(self) -> None:
+        """A new profile custom field should validate when used."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+        record = self.load_yaml(self.record_path)
+
+        profile["metarci_profile"]["custom_fields"][
+            "context"
+        ]["local_reference_code"] = {
+            "type": "string",
+            "requirement": "conditional",
+            "nullable": True,
+            "description": "Local reference code for the source.",
+        }
+
+        record["metarci_record"]["context"][
+            "local_reference_code"
+        ] = "LOC-001"
+
+        self.save_yaml(self.profile_path, profile)
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            msg=self.combined_output(result),
+        )
+
+    def test_invalid_override_type_fails(self) -> None:
+        """A structural type override should be rejected."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "reference"
+        ]["page_count"]["type"] = "number"
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Unsupported override attributes", result.stdout)
+        self.assertIn("type", result.stdout)
+
+    def test_invalid_override_item_type_fails(self) -> None:
+        """A structural item_type override should be rejected."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["tier_overrides"]["context"][
+            "alternate_titles"
+        ] = {
+            "item_type": "integer",
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Unsupported override attributes", result.stdout)
+        self.assertIn("item_type", result.stdout)
+
+    def test_invalid_override_properties_fails(self) -> None:
+        """A structural properties override should be rejected."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "context"
+        ]["sensitivity"] = {
+            "properties": {
+                "level": {
+                    "type": "string",
+                }
+            }
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Unsupported override attributes", result.stdout)
+        self.assertIn("properties", result.stdout)
+
+    def test_invalid_override_item_properties_fails(self) -> None:
+        """A structural item_properties override should be rejected."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "interpretive"
+        ]["relationships"] = {
+            "item_properties": {
+                "target_id": {
+                    "type": "string",
+                }
+            }
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Unsupported override attributes", result.stdout)
+        self.assertIn("item_properties", result.stdout)
+
+    def test_invalid_weakened_requirement_fails(self) -> None:
+        """A profile may not weaken a base requirement."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "reference"
+        ]["source_id"] = {
+            "requirement": "recommended",
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("weakens requirement", result.stdout)
+        self.assertIn("source_id", result.stdout)
+
+    def test_invalid_weakened_nullability_fails(self) -> None:
+        """A profile may not make a non-nullable base field nullable."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "reference"
+        ]["ingestion_timestamp"] = {
+            "nullable": True,
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("non-nullable base field to nullable", result.stdout)
+        self.assertIn("ingestion_timestamp", result.stdout)
+
+    def test_invalid_allowed_values_expansion_fails(self) -> None:
+        """A profile may not expand a base allowed-values set."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "reference"
+        ]["extraction_status"] = {
+            "allowed_values": [
+                "success",
+                "partial",
+                "queued",
+            ]
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("expands the base allowed-values set", result.stdout)
+        self.assertIn("queued", result.stdout)
+
+    def test_invalid_allowed_values_introduction_fails(self) -> None:
+        """A profile may not invent allowed_values for a base field."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "reference"
+        ]["stated_title"] = {
+            "allowed_values": [
+                "Example Policy Manual",
+            ]
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("does not define an allowed-values set", result.stdout)
+        self.assertIn("stated_title", result.stdout)
+
+    def test_invalid_custom_field_shadowing_base_fails(self) -> None:
+        """A custom field may not duplicate a base field name."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["custom_fields"][
+            "reference"
+        ]["source_id"] = {
+            "type": "string",
+            "requirement": "conditional",
+            "nullable": True,
+            "description": "Shadowed source identifier.",
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("duplicate fields declared by the base schema", result.stdout)
+        self.assertIn("source_id", result.stdout)
+
+    def test_invalid_override_targeting_undeclared_field_fails(self) -> None:
+        """An override cannot target an undeclared base field."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["tier_overrides"][
+            "context"
+        ]["imaginary_field"] = {
+            "requirement": "required",
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Unknown field overrides in context tier", result.stdout)
+        self.assertIn("imaginary_field", result.stdout)
 
     # ---------------------------------------------------------
     # Record value validation

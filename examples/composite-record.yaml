@@ -1,0 +1,76 @@
+metarci_record:
+  profile: ../profiles/composite.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: composite-001
+    original_filename: example-case-package.zip
+    source_uri: null
+    file_format: zip
+    mime_type: application/zip
+    file_size_bytes: 812340
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: null
+    stated_title: Example Case Package
+    stated_author: Example Records Office
+    stated_version: "2026.1"
+    ingestion_timestamp: "2026-08-06T13:00:00-04:00"
+    parser_name: package-parser
+    parser_version: "0.1.0"
+    extraction_status: success
+
+  context:
+    preferred_title: Example Case Package
+    alternate_titles: []
+    domains:
+      - operations
+    categories:
+      - composite-package
+    origin_date: null
+    period_covered: null
+    related_sources:
+      - document-001
+      - media-001
+      - structured-data-001
+    source_lineage:
+      - example-package-assembly
+    responsible_organizations:
+      - Example Organization
+    organizational_context: Example Program
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - internal-reviewers
+    intended_purpose: Demonstrate the composite structural profile.
+    sensitivity:
+      level: internal
+      categories: []
+      basis: composite-example
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - collection-assembly
+    themes:
+      - package-organization
+    entities:
+      - example-package
+    analytical_categories:
+      - implementation-example
+    relationships:
+      - target_id: document-001
+        relationship_type: contains
+        notes: Document member included in the composite package.
+      - target_id: media-001
+        relationship_type: contains
+        notes: Media member included in the composite package.
+      - target_id: structured-data-001
+        relationship_type: contains
+        notes: Structured-data member included in the composite package.
+    interpretive_notes:
+      - Demonstrates a composite record before profile-specific overrides are introduced.
+    corpus_role: package
+    extensions: {}

@@ -1,0 +1,65 @@
+metarci_record:
+  profile: ../profiles/document.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: document-001
+    original_filename: example-policy-manual.pdf
+    source_uri: null
+    file_format: pdf
+    mime_type: application/pdf
+    file_size_bytes: 248320
+    checksum: null
+    page_count: 12
+    creation_date: null
+    modification_date: null
+    review_date: "2026-07-15"
+    stated_title: Example Policy Manual
+    stated_author: Example Editorial Team
+    stated_version: "1.0"
+    ingestion_timestamp: "2026-08-06T12:12:00-04:00"
+    parser_name: example-parser
+    parser_version: "0.1.0"
+    extraction_status: success
+
+  context:
+    preferred_title: Example Policy Manual
+    alternate_titles: []
+    domains:
+      - operations
+    categories:
+      - guidance-document
+    origin_date: null
+    period_covered: null
+    related_sources: []
+    source_lineage: []
+    responsible_organizations:
+      - Example Organization
+    organizational_context: Example Program
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - internal-users
+    intended_purpose: Demonstrate the structural document profile.
+    sensitivity:
+      level: internal
+      categories: []
+      basis: document-profile-example
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - policy-communication
+    themes:
+      - procedural-guidance
+    entities: []
+    analytical_categories:
+      - implementation-example
+    relationships:
+      - target_id: document-collection-001
+        relationship_type: member_of
+        notes: Example document included in a larger collection.
+    interpretive_notes:
+      - Demonstrates all three tiers for the document profile.
+    corpus_role: guidance
+    extensions: {}
