@@ -196,30 +196,30 @@ After the four profiles and their valid example records establish the working co
 
 #### Profile-Specific Enforcement Tests
 
-* [ ] Confirm required document-profile fields are enforced.
-* [ ] Confirm required structured-data fields are enforced.
-* [ ] Confirm required media fields are enforced.
-* [ ] Confirm required composite fields are enforced.
-* [ ] Confirm profile-specific field types are enforced.
-* [ ] Confirm profile-specific nested structures are enforced.
+* [x] Confirm required document-profile fields are enforced.
+* [x] Confirm required structured-data fields are enforced.
+* [x] Confirm required media fields are enforced.
+* [x] Confirm required composite fields are enforced.
+* [x] Confirm profile-specific field types are enforced.
+* [x] Confirm profile-specific nested structures are enforced.
 
 After adding the tests:
 
-* [ ] Update the documented test count.
-* [ ] Update `documentation/validation.md` to describe completed coverage.
-* [ ] Update profile documentation if tests expose ambiguity.
-* [ ] Run the complete local test suite.
-* [ ] Confirm GitHub Actions passes.
+* [x] Update the documented test count.
+* [x] Update `documentation/validation.md` to describe completed coverage.
+* [x] Update profile documentation if tests expose ambiguity.
+* [x] Run the complete local test suite.
+* [x] Confirm GitHub Actions passes.
 
 The tests should protect a profile contract that has already been designed and demonstrated, not substitute for profile design.
 
 Regression-test kickoff:
 
-* [ ] Avoid moving fields based on one profile alone.
-* [ ] Confirm the base remains a minimum shared contract.
-* [ ] Confirm profiles specialize rather than redefine the base.
-* [ ] Confirm the three-tier distinction remains meaningful across all profiles.
-* [ ] Record proposed base-schema changes before implementing them.
+* [x] Avoid moving fields based on one profile alone.
+* [x] Confirm the base remains a minimum shared contract.
+* [x] Confirm profiles specialize rather than redefine the base.
+* [x] Confirm the three-tier distinction remains meaningful across all profiles.
+* [x] Record proposed base-schema changes before implementing them.
 
 ---
 
@@ -341,7 +341,7 @@ Complete after or alongside profile-contract regression testing where the profil
 
 ### Planned
 
-* [ ] `documentation/extensions.md`
+* [x] `documentation/extensions.md`
 * [ ] `documentation/profile-selection.md`
 * [ ] `documentation/versioning.md`
 * [ ] `documentation/governance.md`
@@ -398,7 +398,7 @@ Before considering MetaRCI 0.1.0 ready:
 * [ ] The base schema has been reviewed against all four profiles.
 * [ ] Profile-contract regression tests pass.
 * [ ] Profile-specific validation tests pass.
-* [ ] CI passes on the default branch.
+* [x] CI passes on the default branch.
 * [ ] Core documentation is internally consistent.
 * [ ] Extension boundaries are documented.
 * [ ] Base and profile versioning rules are documented.

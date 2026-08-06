@@ -744,6 +744,20 @@ A valid MetaRCI profile must not:
 
 These constraints preserve compatibility and keep the profile mechanism understandable.
 
+### Regression-Test Governance
+
+The profile-contract regression tests are meant to protect the model contract rather than replace design judgment.
+
+The following principles should guide profile and base-schema changes:
+
+* avoid moving fields between the base schema and a profile based on a single implementation or profile alone;
+* keep the base schema as the minimum shared contract for all structural profiles;
+* use profiles to specialize structure rather than redefine the base vocabulary;
+* preserve the distinct meaning of the Reference, Context, and Interpretive tiers across all profiles;
+* record any proposed base-schema change and the evidence supporting it before implementing the change.
+
+These rules keep profile work evidence-driven and prevent the structural model from drifting toward implementation-specific convenience.
+
 ---
 
 ## Profile Lifecycle

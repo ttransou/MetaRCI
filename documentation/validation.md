@@ -654,7 +654,10 @@ Additional tests should cover the MetaRCI 0.1 profile constraints:
 * weakened nullability;
 * expanded `allowed_values`;
 * newly introduced override vocabularies;
-* custom fields that duplicate base fields.
+* custom fields that duplicate base fields;
+* profile-specific required fields enforced through the effective schema;
+* profile-specific field type enforcement for custom fields;
+* profile-specific nested structure enforcement for custom object fields.
 
 Each test creates temporary copies of the valid example files. The tests modify only those temporary copies and do not alter the repository’s canonical examples.
 
@@ -662,7 +665,7 @@ A successful test run ends with output similar to:
 
 ```text
 ----------------------------------------------------------------------
-Ran 40 tests
+Ran 46 tests
 
 OK
 ```

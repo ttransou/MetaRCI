@@ -588,6 +588,195 @@ class MetaRCIValidatorTests(unittest.TestCase):
         self.assertIn("Unknown field overrides in context tier", result.stdout)
         self.assertIn("imaginary_field", result.stdout)
 
+    def test_document_profile_required_custom_field_is_enforced(self) -> None:
+        """A required custom field from the document profile should be enforced."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["custom_fields"]["context"][
+            "local_reference_code"
+        ] = {
+            "type": "string",
+            "requirement": "required",
+            "nullable": False,
+            "description": "Local reference code for the source.",
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record structure", result.stdout)
+        self.assertIn("Missing required fields in context tier", result.stdout)
+        self.assertIn("local_reference_code", result.stdout)
+
+    def test_structured_data_profile_required_custom_field_is_enforced(self) -> None:
+        """A required custom field from the structured-data profile should be enforced."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["custom_fields"]["reference"][
+            "table_name"
+        ] = {
+            "type": "string",
+            "requirement": "required",
+            "nullable": False,
+            "description": "Declared table or dataset name.",
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record structure", result.stdout)
+        self.assertIn("Missing required fields in reference tier", result.stdout)
+        self.assertIn("table_name", result.stdout)
+
+    def test_media_profile_required_custom_field_is_enforced(self) -> None:
+        """A required custom field from the media profile should be enforced."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["custom_fields"]["context"][
+            "media_duration_seconds"
+        ] = {
+            "type": "integer",
+            "requirement": "required",
+            "nullable": False,
+            "description": "Duration of the media item in seconds.",
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record structure", result.stdout)
+        self.assertIn("Missing required fields in context tier", result.stdout)
+        self.assertIn("media_duration_seconds", result.stdout)
+
+    def test_composite_profile_required_custom_field_is_enforced(self) -> None:
+        """A required custom field from the composite profile should be enforced."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["composite_profile"],
+            SOURCE_FILES["composite_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+
+        profile["metarci_profile"]["custom_fields"]["interpretive"][
+            "member_count"
+        ] = {
+            "type": "integer",
+            "requirement": "required",
+            "nullable": False,
+            "description": "Count of meaningful members in the composite.",
+        }
+
+        self.save_yaml(self.profile_path, profile)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record structure", result.stdout)
+        self.assertIn("Missing required fields in interpretive tier", result.stdout)
+        self.assertIn("member_count", result.stdout)
+
+    def test_profile_specific_field_type_is_enforced(self) -> None:
+        """A profile-specific custom field should enforce its declared type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+        record = self.load_yaml(self.record_path)
+
+        profile["metarci_profile"]["custom_fields"]["context"][
+            "local_reference_code"
+        ] = {
+            "type": "integer",
+            "requirement": "required",
+            "nullable": False,
+            "description": "Numeric local reference code.",
+        }
+
+        record["metarci_record"]["context"][
+            "local_reference_code"
+        ] = "LOC-001"
+
+        self.save_yaml(self.profile_path, profile)
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.local_reference_code", result.stdout)
+        self.assertIn("must be type 'integer'", result.stdout)
+
+    def test_profile_specific_nested_structure_is_enforced(self) -> None:
+        """A profile-specific nested object should validate its child properties."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        profile = self.load_yaml(self.profile_path)
+        record = self.load_yaml(self.record_path)
+
+        profile["metarci_profile"]["custom_fields"]["context"][
+            "source_parts"
+        ] = {
+            "type": "object",
+            "requirement": "required",
+            "nullable": False,
+            "description": "Nested provenance details for a source.",
+            "properties": {
+                "part_id": {
+                    "type": "string",
+                    "requirement": "required",
+                    "nullable": False,
+                    "description": "Identifier for the part.",
+                },
+                "part_count": {
+                    "type": "integer",
+                    "requirement": "required",
+                    "nullable": False,
+                    "description": "Quantity of the part.",
+                },
+            },
+        }
+
+        record["metarci_record"]["context"]["source_parts"] = {
+            "part_id": 42,
+            "part_count": 3,
+        }
+
+        self.save_yaml(self.profile_path, profile)
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.source_parts.part_id", result.stdout)
+        self.assertIn("must be type 'string'", result.stdout)
+
     # ---------------------------------------------------------
     # Record value validation
     # ---------------------------------------------------------
