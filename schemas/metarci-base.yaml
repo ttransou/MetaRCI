@@ -20,7 +20,137 @@ metarci:
         Metadata extracted or generated from the source, file,
         or ingestion process with minimal human curation.
 
-      fields: {}
+            fields:
+        source_id:
+          type: string
+          requirement: required
+          nullable: false
+          description: >
+            Stable identifier assigned to the source within the implementation.
+
+        original_filename:
+          type: string
+          requirement: recommended
+          nullable: true
+          description: >
+            Original filename of the ingested source.
+
+        source_uri:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Original URI or source location, when available.
+
+        file_format:
+          type: string
+          requirement: recommended
+          nullable: true
+          description: >
+            File format of the source.
+
+        mime_type:
+          type: string
+          requirement: recommended
+          nullable: true
+          description: >
+            MIME type detected or supplied for the source.
+
+        file_size_bytes:
+          type: integer
+          requirement: conditional
+          nullable: true
+          description: >
+            Size of the source file in bytes, when available.
+
+        checksum:
+          type: string
+          requirement: recommended
+          nullable: true
+          description: >
+            Hash used to identify and verify the source file.
+
+        page_count:
+          type: integer
+          requirement: conditional
+          nullable: true
+          description: >
+            Number of pages, when applicable and reliably extractable.
+
+        creation_date:
+          type: date
+          requirement: conditional
+          nullable: true
+          description: >
+            Creation date extracted from file properties or explicit source metadata.
+
+        modification_date:
+          type: date
+          requirement: conditional
+          nullable: true
+          description: >
+            Last modification date extracted from the file or source metadata.
+
+        review_date:
+          type: date
+          requirement: conditional
+          nullable: true
+          description: >
+            Review date explicitly extracted from document boilerplate or metadata.
+
+        stated_title:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Title explicitly stated in the source or embedded metadata.
+
+        stated_author:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Author or creator explicitly stated in the source or embedded metadata.
+
+        stated_version:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Version explicitly stated in the source or embedded metadata.
+
+        ingestion_timestamp:
+          type: datetime
+          requirement: required
+          nullable: false
+          description: >
+            Date and time at which the source entered the ingestion process.
+
+        parser_name:
+          type: string
+          requirement: recommended
+          nullable: true
+          description: >
+            Parser used to process the source.
+
+        parser_version:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Version of the parser used, when available.
+
+        extraction_status:
+          type: string
+          requirement: required
+          nullable: false
+          allowed_values:
+            - success
+            - partial
+            - failed
+            - skipped
+          description: >
+            Overall result of the metadata extraction process.
 
     context:
       name: Context
@@ -28,7 +158,147 @@ metarci:
         Curated or externally supplied metadata that situates
         the source within its broader domain or corpus.
 
-      fields: {}
+            fields:
+        preferred_title:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Preferred or normalized title used within the corpus.
+
+        alternate_titles:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Alternate titles, aliases, or former titles associated with the source.
+
+        domains:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Domains or subject areas relevant to the source.
+
+        categories:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Curated classifications applied within the corpus.
+
+        origin_date:
+          type: date
+          requirement: conditional
+          nullable: true
+          description: >
+            Curated date associated with the source's original creation,
+            publication, release, or issuance.
+
+        period_covered:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Time period addressed or represented by the source.
+
+        related_sources:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Identifiers for sources related to this source.
+
+        source_lineage:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Curated information about editions, versions, derivation,
+            succession, or other source history.
+
+        responsible_organizations:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Organizations responsible for creating, maintaining,
+            issuing, or governing the source.
+
+        organizational_context:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Organizational setting in which the source applies or is used.
+
+        geographic_context:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Geographic locations associated with the source.
+
+        jurisdictional_context:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Legal, regulatory, or administrative jurisdictions associated
+            with the source.
+
+        intended_audiences:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Audiences for whom the source is intended or considered relevant.
+
+        intended_purpose:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Curated description of the source's intended purpose.
+
+        sensitivity:
+          type: object
+          requirement: conditional
+          nullable: true
+          description: >
+            Curated sensitivity classification for the source.
+
+          properties:
+            level:
+              type: string
+              nullable: true
+
+            categories:
+              type: list
+              item_type: string
+              nullable: true
+
+            basis:
+              type: string
+              nullable: true
+
+        external_identifiers:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Identifiers supplied by external catalogs, registries,
+            repositories, or systems of record.
 
     interpretive:
       name: Interpretive
@@ -36,4 +306,80 @@ metarci:
         Corpus-specific metadata that expresses analytical,
         semantic, or relational meaning.
 
-      fields: {}
+           fields:
+        concepts:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Corpus-specific concepts associated with the source or its contents.
+
+        themes:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Curated thematic classifications relevant to the use case.
+
+        entities:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Entities identified or interpreted within the corpus model.
+
+        analytical_categories:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Domain-specific analytical classifications applied to the source.
+
+        relationships:
+          type: list
+          item_type: object
+          requirement: conditional
+          nullable: true
+          description: >
+            Corpus-specific semantic or analytical relationships.
+
+          item_properties:
+            target_id:
+              type: string
+              nullable: false
+
+            relationship_type:
+              type: string
+              nullable: false
+
+            notes:
+              type: string
+              nullable: true
+
+        interpretive_notes:
+          type: list
+          item_type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Curated notes explaining interpretation, significance,
+            ambiguity, or analytical relevance.
+
+        corpus_role:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Role assigned to the source within the specific corpus or use case.
+
+        extensions:
+          type: object
+          requirement: conditional
+          nullable: true
+          description: >
+            Profile-defined interpretive fields specific to a domain,
+            corpus, or implementation.
