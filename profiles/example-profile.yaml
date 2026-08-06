@@ -14,12 +14,33 @@ metarci_profile:
     corpus: null
     use_case: null
 
-  tier_overrides:
-    reference: {}
-    context: {}
+    tier_overrides:
+    reference:
+      review_date:
+        requirement: recommended
+
+    context:
+      sensitivity:
+        requirement: recommended
+
     interpretive: {}
 
   custom_fields:
     reference: {}
-    context: {}
-    interpretive: {}
+
+    context:
+      business_unit:
+        type: string
+        requirement: conditional
+        nullable: true
+        description: >
+          Business unit associated with the source.
+
+    interpretive:
+      decision_context:
+        type: string
+        requirement: conditional
+        nullable: true
+        description: >
+          Corpus-specific description of how the source informs
+          a decision, action, or analytical use case.
