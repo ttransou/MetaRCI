@@ -45,6 +45,20 @@ VALID_FIELD_ATTRIBUTES = {
     "item_properties",
 }
 
+VALID_OVERRIDE_ATTRIBUTES = {
+    "requirement",
+    "nullable",
+    "description",
+    "allowed_values",
+}
+
+REQUIREMENT_STRENGTH = {
+    "optional": 0,
+    "conditional": 1,
+    "recommended": 2,
+    "required": 3,
+}
+
 VALID_BASE_ATTRIBUTES = {
     "name",
     "version",
@@ -184,7 +198,9 @@ def load_yaml(path: Path) -> dict:
         raise FileNotFoundError(f"Missing file: {path}")
 
     if not path.is_file():
-        raise ValueError(f"Expected a file path, but received: {path}")
+        raise ValueError(
+            f"Expected a file path, but received: {path}"
+        )
 
     with path.open("r", encoding="utf-8") as file:
         data = yaml.safe_load(file)
@@ -253,7 +269,6 @@ def value_matches_type(
         return isinstance(value, str)
 
     if declared_type == "integer":
-        # Python treats bool as a subclass of int.
         return (
             isinstance(value, int)
             and not isinstance(value, bool)
@@ -372,7 +387,7 @@ def validate_base_document(
         )
 
         errors.append(
-            f"Base-schema status must be one of: "
+            "Base-schema status must be one of: "
             f"{allowed_display}. Received {status!r}."
         )
 
@@ -565,7 +580,7 @@ def validate_profile_document(
         )
 
         errors.append(
-            f"Profile status must be one of: "
+            "Profile status must be one of: "
             f"{allowed_display}. Received {status!r}."
         )
 
@@ -914,11 +929,181 @@ def validate_field_definition(
     return errors
 
 
+def validate_override_definition(
+    path_name: str,
+    base_definition: dict,
+    override_definition: object,
+) -> list[str]:
+    """
+    Validate one profile override against its base field.
+
+    MetaRCI 0.1 permits only shallow, non-structural overrides.
+    Profiles may strengthen constraints but may not weaken or
+    structurally redefine fields declared by the base schema.
+    """
+    errors = []
+
+    if not isinstance(override_definition, dict):
+        return [
+            f"Override for '{path_name}' must be a mapping."
+        ]
+
+    unsupported_attributes = (
+        set(override_definition)
+        - VALID_OVERRIDE_ATTRIBUTES
+    )
+
+    if unsupported_attributes:
+        errors.append(
+            f"Unsupported override attributes for "
+            f"'{path_name}': "
+            + ", ".join(sorted(unsupported_attributes))
+            + ". MetaRCI 0.1 permits overrides only for: "
+            + ", ".join(sorted(VALID_OVERRIDE_ATTRIBUTES))
+            + "."
+        )
+
+    if "requirement" in override_definition:
+        override_requirement = override_definition[
+            "requirement"
+        ]
+
+        if override_requirement not in VALID_REQUIREMENTS:
+            errors.append(
+                f"Override for '{path_name}' declares "
+                f"invalid requirement "
+                f"{override_requirement!r}."
+            )
+        else:
+            base_requirement = base_definition.get(
+                "requirement"
+            )
+
+            if base_requirement in REQUIREMENT_STRENGTH:
+                base_strength = REQUIREMENT_STRENGTH[
+                    base_requirement
+                ]
+
+                override_strength = REQUIREMENT_STRENGTH[
+                    override_requirement
+                ]
+
+                if override_strength < base_strength:
+                    errors.append(
+                        f"Override for '{path_name}' weakens "
+                        f"requirement from "
+                        f"'{base_requirement}' to "
+                        f"'{override_requirement}'. "
+                        "Profiles may strengthen requirements "
+                        "but may not weaken them."
+                    )
+
+    if "nullable" in override_definition:
+        override_nullable = override_definition["nullable"]
+
+        if not isinstance(override_nullable, bool):
+            errors.append(
+                f"Override for '{path_name}' must declare "
+                "nullable as true or false."
+            )
+        else:
+            base_nullable = base_definition.get("nullable")
+
+            if (
+                base_nullable is False
+                and override_nullable is True
+            ):
+                errors.append(
+                    f"Override for '{path_name}' changes a "
+                    "non-nullable base field to nullable. "
+                    "Profiles may make nullable fields "
+                    "non-nullable but may not weaken "
+                    "base nullability."
+                )
+
+    if "description" in override_definition:
+        override_description = override_definition[
+            "description"
+        ]
+
+        if not isinstance(override_description, str):
+            errors.append(
+                f"Override for '{path_name}' has a "
+                "description that is not a string."
+            )
+        elif not override_description.strip():
+            errors.append(
+                f"Override for '{path_name}' has an "
+                "empty description."
+            )
+
+    if "allowed_values" in override_definition:
+        override_allowed_values = override_definition[
+            "allowed_values"
+        ]
+
+        if not isinstance(override_allowed_values, list):
+            errors.append(
+                f"Override for '{path_name}' declares "
+                "allowed_values that is not a list."
+            )
+        else:
+            base_allowed_values = base_definition.get(
+                "allowed_values"
+            )
+
+            if base_allowed_values is None:
+                errors.append(
+                    f"Override for '{path_name}' declares "
+                    "allowed_values, but the base field does "
+                    "not define an allowed-values set. "
+                    "MetaRCI 0.1 permits profiles to narrow "
+                    "existing allowed values, not introduce "
+                    "a new controlled vocabulary through "
+                    "an override."
+                )
+
+            elif not isinstance(base_allowed_values, list):
+                errors.append(
+                    f"Base field '{path_name}' has invalid "
+                    "allowed_values and cannot be safely "
+                    "overridden."
+                )
+
+            else:
+                unsupported_values = [
+                    value
+                    for value in override_allowed_values
+                    if value not in base_allowed_values
+                ]
+
+                if unsupported_values:
+                    unsupported_display = ", ".join(
+                        repr(value)
+                        for value in unsupported_values
+                    )
+
+                    errors.append(
+                        f"Override for '{path_name}' expands "
+                        "the base allowed-values set with: "
+                        f"{unsupported_display}. Profiles "
+                        "may only narrow allowed_values."
+                    )
+
+    return errors
+
+
 def validate_schema_definitions(
     base_data: dict,
     profile_data: dict,
 ) -> list[str]:
-    """Validate base fields, custom fields, and overrides."""
+    """
+    Validate base fields, profile custom fields, and overrides.
+
+    Profile overrides are intentionally restricted in MetaRCI 0.1.
+    They may strengthen non-structural field constraints but may
+    not redefine the base schema's field shapes.
+    """
     errors = []
 
     for tier_name in sorted(REQUIRED_TIERS):
@@ -969,10 +1154,34 @@ def validate_schema_definitions(
                 )
                 continue
 
+            base_fields = (
+                base_data["tiers"][tier_name]["fields"]
+            )
+
+            duplicate_field_names = (
+                set(tier_custom_fields)
+                & set(base_fields)
+            )
+
+            if duplicate_field_names:
+                errors.append(
+                    f"Custom fields in the {tier_name} tier "
+                    "duplicate fields declared by the base "
+                    "schema: "
+                    + ", ".join(
+                        sorted(duplicate_field_names)
+                    )
+                    + ". Use tier_overrides to specialize "
+                    "an existing base field."
+                )
+
             for (
                 field_name,
                 field_definition,
             ) in tier_custom_fields.items():
+                if field_name in base_fields:
+                    continue
+
                 errors.extend(
                     validate_field_definition(
                         f"{tier_name}.{field_name}",
@@ -1037,95 +1246,13 @@ def validate_schema_definitions(
                 if field_name not in base_fields:
                     continue
 
-                override_path = (
-                    f"{tier_name}.{field_name}"
+                errors.extend(
+                    validate_override_definition(
+                        f"{tier_name}.{field_name}",
+                        base_fields[field_name],
+                        override_definition,
+                    )
                 )
-
-                if not isinstance(
-                    override_definition,
-                    dict,
-                ):
-                    errors.append(
-                        f"Override for '{override_path}' "
-                        "must be a mapping."
-                    )
-                    continue
-
-                unknown_override_attributes = (
-                    set(override_definition)
-                    - VALID_FIELD_ATTRIBUTES
-                )
-
-                if unknown_override_attributes:
-                    errors.append(
-                        f"Unknown override attributes for "
-                        f"'{override_path}': "
-                        + ", ".join(
-                            sorted(
-                                unknown_override_attributes
-                            )
-                        )
-                    )
-
-                if "type" in override_definition:
-                    override_type = (
-                        override_definition["type"]
-                    )
-
-                    if override_type not in VALID_TYPES:
-                        errors.append(
-                            f"Override for "
-                            f"'{override_path}' declares "
-                            f"invalid type "
-                            f"{override_type!r}."
-                        )
-
-                if "requirement" in override_definition:
-                    override_requirement = (
-                        override_definition[
-                            "requirement"
-                        ]
-                    )
-
-                    if (
-                        override_requirement
-                        not in VALID_REQUIREMENTS
-                    ):
-                        errors.append(
-                            f"Override for "
-                            f"'{override_path}' declares "
-                            "invalid requirement "
-                            f"{override_requirement!r}."
-                        )
-
-                if "nullable" in override_definition:
-                    if not isinstance(
-                        override_definition["nullable"],
-                        bool,
-                    ):
-                        errors.append(
-                            f"Override for "
-                            f"'{override_path}' must "
-                            "declare nullable as "
-                            "true or false."
-                        )
-
-                if (
-                    "allowed_values"
-                    in override_definition
-                    and not isinstance(
-                        override_definition[
-                            "allowed_values"
-                        ],
-                        list,
-                    )
-                ):
-                    errors.append(
-                        f"Override for "
-                        f"'{override_path}' declares "
-                        "allowed_values that is not "
-                        "a list."
-                    )
 
     return errors
 
@@ -1252,7 +1379,6 @@ def validate_value(
             {},
         )
 
-        # Objects without declared properties are open objects.
         if not property_definitions:
             return errors
 
@@ -1353,7 +1479,6 @@ def main() -> int:
     profile = documents["profile"]
     record = documents["record"]
 
-    # Root errors can be collected across all three documents.
     root_errors = []
 
     if "metarci" not in base:
@@ -1384,7 +1509,6 @@ def main() -> int:
     profile_data = profile["metarci_profile"]
     record_data = record["metarci_record"]
 
-    # Stage 1: validate document structures.
     document_errors = []
 
     document_errors.extend(
@@ -1414,7 +1538,6 @@ def main() -> int:
         )
         return 1
 
-    # Stage 2: validate field definitions and overrides.
     schema_errors = validate_schema_definitions(
         base_data,
         profile_data,
@@ -1427,7 +1550,6 @@ def main() -> int:
         )
         return 1
 
-    # Stage 3: validate version compatibility.
     compatibility_errors = []
 
     declared_base_version = (
@@ -1470,7 +1592,6 @@ def main() -> int:
         )
         return 1
 
-    # Stage 4: resolve the effective schema.
     resolved_schemas = {
         tier_name: resolve_field_definitions(
             base_data,
@@ -1480,7 +1601,6 @@ def main() -> int:
         for tier_name in REQUIRED_TIERS
     }
 
-    # Stage 5: validate record structure.
     record_structure_errors = []
 
     for tier_name in sorted(REQUIRED_TIERS):
@@ -1539,7 +1659,6 @@ def main() -> int:
         )
         return 1
 
-    # Stage 6: recursively validate record values.
     value_errors = []
 
     for tier_name in sorted(REQUIRED_TIERS):
@@ -1583,6 +1702,7 @@ def main() -> int:
     print("OK: Record tiers are valid mappings.")
     print("OK: Base and profile schema definitions are valid.")
     print("OK: Profile overrides target declared base fields.")
+    print("OK: Profile override constraints are satisfied.")
     print("OK: Profile overrides and custom fields were resolved.")
     print("OK: Profile base_version matches the base schema.")
     print("OK: Record profile_version matches the profile.")

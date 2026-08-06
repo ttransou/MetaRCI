@@ -2,7 +2,7 @@
 
 ## Overview
 
-MetaRCI includes a command-line validator that checks whether a base schema, implementation profile, and metadata record conform to the framework’s structural and validation rules.
+MetaRCI includes a command-line validator that checks whether a base schema, structural profile, and metadata record conform to the framework’s rules.
 
 The validator is implemented in:
 
@@ -16,9 +16,13 @@ It validates the relationship among three YAML document types:
 Base schema → Profile → Record
 ```
 
-The base schema defines the available metadata fields and their rules. A profile selects, modifies, or extends those rules for a particular domain or corpus. A record contains metadata values that must conform to the resolved profile.
+The base schema defines the shared metadata vocabulary and minimum validation contract.
 
-The validator performs both structural and value-level validation. It also reports multiple errors within a validation stage rather than stopping after the first issue.
+A profile applies that contract to a structural source class. It may strengthen selected constraints, narrow existing controlled values, and add structurally necessary custom fields.
+
+A record contains metadata values describing an actual source and must conform to the effective schema produced by the base schema and selected profile.
+
+The validator performs structural, compatibility, and recursive value validation. It reports multiple errors within a safe validation stage rather than stopping after the first issue.
 
 ---
 
@@ -26,10 +30,10 @@ The validator performs both structural and value-level validation. It also repor
 
 The validator requires:
 
-* Python 3.10 or later
-* the dependencies listed in `requirements.txt`
+* Python 3.10 or later;
+* the dependencies listed in `requirements.txt`.
 
-Install PyYAML with:
+Install the dependencies from the repository root:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -86,19 +90,19 @@ A different profile and record may be supplied in the same way:
 ```bash
 python validate.py \
   --base schemas/metarci-base.yaml \
-  --profile profiles/humanities-profile.yaml \
-  --record examples/hamlet-record.yaml
+  --profile profiles/document.yaml \
+  --record examples/document-record.yaml
 ```
 
 The available arguments are:
 
-| Argument    | Purpose                                      |
-| ----------- | -------------------------------------------- |
-| `--base`    | Path to the MetaRCI base-schema YAML file    |
-| `--profile` | Path to the implementation-profile YAML file |
-| `--record`  | Path to the metadata-record YAML file        |
+| Argument    | Purpose                                   |
+| ----------- | ----------------------------------------- |
+| `--base`    | Path to the MetaRCI base-schema YAML file |
+| `--profile` | Path to the structural-profile YAML file  |
+| `--record`  | Path to the metadata-record YAML file     |
 
-Display the command-line help with:
+Display command-line help with:
 
 ```bash
 python validate.py --help
@@ -177,7 +181,8 @@ For the profile, this includes:
 * valid lifecycle status;
 * implementation metadata;
 * the declared base-schema path;
-* profile override and custom-field containers.
+* profile override containers;
+* custom-field containers.
 
 For the record, this includes:
 
@@ -198,7 +203,7 @@ VALIDATION FAILED: Document validation reported 1 error(s).
 
 The validator checks the field definitions declared by the base schema and profile.
 
-Each field definition must declare:
+Each complete field definition must declare:
 
 * a valid `type`;
 * a valid `requirement`;
@@ -230,17 +235,202 @@ The validator also checks:
 * nested object properties;
 * object properties within lists;
 * `allowed_values`;
-* custom fields;
-* profile overrides;
-* override targets.
+* custom-field definitions;
+* profile override targets;
+* MetaRCI 0.1 override constraints.
+
+---
+
+## Profile Override Validation
+
+MetaRCI 0.1 permits shallow, non-structural profile overrides.
+
+Profiles may override only:
+
+```text
+requirement
+nullable
+description
+allowed_values
+```
+
+Structural attributes are not overridable in version `0.1`, including:
+
+```text
+type
+item_type
+properties
+item_properties
+```
+
+A profile must use a custom field or request a base-schema revision when a structural change is required.
+
+### Requirement Strength
+
+Profiles may strengthen a field requirement but may not weaken it.
+
+The validator applies the following order:
+
+```text
+optional < conditional < recommended < required
+```
+
+Valid examples include:
+
+```text
+optional → recommended
+optional → required
+conditional → recommended
+conditional → required
+recommended → required
+```
+
+Invalid examples include:
+
+```text
+required → recommended
+required → optional
+recommended → conditional
+recommended → optional
+conditional → optional
+```
 
 Example failure:
 
 ```text
 VALIDATION FAILED: Schema-definition validation reported 1 error(s).
-  1. Schema field 'reference.page_count' must declare one of
-     ['date', 'datetime', 'integer', 'list', 'object', 'string']
-     as its type. Received 'number'.
+  1. Override for 'reference.source_id' weakens requirement
+     from 'required' to 'optional'. Profiles may strengthen
+     requirements but may not weaken them.
+```
+
+### Nullability
+
+Profiles may strengthen nullability by changing a nullable field to non-nullable.
+
+Valid:
+
+```text
+nullable: true → nullable: false
+```
+
+Profiles may not weaken nullability by changing a non-nullable field to nullable.
+
+Invalid:
+
+```text
+nullable: false → nullable: true
+```
+
+Example failure:
+
+```text
+VALIDATION FAILED: Schema-definition validation reported 1 error(s).
+  1. Override for 'reference.source_id' changes a non-nullable
+     base field to nullable.
+```
+
+### Allowed Values
+
+Profiles may narrow an existing base `allowed_values` set.
+
+For example, if the base permits:
+
+```yaml
+allowed_values:
+  - success
+  - partial
+  - failed
+  - skipped
+```
+
+a profile may narrow the set:
+
+```yaml
+allowed_values:
+  - success
+  - partial
+```
+
+A profile may not:
+
+* introduce `allowed_values` when the base field has none;
+* add values not declared by the base;
+* expand the base vocabulary.
+
+Example failure:
+
+```text
+VALIDATION FAILED: Schema-definition validation reported 1 error(s).
+  1. Override for 'reference.extraction_status' expands the
+     base allowed-values set with: 'complete'. Profiles may
+     only narrow allowed_values.
+```
+
+### Descriptions
+
+A profile may replace or refine a field description.
+
+An override description must:
+
+* be a string;
+* not be empty.
+
+### Structural Overrides
+
+The following override is invalid:
+
+```yaml
+tier_overrides:
+  reference:
+    page_count:
+      type: string
+```
+
+The validator reports unsupported override attributes:
+
+```text
+VALIDATION FAILED: Schema-definition validation reported 1 error(s).
+  1. Unsupported override attributes for 'reference.page_count':
+     type. MetaRCI 0.1 permits overrides only for:
+     allowed_values, description, nullable, requirement.
+```
+
+---
+
+## Custom-Field Validation
+
+Profiles may add structurally necessary custom fields.
+
+Custom fields must:
+
+* belong to the Reference, Context, or Interpretive tier;
+* use a supported MetaRCI field type;
+* declare `requirement`;
+* declare `nullable`;
+* satisfy nested schema-definition rules;
+* use a name not already declared by the base schema.
+
+A custom field may not replace or shadow a base field.
+
+The following is invalid:
+
+```yaml
+custom_fields:
+  reference:
+    source_id:
+      type: string
+      requirement: required
+      nullable: false
+```
+
+Example failure:
+
+```text
+VALIDATION FAILED: Schema-definition validation reported 1 error(s).
+  1. Custom fields in the reference tier duplicate fields
+     declared by the base schema: source_id. Use tier_overrides
+     to specialize an existing base field.
 ```
 
 ---
@@ -282,21 +472,17 @@ VALIDATION FAILED: Version compatibility reported 1 error(s).
 
 After the base schema and profile have been validated, the validator resolves the effective schema for each tier.
 
-The resolved schema combines:
+The effective schema combines:
 
 1. base-schema fields;
-2. profile overrides;
+2. permitted profile overrides;
 3. profile custom fields.
 
-For a base field, the profile may override selected attributes such as:
-
-```yaml
-requirement: recommended
-```
+For a base field, a profile override changes only the explicitly supplied permitted attributes. All other attributes remain inherited from the base definition.
 
 Custom fields are then added to the selected tier.
 
-This produces the field definitions used to validate the record.
+Schema resolution occurs only after override and custom-field constraints have passed validation.
 
 ---
 
@@ -355,7 +541,7 @@ Value 'reference.page_count' must be type 'integer',
 but received 'str'.
 ```
 
-Nested validation also reports the complete path to the invalid value:
+Nested validation reports the complete path to the invalid value:
 
 ```text
 context.sensitivity.categories[1]
@@ -437,9 +623,7 @@ Run all tests from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The suite currently contains 22 tests.
-
-The tests cover:
+The current suite tests:
 
 * valid base, profile, and record files;
 * invalid controlled values;
@@ -462,6 +646,15 @@ The tests cover:
 * malformed YAML;
 * aggregated value errors.
 
+Additional tests should cover the MetaRCI 0.1 profile constraints:
+
+* unsupported structural overrides;
+* weakened requirements;
+* weakened nullability;
+* expanded `allowed_values`;
+* newly introduced override vocabularies;
+* custom fields that duplicate base fields.
+
 Each test creates temporary copies of the valid example files. The tests modify only those temporary copies and do not alter the repository’s canonical examples.
 
 A successful test run ends with output similar to:
@@ -472,6 +665,8 @@ Ran 22 tests
 
 OK
 ```
+
+The test count should be updated when the new profile-constraint tests are added.
 
 ---
 
@@ -495,13 +690,14 @@ The workflow performs these steps:
 
 1. checks out the repository;
 2. configures Python;
-3. installs PyYAML;
+3. installs dependencies from `requirements.txt`;
 4. runs the validator against the example files;
 5. runs the complete automated test suite.
 
 The local commands executed by CI are:
 
 ```bash
+python -m pip install -r requirements.txt
 python validate.py
 python -m unittest discover -s tests -v
 ```
@@ -540,6 +736,7 @@ OK: Record references the loaded profile.
 OK: Record tiers are valid mappings.
 OK: Base and profile schema definitions are valid.
 OK: Profile overrides target declared base fields.
+OK: Profile override constraints are satisfied.
 OK: Profile overrides and custom fields were resolved.
 OK: Profile base_version matches the base schema.
 OK: Record profile_version matches the profile.
@@ -560,6 +757,8 @@ The validator currently supports validation of one base schema, one profile, and
 
 It uses exact version matching rather than semantic-version compatibility rules.
 
+MetaRCI 0.1 profile overrides are intentionally shallow and non-structural.
+
 The validator does not currently:
 
 * validate multiple records in one command;
@@ -568,9 +767,11 @@ The validator does not currently:
 * install as a packaged command-line application;
 * resolve remote schema or profile references;
 * apply semantic-version ranges;
+* support profile-to-profile inheritance;
+* deep-merge nested profile overrides;
 * perform domain-specific factual validation.
 
-These may be added in later versions without changing the fundamental validation model.
+These may be considered in later versions without changing the fundamental validation model.
 
 ---
 
@@ -582,9 +783,11 @@ A MetaRCI record should not merely contain metadata-shaped values. It should be 
 
 * where each field was declared;
 * which profile rules apply;
+* whether a profile strengthens or weakens the base contract;
+* whether custom fields preserve the shared vocabulary;
 * whether required context is present;
 * whether values conform to their declared types;
 * whether nested structures are complete;
 * whether the record is compatible with the schema and profile versions it references.
 
-The validator therefore treats metadata structure, provenance, context, and governance rules as testable parts of the framework rather than informal documentation.
+The validator therefore treats metadata structure, provenance, context, profile governance, and compatibility rules as testable parts of the framework rather than informal documentation.
