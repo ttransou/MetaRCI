@@ -1,4 +1,4 @@
-# MetaRCI
+# MetaRCI🔱
 
 ## A Progressive Metadata Model for Schema-Conscious RAG
 
