@@ -20,7 +20,7 @@ metarci:
         Metadata extracted or generated from the source, file,
         or ingestion process with minimal human curation.
 
-            fields:
+      fields:
         source_id:
           type: string
           requirement: required
@@ -82,7 +82,8 @@ metarci:
           requirement: conditional
           nullable: true
           description: >
-            Creation date extracted from file properties or explicit source metadata.
+            Creation date extracted from file properties or explicit
+            source metadata.
 
         modification_date:
           type: date
@@ -96,7 +97,8 @@ metarci:
           requirement: conditional
           nullable: true
           description: >
-            Review date explicitly extracted from document boilerplate or metadata.
+            Review date explicitly extracted from document boilerplate
+            or metadata.
 
         stated_title:
           type: string
@@ -110,7 +112,8 @@ metarci:
           requirement: conditional
           nullable: true
           description: >
-            Author or creator explicitly stated in the source or embedded metadata.
+            Author or creator explicitly stated in the source
+            or embedded metadata.
 
         stated_version:
           type: string
@@ -158,7 +161,7 @@ metarci:
         Curated or externally supplied metadata that situates
         the source within its broader domain or corpus.
 
-            fields:
+      fields:
         preferred_title:
           type: string
           requirement: conditional
@@ -172,7 +175,8 @@ metarci:
           requirement: conditional
           nullable: true
           description: >
-            Alternate titles, aliases, or former titles associated with the source.
+            Alternate titles, aliases, or former titles associated
+            with the source.
 
         domains:
           type: list
@@ -306,14 +310,15 @@ metarci:
         Corpus-specific metadata that expresses analytical,
         semantic, or relational meaning.
 
-           fields:
+      fields:
         concepts:
           type: list
           item_type: string
           requirement: conditional
           nullable: true
           description: >
-            Corpus-specific concepts associated with the source or its contents.
+            Corpus-specific concepts associated with the source
+            or its contents.
 
         themes:
           type: list
@@ -374,7 +379,8 @@ metarci:
           requirement: conditional
           nullable: true
           description: >
-            Role assigned to the source within the specific corpus or use case.
+            Role assigned to the source within the specific corpus
+            or use case.
 
         extensions:
           type: object
