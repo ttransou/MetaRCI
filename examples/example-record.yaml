@@ -1,1 +1,64 @@
+metarci_record:
+  profile: ../profiles/example-profile.yaml
+  profile_version: "0.1.0"
 
+  reference:
+    source_id: example-001
+    original_filename: example-document.pdf
+    source_uri: null
+    file_format: pdf
+    mime_type: application/pdf
+    file_size_bytes: 248320
+    checksum: null
+    page_count: 12
+    creation_date: null
+    modification_date: null
+    review_date: "2026-07-15"
+    stated_title: Example Document
+    stated_author: null
+    stated_version: "1.0"
+    ingestion_timestamp: "2026-08-06T12:12:00-04:00"
+    parser_name: example-parser
+    parser_version: "0.1.0"
+    extraction_status: success
+
+  context:
+    preferred_title: Example Document
+    alternate_titles: []
+    domains:
+      - example-domain
+    categories:
+      - reference-material
+    origin_date: null
+    period_covered: null
+    related_sources: []
+    source_lineage: []
+    responsible_organizations:
+      - Example Organization
+    organizational_context: Example Program
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - internal-users
+    intended_purpose: Demonstrate a MetaRCI metadata record.
+    sensitivity:
+      level: internal
+      categories: []
+      basis: example-profile
+    external_identifiers: []
+    business_unit: Example Unit
+
+  interpretive:
+    concepts:
+      - metadata-modeling
+    themes:
+      - knowledge-organization
+    entities: []
+    analytical_categories:
+      - implementation-example
+    relationships: []
+    interpretive_notes:
+      - Demonstrates all three MetaRCI tiers in one record.
+    corpus_role: example
+    decision_context: Supports evaluation of the example profile.
+    extensions: {}
