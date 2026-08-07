@@ -54,6 +54,7 @@ Open question:
 * Should section/chapter/clause structures be represented directly in profile custom fields?
 * How much edition/version relationship structure should be explicit versus relationship-based?
 * How should documents with significant embedded media be represented when both document and media structure matter?
+* Should any currently base-level document-skewed fields be reconsidered in a future base-schema review?
 
 ## Current Decisions Supported by YAML
 
@@ -64,12 +65,9 @@ Current contract:
 * Only shallow allowed override behavior is used.
 * Profile-version and base-version equality are required by validator behavior.
 
-## Unresolved Questions
+Proposed change:
 
-Open question:
-
-* Should additional document-structure fields be introduced in profile YAML or deferred to extensions?
-* Should any currently base-level document-skewed fields be reconsidered in a future base-schema review?
+* Introduce additional document-structure profile fields only after recurring cross-implementation evidence.
 
 ## Boundaries with Other Profiles
 
@@ -88,3 +86,35 @@ Current guidance:
 Deferred:
 
 * Domain-specific document specializations as separate structural profiles.
+
+## Closure Candidate Pass (No Implementation)
+
+Current guidance:
+
+* Close as guidance now: document records should remain structurally lightweight and rely on inherited base fields plus the current requirement overrides for title, author, and page_count.
+* Close as guidance now: edition/version linkage should default to existing relationship modeling unless repeated ambiguity is demonstrated.
+* Close as guidance now: when embedded media is materially primary, represent it as a separate media or composite record rather than forcing all structure into the document profile.
+
+Open question:
+
+* Keep open: section/chapter/clause representation in profile YAML, pending recurring cross-implementation evidence.
+* Keep open: whether document-skewed base fields should be moved or re-scoped, pending formal base-schema review evidence.
+
+## Recommended Code Change (Proposal Only)
+
+Proposed change:
+
+* Introduce one optional document custom field in profile YAML to capture reusable subdivision structure without domain language, for example:
+  * `context.document_subdivisions` as `list<object>` with minimal child properties such as subdivision kind, label, and source locator.
+
+Current guidance:
+
+* Do not implement yet.
+* Implement only after at least two independent document testbeds show recurring need that is not cleanly represented by current base fields and relationships.
+
+If later approved, the implementation bundle should include:
+
+* profile YAML update in `profiles/document.yaml`;
+* example update in `examples/document-record.yaml`;
+* positive/negative regression tests in `tests/test_validate.py` for nested subdivision validation;
+* documentation updates in this file and `documentation/profile-question-matrix.md`.

@@ -52,6 +52,9 @@ Open question:
 * What context may be inherited from the composite record?
 * How should collection-level and item-level metadata conflicts be handled?
 * How should completeness be represented when expected membership is unknown?
+* Should cross-profile membership constraints be formalized in profile YAML or remain descriptive guidance?
+* Can and should a composite explicitly contain members validated under different structural profiles in a future contract?
+* Should completeness and expected-membership state become first-class fields?
 
 ## Current Decisions Supported by YAML
 
@@ -64,17 +67,6 @@ Current contract:
 Current guidance:
 
 * Composite members may be represented by related source links and relationship entries.
-
-Open question:
-
-* Should cross-profile membership constraints be formalized in profile YAML or remain descriptive guidance?
-
-## Unresolved Questions
-
-Open question:
-
-* Can and should a composite explicitly contain members validated under different structural profiles in a future contract?
-* Should completeness and expected-membership state become first-class fields?
 
 Proposed change:
 
@@ -96,3 +88,36 @@ Current guidance:
 Deferred:
 
 * A full graph-native composite membership model.
+
+## Closure Candidate Pass (No Implementation)
+
+Current guidance:
+
+* Close as guidance now: treat composite as an aggregation profile only when the source unit has meaningful member relationships beyond simple storage.
+* Close as guidance now: represent membership links with existing related_sources and relationship entries while the profile remains boundary-first.
+* Close as guidance now: allow mixed-member structures in practice when modeled through relationships, while deferring formal cross-profile constraints.
+
+Open question:
+
+* Keep open: standardized representation for expected versus present members and completeness state in profile YAML.
+* Keep open: standardized representation for member roles and ordering when these change interpretation.
+* Keep open: whether inheritance and conflict-resolution behavior should remain guidance or become contractized checks.
+
+## Recommended Code Change (Proposal Only)
+
+Proposed change:
+
+* Introduce one optional composite custom field in profile YAML to capture reusable membership state, for example:
+  * `context.member_manifest` as `list<object>` with minimal child properties such as member_id, member_profile, member_role, member_order, and membership_status.
+
+Current guidance:
+
+* Do not implement yet.
+* Implement only after at least two independent composite testbeds require explicit expected/present membership semantics that cannot be represented clearly with current related_sources and relationship usage.
+
+If later approved, the implementation bundle should include:
+
+* profile YAML update in `profiles/composite.yaml`;
+* example update in `examples/composite-record.yaml`;
+* positive/negative regression tests in `tests/test_validate.py` for nested member-manifest validation;
+* documentation updates in this file and `documentation/profile-question-matrix.md`.

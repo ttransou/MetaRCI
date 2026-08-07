@@ -266,6 +266,21 @@ Extensions may specialize implementation behavior, but they should not silently 
 
 ## Profile Development Questions
 
+Status interpretation:
+
+* `[x]` means the question is documented in profile documentation with explicit contract/guidance/open-question labeling.
+* `[ ]` means the question has not yet been documented.
+
+Checked items are not automatically settled architecture. Open questions may remain open pending evidence and explicit schema/validator decisions.
+
+Question closure criteria:
+
+* identify whether the answer is `Current guidance`, `Current contract`, or a `Proposed change`;
+* cite the supporting source: profile YAML, example record, validator behavior, test result, or implementation evidence;
+* state whether a schema/profile/validator/test change is required;
+* if a change is required, record it as a proposed change before implementation;
+* if evidence is insufficient, keep the item open and record what evidence is still needed.
+
 ### Document
 
 * [x] What document-structure fields are genuinely reusable?
@@ -367,6 +382,27 @@ Complete after or alongside profile-contract regression testing where the profil
 ## Implementation Testbeds
 
 Implementation testbeds may be used to evaluate MetaRCI without defining the framework.
+
+Execution protocol:
+
+* See [documentation/testbeds.md](documentation/testbeds.md).
+* Use [documentation/testbed-report-template.md](documentation/testbed-report-template.md) for evidence capture.
+* Track required source provisioning in [documentation/testbed-source-intake.md](documentation/testbed-source-intake.md).
+
+Morning (08/07-08) pickup checklist:
+
+* [ ] Place source files in [testbed-sources/](testbed-sources) using the existing intake folders:
+  * [ ] `testbed-sources/document/doc-source-001/`
+  * [ ] `testbed-sources/document/doc-source-002/`
+  * [ ] `testbed-sources/structured-data/data-source-001/`
+  * [ ] `testbed-sources/structured-data/data-source-002/`
+  * [ ] `testbed-sources/media/media-source-001/`
+  * [ ] `testbed-sources/media/media-source-002/`
+  * [ ] `testbed-sources/composite/comp-source-001/`
+  * [ ] `testbed-sources/composite/comp-source-002/`
+* [ ] Update source locations, license/usage status, and readiness flags in [documentation/testbed-source-intake.md](documentation/testbed-source-intake.md).
+* [ ] Start with baseline-ready IDs and create corresponding reports in [documentation/testbed-reports/](documentation/testbed-reports).
+* [ ] Keep any schema-impact idea labeled as `Proposed change` until supported by at least two independent testbeds.
 
 Potential testbeds include:
 
