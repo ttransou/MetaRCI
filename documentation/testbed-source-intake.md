@@ -81,8 +81,8 @@ Coverage goals:
 
 | Intake id | Profile | Source set summary | Ready for baseline | Ready for variants | Notes |
 |---|---|---|---|---|---|
-| doc-source-001 | document | narrative baseline document; see documentation/testbed-sources/document-sources.md | no | no | |
-| doc-source-002 | document | embedded-media or rich-subdivision document; see documentation/testbed-sources/document-sources.md | no | no | |
+| doc-source-001 | document | TheYellowWallpaper.md | yes | no | |
+| doc-source-002 | document | NIST AI Risk Management Framework 1.0.pdf | yes | no | |
 | data-source-001 | structured-data | neutral tabular baseline; see documentation/testbed-sources/structured-data-sources.md | no | no | |
 | data-source-002 | structured-data | units and missing-value conventions dataset; see documentation/testbed-sources/structured-data-sources.md | no | no | |
 | media-source-001 | media | image or diagram collection baseline; see documentation/testbed-sources/media-sources.md | no | no | |
