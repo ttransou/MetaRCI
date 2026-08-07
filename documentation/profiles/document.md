@@ -30,6 +30,8 @@ Current contract:
   * reference.page_count
   * reference.stated_title
   * reference.stated_author
+* Current executable custom field support includes:
+  * context.document_subdivisions
 
 Current guidance:
 
@@ -39,9 +41,9 @@ Current guidance:
 
 Current contract:
 
-* The profile currently relies on inherited base fields plus three requirement overrides.
-* There are no document-specific custom fields in the YAML.
-* The example record demonstrates this contract with base fields and no custom field usage.
+* The profile currently relies on inherited base fields, three requirement overrides, and one reusable context custom field.
+* The document-specific custom field currently declared in YAML is `context.document_subdivisions`.
+* The example record demonstrates this contract, including subdivision descriptors.
 
 Current guidance:
 
@@ -61,7 +63,7 @@ Open question:
 Current contract:
 
 * Status is draft.
-* No custom fields are declared.
+* One reusable context custom field is declared.
 * Only shallow allowed override behavior is used.
 * Profile-version and base-version equality are required by validator behavior.
 
@@ -104,13 +106,12 @@ Open question:
 
 Proposed change:
 
-* Introduce one optional document custom field in profile YAML to capture reusable subdivision structure without domain language, for example:
-  * `context.document_subdivisions` as `list<object>` with minimal child properties such as subdivision kind, label, and source locator.
+* Extend and refine subdivision representation only if evidence shows the current minimal shape is insufficient.
 
 Current guidance:
 
-* Do not implement yet.
-* Implement only after at least two independent document testbeds show recurring need that is not cleanly represented by current base fields and relationships.
+* Keep `context.document_subdivisions` lightweight and implementation-agnostic.
+* Add stricter subdivision semantics only after recurring multi-implementation evidence.
 
 If later approved, the implementation bundle should include:
 

@@ -1,0 +1,75 @@
+metarci_record:
+  profile: ../profiles/document.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: doc-source-001
+    original_filename: doc-source-001.md
+    source_uri: null
+    file_format: markdown
+    mime_type: text/markdown
+    file_size_bytes: 0
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: "2026-08-07"
+    stated_title: The Yellow Wallpaper
+    stated_author: Charlotte Perkins Gilman
+    stated_version: "project-gutenberg-edition"
+    ingestion_timestamp: "2026-08-07T00:10:00+00:00"
+    parser_name: manual-testbed-entry
+    parser_version: "0.1.0"
+    extraction_status: success
+
+  context:
+    preferred_title: The Yellow Wallpaper
+    alternate_titles: []
+    domains:
+      - literature
+    categories:
+      - narrative-document
+    origin_date: null
+    period_covered: null
+    related_sources: []
+    source_lineage: []
+    responsible_organizations: []
+    organizational_context: null
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - general-public
+    intended_purpose: Candidate explicit subdivision shape.
+    sensitivity:
+      level: public
+      categories: []
+      basis: public-domain-source
+    external_identifiers:
+      - gutenberg-1952
+    document_subdivisions:
+      - kind: section
+        label: opening
+        source_locator: start-of-text
+      - kind: section
+        label: middle
+        source_locator: narrative-shift
+      - kind: section
+        label: ending
+        source_locator: final-pages
+
+  interpretive:
+    concepts:
+      - narrative-voice
+    themes:
+      - confinement
+    entities: []
+    analytical_categories:
+      - document-testbed
+      - subdivision-explicit
+    relationships: []
+    interpretive_notes:
+      - >
+        This variant now exercises explicit subdivision structure under
+        the current document-profile contract.
+    corpus_role: variant-b
+    extensions: {}

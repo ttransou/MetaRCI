@@ -615,6 +615,56 @@ class MetaRCIValidatorTests(unittest.TestCase):
         self.assertIn("Missing required fields in context tier", result.stdout)
         self.assertIn("local_reference_code", result.stdout)
 
+    def test_document_subdivisions_item_property_type_is_enforced(self) -> None:
+        """Document subdivision item properties should enforce declared types."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+
+        record["metarci_record"]["context"][
+            "document_subdivisions"
+        ][0]["label"] = 101
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.document_subdivisions[0].label",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_document_subdivisions_missing_required_property_fails(self) -> None:
+        """Document subdivision items must include required child properties."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["document_profile"],
+            SOURCE_FILES["document_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+
+        del record["metarci_record"]["context"][
+            "document_subdivisions"
+        ][0]["kind"]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.document_subdivisions[0]",
+            result.stdout,
+        )
+        self.assertIn("kind", result.stdout)
+
     def test_structured_data_profile_required_custom_field_is_enforced(self) -> None:
         """A required custom field from the structured-data profile should be enforced."""
         self.stage_profile_and_record(

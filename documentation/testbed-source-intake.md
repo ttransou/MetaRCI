@@ -83,10 +83,10 @@ Coverage goals:
 |---|---|---|---|---|---|
 | doc-source-001 | document | TheYellowWallpaper.md | yes | no | |
 | doc-source-002 | document | NIST AI Risk Management Framework 1.0.pdf | yes | no | |
-| data-source-001 | structured-data | neutral tabular baseline; see documentation/testbed-sources/structured-data-sources.md | no | no | |
-| data-source-002 | structured-data | units and missing-value conventions dataset; see documentation/testbed-sources/structured-data-sources.md | no | no | |
-| media-source-001 | media | image or diagram collection baseline; see documentation/testbed-sources/media-sources.md | no | no | |
-| media-source-002 | media | audio or video segmentable source; see documentation/testbed-sources/media-sources.md | no | no | |
+| data-source-001 | structured-data | USGS all_month.csv baseline feed snapshot | yes | yes | Source file present in testbed-sources/structured-data/data-source-001/data-source-001.csv |
+| data-source-002 | structured-data | ERDDAP CSV export with unit metadata row | yes | yes | Source file present in testbed-sources/structured-data/data-source-002/data-source-002.csv |
+| media-source-001 | media | JPEG still image source for baseline media representation | yes | yes | Source file present in testbed-sources/media/media-source-001/media-source-001.jpg |
+| media-source-002 | media | MP4 segmentable video source | yes | yes | Source file present in testbed-sources/media/media-source-002/media-source-002.mp4 |
 | comp-source-001 | composite | complete-membership package; see documentation/testbed-sources/composite-sources.md | no | no | |
 | comp-source-002 | composite | partial or unknown-membership package; see documentation/testbed-sources/composite-sources.md | no | no | |
 

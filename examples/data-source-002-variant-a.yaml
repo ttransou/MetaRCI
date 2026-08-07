@@ -1,0 +1,70 @@
+metarci_record:
+  profile: ../profiles/structured-data.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: data-source-002
+    original_filename: data-source-002.csv
+    source_uri: null
+    file_format: csv
+    mime_type: text/csv
+    file_size_bytes: 0
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: "2026-08-07"
+    stated_title: ERDDAP CSV extract
+    stated_author: ERDDAP-compatible source
+    stated_version: null
+    ingestion_timestamp: "2026-08-07T00:50:00+00:00"
+    parser_name: csv-parser
+    parser_version: "1.0.0"
+    extraction_status: success
+
+  context:
+    preferred_title: ERDDAP tabular extract with units row
+    alternate_titles: []
+    domains:
+      - environmental-data
+    categories:
+      - tabular-data
+    origin_date: null
+    period_covered: null
+    related_sources:
+      - erddap-metadata-reference
+    source_lineage:
+      - erddap-tabular-export
+    responsible_organizations: []
+    organizational_context: Export includes unit labels in the second row.
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - analysts
+    intended_purpose: Variant A captures unit and schema semantics through notes and relationships only.
+    sensitivity:
+      level: public
+      categories: []
+      basis: public-data
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - measurement-series
+      - declared-schema
+    themes:
+      - unit-aware-tabular-data
+    entities:
+      - station-readings
+    analytical_categories:
+      - structured-data-testbed
+      - schema-notes-lightweight
+    relationships:
+      - target_id: erddap-metadata-reference
+        relationship_type: described_by
+        notes: External metadata clarifies unit and column semantics.
+    interpretive_notes:
+      - "Declared units row: longitude degrees_east, latitude degrees_north, time UTC, T_25 degree_C."
+      - "This source distinguishes metadata rows from value rows without profile custom fields."
+    corpus_role: variant-a
+    extensions: {}

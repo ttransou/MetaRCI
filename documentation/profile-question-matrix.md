@@ -40,6 +40,33 @@ Use one or more of the following evidence sources when closing a question:
 | How should documents with significant embedded media be represented when both document and media structure matter? | Paired record experiments (document-only vs split document+media/composite) | One approach consistently preserves meaning with less ambiguity | Current guidance | Usually docs/tests only unless new fields introduced |
 | Should any currently base-level document-skewed fields be reconsidered in a future base-schema review? | Base-field usage frequencies across all profile examples and testbeds | Field is repeatedly null/irrelevant outside one profile and better modeled as profile-specific | Proposed change | Base schema revision, profile/test updates, migration notes |
 
+### Document Evidence Update (2026-08-07)
+
+Evidence source:
+
+* documentation/testbed-reports/document-structure-001.md
+
+Observed execution results:
+
+* Baseline pass: examples/doc-source-001-record.yaml
+* Baseline pass: examples/doc-source-002-record.yaml
+* Variant A pass: examples/doc-source-001-variant-a.yaml
+* Variant A pass: examples/doc-source-002-variant-a.yaml
+* Variant B pass: examples/doc-source-001-variant-b.yaml
+* Variant B fail: examples/doc-source-002-variant-b.yaml (unknown context field embedded_media_index)
+
+Evidence-based status deltas:
+
+* Section/chapter/clause custom field question is now represented by a draft contract patch; keep evaluating shape stability across additional implementations.
+* Embedded-media boundary question is now supported as Current guidance: represent materially primary media as related media/composite records using existing relationship patterns.
+* Edition/version explicitness question is now supported as Current guidance: use stated_version plus source_lineage or relationships under the current contract.
+
+Step 2 implementation update (2026-08-07):
+
+* A draft contract patch now declares context.document_subdivisions in profiles/document.yaml.
+* The document example now exercises this field in examples/document-record.yaml.
+* Regression tests now verify required child-property and type enforcement in tests/test_validate.py.
+
 ## Structured-Data Profile
 
 | Open question | Primary evidence needed | Closure threshold | Likely closure outcome | Contract impact if changed |
@@ -52,6 +79,27 @@ Use one or more of the following evidence sources when closing a question:
 | Whether to add reusable schema-description custom fields in reference/context/interpretive tiers | Tier placement analysis across examples | Clear, consistent tier placement across implementations | Proposed change | Profile YAML and tests |
 | Whether additional validator checks are needed for structured-data-specific semantics | Test failures or ambiguity not caught by current validator | Demonstrable error class missed by current checks | Proposed change | Validator logic and new tests |
 
+### Structured-Data Evidence Update (2026-08-07)
+
+Evidence source:
+
+* documentation/testbed-reports/structured-data-schema-002.md
+
+Observed execution results:
+
+* Baseline pass: examples/data-source-001-record.yaml
+* Baseline pass: examples/data-source-002-record.yaml
+* Variant A pass: examples/data-source-001-variant-a.yaml
+* Variant A pass: examples/data-source-002-variant-a.yaml
+* Variant B fail: examples/data-source-001-variant-b.yaml (unknown context field variable_definitions)
+* Variant B fail: examples/data-source-002-variant-b.yaml (unknown context field variable_definitions)
+
+Evidence-based status deltas:
+
+* Variable-definition representation now has two-source evidence and is ready as a Proposed change candidate.
+* Units, domain, and missing-value representation has two-source evidence and is ready as a Proposed change candidate.
+* Inferred-versus-declared schema distinction has two-source evidence and is ready as a Proposed change candidate.
+
 ## Media Profile
 
 | Open question | Primary evidence needed | Closure threshold | Likely closure outcome | Contract impact if changed |
@@ -63,6 +111,27 @@ Use one or more of the following evidence sources when closing a question:
 | Which media properties belong in reference versus context/interpretive tiers? | Tier-placement consistency review across examples | Same tier choices hold across implementations | Current guidance | Docs only unless field moves are needed |
 | How to represent machine-generated and human-curated descriptions without ambiguity | Comparison of representation patterns and reviewer outcomes | Ambiguity eliminated in repeated reviews | Current guidance or Proposed change | Possibly new fields and validation expectations |
 | Whether to encode region/time segmentation in profile fields or extensions | Extension vs profile reuse analysis | Structural need is broad enough to justify core profile inclusion | Proposed change or Current guidance | Profile YAML changes if promoted |
+
+### Media Evidence Update (2026-08-07)
+
+Evidence source:
+
+* documentation/testbed-reports/media-semantics-001.md
+
+Observed execution results:
+
+* Baseline pass: examples/media-source-001-record.yaml
+* Baseline pass: examples/media-source-002-record.yaml
+* Variant A pass: examples/media-source-001-variant-a.yaml
+* Variant A pass: examples/media-source-002-variant-a.yaml
+* Variant B fail: examples/media-source-001-variant-b.yaml (unknown interpretive field generated_descriptions)
+* Variant B fail: examples/media-source-002-variant-b.yaml (unknown interpretive field segment_references)
+
+Evidence-based status deltas:
+
+* Generated-description provenance now has two-source evidence and is ready as a Proposed change candidate.
+* Caption or transcript structure now has two-source evidence and is ready as a Proposed change candidate.
+* Segment-reference representation has source-backed evidence and is ready as a Proposed change candidate.
 
 ## Composite Profile
 

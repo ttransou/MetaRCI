@@ -1,0 +1,61 @@
+metarci_record:
+  profile: ../profiles/media.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: media-source-002
+    original_filename: media-source-002.mp4
+    source_uri: null
+    file_format: mp4
+    mime_type: video/mp4
+    file_size_bytes: 288255184
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: "2026-08-07"
+    stated_title: media-source-002 video sample
+    stated_author: null
+    stated_version: null
+    ingestion_timestamp: "2026-08-07T01:15:00+00:00"
+    parser_name: media-parser
+    parser_version: "0.1.0"
+    extraction_status: success
+
+  context:
+    preferred_title: media-source-002 video sample
+    alternate_titles: []
+    domains:
+      - audiovisual-media
+    categories:
+      - video
+    origin_date: null
+    period_covered: null
+    related_sources: []
+    source_lineage: []
+    responsible_organizations: []
+    organizational_context: Video baseline source for media profile testbed.
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - analysts
+    intended_purpose: Baseline media representation for segmentable video source.
+    sensitivity:
+      level: public
+      categories: []
+      basis: source-added-for-testbed
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - audiovisual-sequence
+    themes:
+      - media-baseline
+    entities: []
+    analytical_categories:
+      - media-testbed
+    relationships: []
+    interpretive_notes:
+      - Baseline video source represented without profile custom fields.
+    corpus_role: baseline
+    extensions: {}

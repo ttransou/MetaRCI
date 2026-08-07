@@ -1,0 +1,78 @@
+metarci_record:
+  profile: ../profiles/structured-data.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: data-source-001
+    original_filename: data-source-001.csv
+    source_uri: null
+    file_format: csv
+    mime_type: text/csv
+    file_size_bytes: 0
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: "2026-08-07"
+    stated_title: USGS all_month.csv
+    stated_author: U.S. Geological Survey
+    stated_version: null
+    ingestion_timestamp: "2026-08-07T00:40:00+00:00"
+    parser_name: csv-parser
+    parser_version: "1.0.0"
+    extraction_status: success
+
+  context:
+    preferred_title: USGS Earthquake Feed - all_month snapshot
+    alternate_titles: []
+    domains:
+      - geoscience
+    categories:
+      - tabular-data
+    origin_date: null
+    period_covered: null
+    related_sources: []
+    source_lineage:
+      - usgs-event-feed
+    responsible_organizations:
+      - U.S. Geological Survey
+    organizational_context: Earthquake event reporting feed.
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - analysts
+    intended_purpose: Candidate explicit variable-definition structure.
+    sensitivity:
+      level: public
+      categories: []
+      basis: public-feed
+    external_identifiers: []
+    variable_definitions:
+      - variable_name: time
+        value_type: datetime
+        unit: UTC
+        value_domain: timestamp
+        missing_value_rule: no-null-expected
+        schema_source_type: inferred
+      - variable_name: mag
+        value_type: number
+        unit: magnitude
+        value_domain: real-number
+        missing_value_rule: null-allowed
+        schema_source_type: inferred
+
+  interpretive:
+    concepts:
+      - event-observation
+    themes:
+      - geospatial-events
+    entities:
+      - earthquake-records
+    analytical_categories:
+      - structured-data-testbed
+      - schema-notes-explicit
+    relationships: []
+    interpretive_notes:
+      - This variant intentionally uses an undeclared structured-data field candidate.
+    corpus_role: variant-b
+    extensions: {}

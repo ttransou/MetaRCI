@@ -334,7 +334,7 @@ Complete after or alongside profile-contract regression testing where the profil
 * [ ] Confirm that base requirement values are valid before comparing strength.
 * [ ] Improve diagnostics for empty profile overrides.
 * [ ] Add tests for multiple simultaneous schema-definition errors.
-* [ ] Add tests for valid and invalid profile-specific nested fields.
+* [x] Add tests for valid and invalid profile-specific nested fields.
 * [ ] Confirm custom fields cannot collide with other custom fields after schema resolution.
 
 ### Later
@@ -392,16 +392,16 @@ Execution protocol:
 Morning (08/07-08) pickup checklist:
 
 * [ ] Place source files in [testbed-sources/](testbed-sources) using the existing intake folders:
-  * [ ] `testbed-sources/document/doc-source-001/`
-  * [ ] `testbed-sources/document/doc-source-002/`
-  * [ ] `testbed-sources/structured-data/data-source-001/`
-  * [ ] `testbed-sources/structured-data/data-source-002/`
-  * [ ] `testbed-sources/media/media-source-001/`
-  * [ ] `testbed-sources/media/media-source-002/`
+  * [x] `testbed-sources/document/doc-source-001/`
+  * [x] `testbed-sources/document/doc-source-002/`
+  * [x] `testbed-sources/structured-data/data-source-001/`
+  * [x] `testbed-sources/structured-data/data-source-002/`
+  * [x] `testbed-sources/media/media-source-001/`
+  * [x] `testbed-sources/media/media-source-002/`
   * [ ] `testbed-sources/composite/comp-source-001/`
   * [ ] `testbed-sources/composite/comp-source-002/`
-* [ ] Update source locations, license/usage status, and readiness flags in [documentation/testbed-source-intake.md](documentation/testbed-source-intake.md).
-* [ ] Start with baseline-ready IDs and create corresponding reports in [documentation/testbed-reports/](documentation/testbed-reports).
+* [x] Update source locations, license/usage status, and readiness flags in [documentation/testbed-source-intake.md](documentation/testbed-source-intake.md).
+* [x] Start with baseline-ready IDs and create corresponding reports in [documentation/testbed-reports/](documentation/testbed-reports).
 * [ ] Keep any schema-impact idea labeled as `Proposed change` until supported by at least two independent testbeds.
 
 Potential testbeds include:

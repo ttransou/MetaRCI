@@ -1,0 +1,63 @@
+metarci_record:
+  profile: ../profiles/document.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: doc-source-002
+    original_filename: doc-source-002.pdf
+    source_uri: null
+    file_format: pdf
+    mime_type: application/pdf
+    file_size_bytes: 0
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: "2026-08-07"
+    stated_title: NIST AI Risk Management Framework 1.0
+    stated_author: National Institute of Standards and Technology
+    stated_version: "1.0"
+    ingestion_timestamp: "2026-08-07T00:00:00+00:00"
+    parser_name: manual-testbed-entry
+    parser_version: "0.1.0"
+    extraction_status: success
+
+  context:
+    preferred_title: NIST AI Risk Management Framework 1.0
+    alternate_titles:
+      - AI RMF 1.0
+    domains:
+      - governance
+    categories:
+      - framework-document
+    origin_date: null
+    period_covered: null
+    related_sources: []
+    source_lineage: []
+    responsible_organizations:
+      - NIST
+    organizational_context: Standards guidance publication.
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - practitioners
+    intended_purpose: Richly structured document testbed source.
+    sensitivity:
+      level: public
+      categories: []
+      basis: public-guidance-document
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - risk-management
+    themes:
+      - ai-governance
+    entities: []
+    analytical_categories:
+      - document-testbed
+    relationships: []
+    interpretive_notes:
+      - Candidate source for subdivision and embedded-media boundary tests.
+    corpus_role: baseline
+    extensions: {}

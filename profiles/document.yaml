@@ -31,5 +31,30 @@ metarci_profile:
 
   custom_fields:
     reference: {}
-    context: {}
+    context:
+      document_subdivisions:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Optional subdivision descriptors for chapter, section, or
+          clause-like structure when lightweight relationship modeling
+          is insufficient.
+        item_properties:
+          kind:
+            type: string
+            requirement: required
+            nullable: false
+            description: Generic subdivision type label.
+          label:
+            type: string
+            requirement: required
+            nullable: false
+            description: Human-readable subdivision label.
+          source_locator:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: Source-specific locator for the subdivision.
     interpretive: {}
