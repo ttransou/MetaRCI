@@ -658,6 +658,11 @@ Additional tests should cover the MetaRCI 0.1 profile constraints:
 * profile-specific required fields enforced through the effective schema;
 * profile-specific field type enforcement for custom fields;
 * profile-specific nested structure enforcement for custom object fields.
+* structured-data `reference.source_fields` locator property types.
+* structured-data `context.field_context` required field and external source attribution.
+* structured-data `context.field_context` nested locator and list item types.
+* structured-data `interpretive.field_interpretations` required field locator.
+* structured-data `interpretive.field_interpretations` inferred-value and evidence-basis property types.
 
 Each test creates temporary copies of the valid example files. The tests modify only those temporary copies and do not alter the repository’s canonical examples.
 
@@ -665,7 +670,7 @@ A successful test run ends with output similar to:
 
 ```text
 ----------------------------------------------------------------------
-Ran 46 tests
+Ran 61 tests
 
 OK
 ```

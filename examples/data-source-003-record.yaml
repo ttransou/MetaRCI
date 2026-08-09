@@ -1,0 +1,72 @@
+metarci_record:
+  profile: ../profiles/structured-data.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: data-source-003
+    original_filename: iris.data
+    source_uri: null
+    file_format: data
+    mime_type: text/plain
+    file_size_bytes: null
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: null
+    stated_title: null
+    stated_author: null
+    stated_version: null
+    ingestion_timestamp: "2026-08-09T00:00:00+00:00"
+    parser_name: null
+    parser_version: null
+    extraction_status: success
+    source_fields:
+      - position: 1
+      - position: 2
+      - position: 3
+      - position: 4
+      - position: 5
+
+  context:
+    preferred_title: Iris Data
+    alternate_titles: []
+    domains:
+      - machine-learning
+      - biological-measurement
+    categories:
+      - tabular-data
+      - classification-dataset
+    origin_date: null
+    period_covered: null
+    related_sources:
+      - data-source-003-schema
+    source_lineage: []
+    responsible_organizations: []
+    organizational_context: null
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences: []
+    intended_purpose: Test source-native field identity when field names and semantics are supplied by separate documentation.
+    sensitivity:
+      level: public
+      categories: []
+      basis: public-dataset
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - positional-fields
+    themes:
+      - structured-data-schema
+    entities: []
+    analytical_categories:
+      - structured-data-testbed
+    relationships:
+      - target_id: data-source-003-schema
+        relationship_type: described_by
+        notes: Field names and semantic descriptions are supplied by the accompanying iris.names source.
+    interpretive_notes:
+      - Baseline representation preserves positional field identity without importing external schema semantics into Reference.
+    corpus_role: testbed-source
+    extensions: {}

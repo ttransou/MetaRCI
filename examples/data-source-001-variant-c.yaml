@@ -1,0 +1,89 @@
+metarci_record:
+  profile: ../profiles/structured-data.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: data-source-001
+    original_filename: data-source-001.csv
+    source_uri: null
+    file_format: csv
+    mime_type: text/csv
+    file_size_bytes: 0
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: "2026-08-07"
+    stated_title: USGS all_month.csv
+    stated_author: U.S. Geological Survey
+    stated_version: null
+    ingestion_timestamp: "2026-08-07T00:45:00+00:00"
+    parser_name: csv-parser
+    parser_version: "1.0.0"
+    extraction_status: success
+    source_fields:
+      - name: time
+        position: 1
+      - name: mag
+        position: 5
+
+  context:
+    preferred_title: USGS Earthquake Feed - all_month snapshot
+    alternate_titles: []
+    domains:
+      - geoscience
+    categories:
+      - tabular-data
+    origin_date: null
+    period_covered: null
+    related_sources: []
+    source_lineage:
+      - usgs-event-feed
+    responsible_organizations:
+      - U.S. Geological Survey
+    organizational_context: Earthquake event reporting feed.
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - analysts
+    intended_purpose: Candidate inferred field-level interpretation using observed source values.
+    sensitivity:
+      level: public
+      categories: []
+      basis: public-feed
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - event-observation
+      - inferred-schema
+    themes:
+      - geospatial-events
+    entities:
+      - earthquake-records
+    analytical_categories:
+      - structured-data-testbed
+      - schema-notes-explicit
+    relationships: []
+    field_interpretations:
+      - field:
+          name: time
+          position: 1
+        inferred_value_type: datetime-string
+        observed_characteristics:
+          - Values use an ISO-8601 style UTC timestamp format with a trailing Z suffix.
+          - Observed values include fractional seconds.
+        inference_basis: Inference based on observed source values in data-source-001.csv.
+      - field:
+          name: mag
+          position: 5
+        inferred_value_type: numeric
+        observed_characteristics:
+          - Observed values are decimal or integer-like numeric magnitudes.
+          - Observed precision varies by row.
+        inference_basis: Inference based on observed source values in data-source-001.csv.
+    interpretive_notes:
+      - Field-level assertions are inferred from observed values and are not source-declared schema constraints.
+      - This variant intentionally introduces an undeclared interpretive candidate field.
+    corpus_role: variant-c
+    extensions: {}

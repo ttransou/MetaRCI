@@ -692,6 +692,365 @@ class MetaRCIValidatorTests(unittest.TestCase):
         self.assertIn("Missing required fields in reference tier", result.stdout)
         self.assertIn("table_name", result.stdout)
 
+    def test_structured_data_source_field_name_type_is_enforced(self) -> None:
+        """Structured-data source field names should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+
+        record["metarci_record"]["reference"][
+            "source_fields"
+        ][0]["name"] = 101
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "reference.source_fields[0].name",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_structured_data_source_field_position_type_is_enforced(self) -> None:
+        """Structured-data source field positions should enforce integer type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+
+        record["metarci_record"]["reference"][
+            "source_fields"
+        ][0]["position"] = "first"
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "reference.source_fields[0].position",
+            result.stdout,
+        )
+        self.assertIn("must be type 'integer'", result.stdout)
+
+    def test_structured_data_source_field_path_type_is_enforced(self) -> None:
+        """Structured-data source field paths should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+
+        record["metarci_record"]["reference"][
+            "source_fields"
+        ][0]["path"] = 101
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "reference.source_fields[0].path",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_structured_data_source_field_local_id_type_is_enforced(self) -> None:
+        """Structured-data local field identifiers should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+
+        record["metarci_record"]["reference"][
+            "source_fields"
+        ][0]["local_id"] = 101
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "reference.source_fields[0].local_id",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_structured_data_field_context_missing_field_fails(self) -> None:
+        """Context field assertions must include a field locator."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["field_context"] = [
+            {
+                "external_source_id": "schema-001",
+                "unit": "cm",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.field_context[0]", result.stdout)
+        self.assertIn("field", result.stdout)
+
+    def test_structured_data_field_context_missing_external_source_id_fails(self) -> None:
+        """Context field assertions must identify their external source."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["field_context"] = [
+            {
+                "field": {
+                    "name": "item_id",
+                    "position": 1,
+                },
+                "unit": "cm",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.field_context[0]", result.stdout)
+        self.assertIn("external_source_id", result.stdout)
+
+    def test_structured_data_field_context_position_type_is_enforced(self) -> None:
+        """Context field locators should enforce integer position type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["field_context"] = [
+            {
+                "field": {
+                    "position": "first",
+                },
+                "external_source_id": "schema-001",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.field_context[0].field.position",
+            result.stdout,
+        )
+        self.assertIn("must be type 'integer'", result.stdout)
+
+    def test_structured_data_field_context_value_domain_item_type_is_enforced(self) -> None:
+        """Context field value domains should enforce string item type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["field_context"] = [
+            {
+                "field": {
+                    "name": "item_id",
+                    "position": 1,
+                },
+                "external_source_id": "schema-001",
+                "value_domain": [
+                    "allowed",
+                    101,
+                ],
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.field_context[0].value_domain[1]",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_structured_data_field_interpretation_missing_field_fails(self) -> None:
+        """Interpretive field assertions must include a field locator."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["field_interpretations"] = [
+            {
+                "inferred_value_type": "numeric",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("interpretive.field_interpretations[0]", result.stdout)
+        self.assertIn("field", result.stdout)
+
+    def test_structured_data_field_interpretation_position_type_is_enforced(self) -> None:
+        """Interpretive field locators should enforce integer position type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["field_interpretations"] = [
+            {
+                "field": {
+                    "position": "first",
+                },
+                "inferred_value_type": "numeric",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "interpretive.field_interpretations[0].field.position",
+            result.stdout,
+        )
+        self.assertIn("must be type 'integer'", result.stdout)
+
+    def test_structured_data_field_interpretation_inferred_value_type_is_enforced(self) -> None:
+        """Interpretive inferred value types should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["field_interpretations"] = [
+            {
+                "field": {
+                    "name": "item_id",
+                    "position": 1,
+                },
+                "inferred_value_type": 101,
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "interpretive.field_interpretations[0].inferred_value_type",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_structured_data_field_interpretation_observed_characteristics_item_type_is_enforced(self) -> None:
+        """Observed characteristics should enforce string item type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["field_interpretations"] = [
+            {
+                "field": {
+                    "name": "item_id",
+                    "position": 1,
+                },
+                "observed_characteristics": [
+                    "Values appear numeric.",
+                    101,
+                ],
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "interpretive.field_interpretations[0].observed_characteristics[1]",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_structured_data_field_interpretation_inference_basis_type_is_enforced(self) -> None:
+        """Interpretive inference basis should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["structured_data_profile"],
+            SOURCE_FILES["structured_data_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["field_interpretations"] = [
+            {
+                "field": {
+                    "name": "item_id",
+                    "position": 1,
+                },
+                "inference_basis": 101,
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "interpretive.field_interpretations[0].inference_basis",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
     def test_media_profile_required_custom_field_is_enforced(self) -> None:
         """A required custom field from the media profile should be enforced."""
         self.stage_profile_and_record(

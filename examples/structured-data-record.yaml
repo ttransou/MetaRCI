@@ -21,6 +21,11 @@ metarci_record:
     parser_name: csv-parser
     parser_version: "1.0.0"
     extraction_status: success
+    source_fields:
+      - name: item_id
+        position: 1
+      - name: item_name
+        position: 2
 
   context:
     preferred_title: Example Inventory Export
@@ -64,6 +69,6 @@ metarci_record:
         relationship_type: exported_from
         notes: Example inventory export generated from a source system.
     interpretive_notes:
-      - Demonstrates a structured-data record before profile-specific overrides are introduced.
+      - Demonstrates a structured-data record with source-native field identity represented in Reference.
     corpus_role: dataset
     extensions: {}

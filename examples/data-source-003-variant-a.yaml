@@ -1,0 +1,109 @@
+metarci_record:
+  profile: ../profiles/structured-data.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: data-source-003
+    original_filename: iris.data
+    source_uri: null
+    file_format: data
+    mime_type: text/plain
+    file_size_bytes: null
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: null
+    stated_title: null
+    stated_author: null
+    stated_version: null
+    ingestion_timestamp: "2026-08-09T00:00:00+00:00"
+    parser_name: null
+    parser_version: null
+    extraction_status: success
+    source_fields:
+      - position: 1
+      - position: 2
+      - position: 3
+      - position: 4
+      - position: 5
+
+  context:
+    preferred_title: Iris Data
+    alternate_titles: []
+    domains:
+      - machine-learning
+      - biological-measurement
+    categories:
+      - tabular-data
+      - classification-dataset
+    origin_date: null
+    period_covered: null
+    related_sources:
+      - data-source-003-schema
+    source_lineage: []
+    responsible_organizations: []
+    organizational_context: null
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences: []
+    intended_purpose: Candidate field-level contextual schema mapping grounded in iris.names.
+    sensitivity:
+      level: public
+      categories: []
+      basis: public-dataset
+    external_identifiers: []
+    field_context:
+      - field:
+          position: 1
+        external_source_id: data-source-003-schema
+        external_field_name: sepal length
+        value_type: numeric
+        unit: cm
+      - field:
+          position: 2
+        external_source_id: data-source-003-schema
+        external_field_name: sepal width
+        value_type: numeric
+        unit: cm
+      - field:
+          position: 3
+        external_source_id: data-source-003-schema
+        external_field_name: petal length
+        value_type: numeric
+        unit: cm
+      - field:
+          position: 4
+        external_source_id: data-source-003-schema
+        external_field_name: petal width
+        value_type: numeric
+        unit: cm
+      - field:
+          position: 5
+        external_source_id: data-source-003-schema
+        external_field_name: class
+        value_type: class
+        value_domain:
+          - Iris Setosa
+          - Iris Versicolour
+          - Iris Virginica
+
+  interpretive:
+    concepts:
+      - positional-fields
+      - external-schema-linkage
+    themes:
+      - structured-data-schema
+    entities: []
+    analytical_categories:
+      - structured-data-testbed
+      - schema-notes-explicit
+    relationships:
+      - target_id: data-source-003-schema
+        relationship_type: described_by
+        notes: Field names and semantics are supplied by iris.names.
+    interpretive_notes:
+      - Variant A introduces a candidate context.field_context shape linked to reference positions and grounded in iris.names.
+      - Reference source_fields remain positional-only identity from iris.data.
+    corpus_role: variant-a
+    extensions: {}

@@ -44,6 +44,8 @@ Develop MetaRCI as a domain-agnostic, three-tier metadata model with:
 * [x] Document the profile-development guidance for document, structured-data, media, and composite profiles.
 * [x] Document extension boundaries for implementation-specific metadata.
 * [x] Document the composite-profile guidance and its extension boundary questions.
+* [x] Implement structured-data v0.1 field-level representation across Reference, Context, and Interpretive tiers (`source_fields`, `field_context`, `field_interpretations`).
+* [x] Confirm validator suite currently passes with 61 tests.
 
 ---
 
@@ -396,6 +398,7 @@ Morning (08/07-08) pickup checklist:
   * [x] `testbed-sources/document/doc-source-002/`
   * [x] `testbed-sources/structured-data/data-source-001/`
   * [x] `testbed-sources/structured-data/data-source-002/`
+  * [x] `testbed-sources/structured-data/data-source-003/`
   * [x] `testbed-sources/media/media-source-001/`
   * [x] `testbed-sources/media/media-source-002/`
   * [ ] `testbed-sources/composite/comp-source-001/`
@@ -407,7 +410,7 @@ Morning (08/07-08) pickup checklist:
 Potential testbeds include:
 
 * [ ] SCARAG Shakespeare branch for `document`;
-* [ ] a neutral tabular dataset for `structured-data`;
+* [x] a neutral tabular dataset for `structured-data`;
 * [ ] an image or diagram collection for `media`;
 * [ ] a corpus-level package for `composite`.
 

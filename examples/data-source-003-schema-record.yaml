@@ -1,0 +1,67 @@
+metarci_record:
+  profile: ../profiles/document.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: data-source-003-schema
+    original_filename: iris.names
+    source_uri: null
+    file_format: names
+    mime_type: text/plain
+    file_size_bytes: null
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: null
+    stated_title: null
+    stated_author: null
+    stated_version: null
+    ingestion_timestamp: "2026-08-09T00:05:00+00:00"
+    parser_name: null
+    parser_version: null
+    extraction_status: success
+
+  context:
+    preferred_title: Iris Dataset Documentation
+    alternate_titles: []
+    domains:
+      - machine-learning
+      - biological-measurement
+    categories:
+      - dataset-documentation
+      - schema-documentation
+    origin_date: null
+    period_covered: null
+    related_sources:
+      - data-source-003
+    source_lineage: []
+    responsible_organizations: []
+    organizational_context: null
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences: []
+    intended_purpose: Provide external descriptive and schema context for the Iris data source.
+    sensitivity:
+      level: public
+      categories: []
+      basis: public-dataset-documentation
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - dataset-schema
+      - variable-documentation
+    themes:
+      - structured-data-context
+    entities: []
+    analytical_categories:
+      - structured-data-testbed
+    relationships:
+      - target_id: data-source-003
+        relationship_type: describes
+        notes: Provides field names and semantic documentation for iris.data.
+    interpretive_notes:
+      - Serves as the external contextual source for testing field-level Context metadata.
+    corpus_role: testbed-context-source
+    extensions: {}

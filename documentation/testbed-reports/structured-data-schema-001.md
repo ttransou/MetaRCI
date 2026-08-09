@@ -8,6 +8,21 @@
 * Author: repo working draft
 * Source set summary: one baseline structured-data record plus two modeled variants focused on variable-definition and inferred-versus-declared schema semantics.
 
+## Supersession Note (2026-08-09)
+
+This report remains a historical record of the initial `context.variable_definitions` hypothesis.
+
+Current v0.1 structured-data contract has superseded that hypothesis with a three-tier field representation:
+
+* Reference: `reference.source_fields`
+* Context: `context.field_context`
+* Interpretive: `interpretive.field_interpretations`
+
+For current executable status and follow-on evidence, see:
+
+* `documentation/testbed-reports/structured-data-schema-003.md`
+* `documentation/profiles/structured-data.md`
+
 ## Executed Evidence
 
 Command run:
@@ -163,3 +178,8 @@ From documentation/profiles/structured-data.md:
 * Keep open for now, with proposal candidate documented.
 * Required next evidence step:
   * run a second structured-data testbed on a different dataset style (for example, statistical table export) and verify whether the same variable_definitions shape remains minimal and reusable.
+
+Historical closure note:
+
+* The `context.variable_definitions` candidate documented here is retained as historical hypothesis evidence.
+* Subsequent structured-data iterations adopted the cross-tier `source_fields` / `field_context` / `field_interpretations` architecture for v0.1.

@@ -8,8 +8,9 @@ metarci_profile:
   description: >
     Structural profile for sources whose meaning depends substantially
     on explicit data structure such as tables, records, datasets,
-    exports, or structured logs. This initial version establishes the
-    profile boundary before any override refinements are added.
+    exports, or structured logs. This version establishes the profile
+    boundary and provides a lightweight representation of source-native
+    field identity.
 
   implementation:
     domain: null
@@ -22,6 +23,227 @@ metarci_profile:
     interpretive: {}
 
   custom_fields:
-    reference: {}
-    context: {}
-    interpretive: {}
+    reference:
+      source_fields:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Optional descriptors for source-native fields or variables.
+          Each item should contain enough source-grounded identity
+          information to distinguish the field reliably within the
+          source.
+        item_properties:
+          name:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Source-native field or variable name when one is present
+              and sufficiently meaningful for identification.
+
+          position:
+            type: integer
+            requirement: conditional
+            nullable: true
+            description: >
+              Source-grounded field position or ordinal when ordering
+              is meaningful and useful for identification.
+
+          path:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Source-grounded structural path for nested, hierarchical,
+              or otherwise path-addressable fields.
+
+          local_id:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Implementation-generated local identifier used only when
+              source-native identity is insufficient for reliable field
+              association.
+
+    context:
+      field_context:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Optional externally supplied or curated assertions about
+          source fields whose identity is established in Reference.
+          Each item identifies the target field and the external source
+          supporting the contextual assertions.
+        item_properties:
+          field:
+            type: object
+            requirement: required
+            nullable: false
+            description: >
+              Lightweight locator identifying the corresponding
+              Reference-tier source field.
+            properties:
+              name:
+                type: string
+                requirement: conditional
+                nullable: true
+                description: >
+                  Source-native field or variable name used to locate
+                  the corresponding Reference field when applicable.
+
+              position:
+                type: integer
+                requirement: conditional
+                nullable: true
+                description: >
+                  Source-grounded field position or ordinal used to
+                  locate the corresponding Reference field when
+                  applicable.
+
+              path:
+                type: string
+                requirement: conditional
+                nullable: true
+                description: >
+                  Source-grounded structural path used to locate a
+                  nested or hierarchical Reference field.
+
+              local_id:
+                type: string
+                requirement: conditional
+                nullable: true
+                description: >
+                  Local implementation identifier used to locate the
+                  corresponding Reference field when source-native
+                  identity is otherwise insufficient.
+
+          external_source_id:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Identifier for the external contextual source supporting
+              the assertions in this field-context entry.
+
+          external_field_name:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Field or variable name supplied by the external
+              contextual source.
+
+          value_type:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Value type supplied by the external contextual source.
+
+          unit:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Unit of measure supplied by the external contextual
+              source.
+
+          value_domain:
+            type: list
+            item_type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Allowed or defined values supplied by the external
+              contextual source.
+
+          missing_value_rule:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Missing-value convention supplied by the external
+              contextual source.
+
+    interpretive:
+      field_interpretations:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Optional inferred interpretations about source fields, grounded
+          in observed source values and linked back to Reference-tier
+          field identity.
+        item_properties:
+          field:
+            type: object
+            requirement: required
+            nullable: false
+            description: >
+              Lightweight locator identifying the corresponding
+              Reference-tier source field.
+            properties:
+              name:
+                type: string
+                requirement: conditional
+                nullable: true
+                description: >
+                  Source-native field or variable name used to locate
+                  the corresponding Reference field when applicable.
+
+              position:
+                type: integer
+                requirement: conditional
+                nullable: true
+                description: >
+                  Source-grounded field position or ordinal used to
+                  locate the corresponding Reference field when
+                  applicable.
+
+              path:
+                type: string
+                requirement: conditional
+                nullable: true
+                description: >
+                  Source-grounded structural path used to locate a
+                  nested or hierarchical Reference field.
+
+              local_id:
+                type: string
+                requirement: conditional
+                nullable: true
+                description: >
+                  Local implementation identifier used to locate the
+                  corresponding Reference field when source-native
+                  identity is otherwise insufficient.
+
+          inferred_value_type:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Inferred value-type interpretation supported by observed
+              source values.
+
+          observed_characteristics:
+            type: list
+            item_type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Observed value characteristics supporting the inferred
+              interpretation.
+
+          inference_basis:
+            type: string
+            requirement: conditional
+            nullable: true
+            description: >
+              Brief statement describing the observed-value basis for
+              the inference.

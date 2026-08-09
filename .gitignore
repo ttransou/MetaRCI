@@ -1,1 +1,3 @@
 testbed-sources/media/media-source-002/media-source-002.mp4
+__pycache__/
+*.pyc

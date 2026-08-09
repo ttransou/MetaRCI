@@ -168,6 +168,7 @@ Current guidance:
 
 * Custom fields should be added only when structurally reusable for a profile class.
 * Implementation-only fields should be added through extensions.
+* Profile custom fields may include nested object structures that support cross-tier association patterns, such as lightweight field locators reused across Reference, Context, and Interpretive assertions.
 
 ## Inheritance Model
 

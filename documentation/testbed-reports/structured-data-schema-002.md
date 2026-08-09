@@ -8,6 +8,21 @@
 * Author: GitHub Copilot
 * Source set summary: data-source-001 (USGS all_month.csv) and data-source-002 (ERDDAP CSV with units row)
 
+## Supersession Note (2026-08-09)
+
+This report is preserved as historical evidence for the `context.variable_definitions` hypothesis tested at the time.
+
+Current v0.1 structured-data contract supersedes that hypothesis with:
+
+* `reference.source_fields` for source-native field identity
+* `context.field_context` for externally supplied field assertions
+* `interpretive.field_interpretations` for inferred field assertions
+
+Current executable status and closure notes are tracked in:
+
+* `documentation/testbed-reports/structured-data-schema-003.md`
+* `documentation/profiles/structured-data.md`
+
 ## Questions Covered
 
 * How should column or variable definitions be modeled in a reusable way?
@@ -96,3 +111,8 @@ For question: inferred versus declared schema distinction
   * elevate variable_definitions candidate to Proposed change with this second source-backed evidence packet.
 * Required next evidence step:
   * prototype context.variable_definitions in profile YAML with minimal item properties, then validate against both source variants and regression tests.
+
+Historical closure note:
+
+* `context.variable_definitions` is retained here as the hypothesis actually tested in this report.
+* Later structured-data contract work adopted a different executable architecture (`source_fields` / `field_context` / `field_interpretations`) for v0.1.
