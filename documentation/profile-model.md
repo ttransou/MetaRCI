@@ -24,6 +24,50 @@ Current guidance:
 
 * Domain, organizational, and corpus-specific behavior should be represented through implementation extensions, not through new structural profiles.
 
+## Tier Provenance and Epistemic Basis
+
+Current guidance:
+
+* Tier placement is determined by the epistemic basis of a metadata value, not by the tool, parser, model, or person that produced it.
+* Parser output does not automatically belong in the Reference tier.
+* The same extraction or enrichment process may produce values for more than one tier, but those values must retain the distinction between source-grounded fact, contextual inference, and interpretation.
+
+Current guidance:
+
+### Reference
+
+* Reference metadata describes facts directly present in or mechanically derivable from the source artifact.
+* Reference values should be reproducibly grounded in observable source evidence where the source format permits it.
+* Mechanical extraction may include source identity, file properties, stated metadata, intrinsic structure, counts, locators, or comparable source-native facts.
+* A manually entered value may still belong in Reference when it records a fact directly grounded in the source artifact.
+
+### Context
+
+* Context metadata situates the source within a corpus, domain, organization, jurisdiction, historical setting, intended use, or other external frame.
+* Context values may be curated, externally supplied, or inferred by tooling.
+* Parser- or model-assisted inference may populate Context fields when appropriate, but inferred Context must not be treated as mechanically authoritative merely because tooling produced it.
+* Context should not be used to relocate mechanically source-grounded facts simply because those facts require human review or manual entry.
+
+### Interpretive
+
+* Interpretive metadata contains analytical, relational, evaluative, significance-bearing, or otherwise inferential assertions about the source.
+* Interpretive values may be produced by people, models, or other analytical processes.
+* A mechanically detected feature does not acquire interpretive significance until that significance is asserted separately.
+
+Current guidance:
+
+```text
+Reference   → What is observably present in or mechanically derivable from the source?
+Context     → What situates the source beyond those mechanically grounded facts?
+Interpretive → What is inferred, evaluated, related, or judged about the source?
+```
+
+Current guidance:
+
+* Mechanical extraction should establish source-grounded facts without silently assigning contextual or interpretive significance.
+* Contextual and interpretive enrichment are implementation- and use-case-dependent and may remain partially or entirely user-curated.
+* Profiles should preserve these provenance boundaries when defining overrides and custom fields.
+
 ## Why Profiles Exist
 
 Current guidance:

@@ -11,6 +11,29 @@ Current guidance:
 * A record that validates successfully is not necessarily a faithful or appropriate representation of the source.
 * Testbed evidence must distinguish source-grounded structure, curated context, interpretive assertions, and test scaffolding.
 
+## Extraction Environment (Current Testbeds)
+
+Current guidance:
+
+* Extraction tooling used in testbeds is infrastructure for evidence collection, not part of the MetaRCI contract.
+* MetaRCI remains parser-agnostic; records may capture parser or extractor provenance without requiring one specific implementation.
+
+Current testbed extraction tools:
+
+* Text or Markdown:
+
+   * direct text inspection
+* CSV:
+
+   * Python standard-library parsing
+* PDF:
+
+   * Poppler utilities (`pdftotext`, `pdfinfo`)
+
+Grounding rule:
+
+* A testbed may only assert mechanically grounded source structure when the source can actually be inspected by the available tooling.
+
 ## Outcomes Required Per Testbed
 
 Each testbed must produce:

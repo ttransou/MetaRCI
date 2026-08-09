@@ -1,1 +1,4 @@
+# Python dependencies only.
+# System-level extraction tools (for example Poppler: pdftotext, pdfinfo)
+# are managed via devcontainer or OS package management, not pip.
 PyYAML>=6.0,<7.0

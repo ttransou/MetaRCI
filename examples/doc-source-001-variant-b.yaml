@@ -46,16 +46,6 @@ metarci_record:
       basis: public-domain-source
     external_identifiers:
       - gutenberg-1952
-    document_subdivisions:
-      - kind: section
-        label: opening
-        source_locator: start-of-text
-      - kind: section
-        label: middle
-        source_locator: narrative-shift
-      - kind: section
-        label: ending
-        source_locator: final-pages
 
   interpretive:
     concepts:
@@ -65,11 +55,15 @@ metarci_record:
     entities: []
     analytical_categories:
       - document-testbed
-      - subdivision-explicit
+      - subdivision-interpretive
     relationships: []
     interpretive_notes:
       - >
-        This variant now exercises explicit subdivision structure under
-        the current document-profile contract.
+        Narrative segmentation (opening, middle, ending, shifts) is
+        interpretive analysis and not asserted as intrinsic source-native
+        document structure.
+      - >
+        This source does not provide clear section or chapter markers
+        for exercising intrinsic document_subdivisions.
     corpus_role: variant-b
     extensions: {}

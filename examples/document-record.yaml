@@ -21,6 +21,13 @@ metarci_record:
     parser_name: example-parser
     parser_version: "0.1.0"
     extraction_status: success
+    document_subdivisions:
+      - kind: section
+        label: Scope
+        source_locator: section-1
+      - kind: section
+        label: Roles and Responsibilities
+        source_locator: section-2
 
   context:
     preferred_title: Example Policy Manual
@@ -46,13 +53,6 @@ metarci_record:
       categories: []
       basis: document-profile-example
     external_identifiers: []
-    document_subdivisions:
-      - kind: section
-        label: Scope
-        source_locator: section-1
-      - kind: section
-        label: Roles and Responsibilities
-        source_locator: section-2
 
   interpretive:
     concepts:

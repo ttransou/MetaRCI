@@ -7,9 +7,8 @@ metarci_profile:
 
   description: >
     Structural profile for bounded textual or predominantly textual
-    sources such as reports, manuals, articles, and correspondence.
-    This profile strengthens selected source-identification and
-    document-structure expectations without introducing domain terms.
+    source artifacts. It specializes document identity and intrinsic
+    source-grounded structure without introducing domain semantics.
 
   implementation:
     domain: null
@@ -30,31 +29,35 @@ metarci_profile:
     interpretive: {}
 
   custom_fields:
-    reference: {}
-    context:
+    reference:
       document_subdivisions:
         type: list
         item_type: object
         requirement: conditional
         nullable: true
         description: >
-          Optional subdivision descriptors for chapter, section, or
-          clause-like structure when lightweight relationship modeling
-          is insufficient.
+          Optional descriptors for intrinsic source-native document
+          subdivisions such as parts, chapters, sections, clauses,
+          appendices, or comparable structural divisions.
         item_properties:
           kind:
             type: string
             requirement: required
             nullable: false
-            description: Generic subdivision type label.
+            description: Source-grounded subdivision type label.
+
           label:
             type: string
             requirement: required
             nullable: false
-            description: Human-readable subdivision label.
+            description: Human-readable subdivision label as represented by the source.
+
           source_locator:
             type: string
             requirement: conditional
             nullable: true
-            description: Source-specific locator for the subdivision.
+            description: Source-specific locator identifying the subdivision.
+
+    context: {}
+
     interpretive: {}

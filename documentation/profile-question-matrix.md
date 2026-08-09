@@ -35,7 +35,7 @@ Use one or more of the following evidence sources when closing a question:
 | Open question | Primary evidence needed | Closure threshold | Likely closure outcome | Contract impact if changed |
 |---|---|---|---|---|
 | Which document-structure elements should remain generic versus move to implementation extensions? | Cross-implementation mapping of repeated fields and extension usage | Same field pattern appears in at least 2 distinct document implementations and is not policy-local | Current guidance or Proposed change | Profile YAML custom fields and tests |
-| Should section/chapter/clause structures be represented directly in profile custom fields? | Examples showing repeated structural necessity across document sources | Need cannot be represented cleanly with current relationship model and base fields | Proposed change or Deferred | Profile custom field additions; validator/schema-definition tests |
+| Should section/chapter/clause structures be represented directly in profile custom fields? | Mechanically recoverable intrinsic structure (for example headings and locators) repeated across independent document sources | v0.1 minimum subdivision shape is settled; additional hierarchy or locator complexity requires recurring cross-source evidence | Current contract (v0.1) or Proposed change (extensions) | Profile custom field refinements; validator/schema-definition tests |
 | How much edition/version relationship structure should be explicit versus relationship-based? | Existing relationship usage in records and testbed records with revisions/translations | Relationship model shown insufficient for repeated cases | Current guidance or Proposed change | Profile docs only, or profile custom fields if upgraded |
 | How should documents with significant embedded media be represented when both document and media structure matter? | Paired record experiments (document-only vs split document+media/composite) | One approach consistently preserves meaning with less ambiguity | Current guidance | Usually docs/tests only unless new fields introduced |
 | Should any currently base-level document-skewed fields be reconsidered in a future base-schema review? | Base-field usage frequencies across all profile examples and testbeds | Field is repeatedly null/irrelevant outside one profile and better modeled as profile-specific | Proposed change | Base schema revision, profile/test updates, migration notes |
@@ -57,15 +57,16 @@ Observed execution results:
 
 Evidence-based status deltas:
 
-* Section/chapter/clause custom field question is now represented by a draft contract patch; keep evaluating shape stability across additional implementations.
+* Section/chapter/clause representation is settled as a Current contract decision for v0.1: use `reference.document_subdivisions` with the minimum `kind` / `label` / `source_locator` shape in the Reference tier.
 * Embedded-media boundary question is now supported as Current guidance: represent materially primary media as related media/composite records using existing relationship patterns.
 * Edition/version explicitness question is now supported as Current guidance: use stated_version plus source_lineage or relationships under the current contract.
 
 Step 2 implementation update (2026-08-07):
 
-* A draft contract patch now declares context.document_subdivisions in profiles/document.yaml.
-* The document example now exercises this field in examples/document-record.yaml.
+* profiles/document.yaml now declares reference.document_subdivisions.
+* The document example exercises this field in examples/document-record.yaml.
 * Regression tests now verify required child-property and type enforcement in tests/test_validate.py.
+* Current note: executable declaration and test coverage support the settled v0.1 minimum shape; future hierarchy or locator extensions still require additional cross-source evidence.
 
 ## Structured-Data Profile
 

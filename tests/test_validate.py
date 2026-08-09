@@ -624,7 +624,7 @@ class MetaRCIValidatorTests(unittest.TestCase):
 
         record = self.load_yaml(self.record_path)
 
-        record["metarci_record"]["context"][
+        record["metarci_record"]["reference"][
             "document_subdivisions"
         ][0]["label"] = 101
 
@@ -635,7 +635,7 @@ class MetaRCIValidatorTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("Record-value validation", result.stdout)
         self.assertIn(
-            "context.document_subdivisions[0].label",
+            "reference.document_subdivisions[0].label",
             result.stdout,
         )
         self.assertIn("must be type 'string'", result.stdout)
@@ -649,7 +649,7 @@ class MetaRCIValidatorTests(unittest.TestCase):
 
         record = self.load_yaml(self.record_path)
 
-        del record["metarci_record"]["context"][
+        del record["metarci_record"]["reference"][
             "document_subdivisions"
         ][0]["kind"]
 
@@ -660,7 +660,7 @@ class MetaRCIValidatorTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("Record-value validation", result.stdout)
         self.assertIn(
-            "context.document_subdivisions[0]",
+            "reference.document_subdivisions[0]",
             result.stdout,
         )
         self.assertIn("kind", result.stdout)

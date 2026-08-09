@@ -48,6 +48,23 @@ MetaRCI progressively organizes metadata according to how it is obtained and how
 
 SCARAG [https://github.com/ttransou/SCARAG] serves as one reference implementation of MetaRCI rather than the framework for which MetaRCI was exclusively designed. Within SCARAG, MetaRCI can provide a structured approach to defining Reference, Context, and Interpretive metadata. Other systems may adopt the same model independently, adapting its YAML schemas and domain profiles to their own corpus, use case, and architecture.
 
+### Development Setup Notes
+
+Python dependencies:
+
+* Declared in requirements.txt
+* Install with: `python -m pip install -r requirements.txt`
+
+System extraction tooling used by current testbeds:
+
+* PDF inspection uses Poppler utilities (`pdftotext`, `pdfinfo`)
+* In devcontainer or Codespaces, system dependencies are declared in `.devcontainer/devcontainer.json`
+
+Dependency scope rule:
+
+* `requirements.txt` is for Python packages only.
+* System tools are managed through OS package management or devcontainer configuration.
+
 
 ---
 
