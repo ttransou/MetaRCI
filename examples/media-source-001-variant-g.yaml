@@ -1,0 +1,86 @@
+metarci_record:
+  profile: ../profiles/media.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: media-source-001
+    original_filename: media-source-001.jpg
+    source_uri: null
+    file_format: jpg
+    mime_type: image/jpeg
+    file_size_bytes: 418191
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: "2026-08-07"
+    stated_title: media-source-001 image sample
+    stated_author: null
+    stated_version: null
+    ingestion_timestamp: "2026-08-07T01:00:00+00:00"
+    parser_name: media-parser
+    parser_version: "0.1.0"
+    extraction_status: success
+    visual_dimensions:
+      width_pixels: 872
+      height_pixels: 1024
+
+  context:
+    preferred_title: "[Robert Cornelius, self-portrait; believed to be the earliest extant American portrait photo]"
+    alternate_titles: []
+    domains:
+      - visual-media
+    categories:
+      - image
+    origin_date: null
+    period_covered: null
+    supplied_descriptions:
+      - text: "Robert Cornelius's daguerreotype self-portrait from October or November, 1839--the earliest extant American portrait photograph--is among the treasures of the Library of Congress's photographic collections. Made within just months of Louis-Jacques-Mande Daguerre's August 1839 announcement of his process to the world, the Cornelius photo showed that the new medium had the potential to record a human likeness, theretofore considered highly impractical due to the long exposure times required. Daguerre announced his invention of a photographic method to the French Academy of Sciences in August 1839. That October, a young Philadelphian, Robert Cornelius, working out of doors to take advantage of the light, made this head-and-shoulders self-portrait using a box fitted with a lens from an opera glass. In the portrait, Cornelius stands slightly off-center with hair askew, in the yard behind his family's lamp and chandelier store, peering uncertainly into the camera. Early daguerreotypy required a long exposure time, ranging from three to fifteen minutes, making the process nearly impractical for portraiture."
+        source_id: media-source-001-loc-record
+    supplied_attributions:
+      - name: "Cornelius, Robert, 1809-1893"
+        source_id: media-source-001-loc-record
+    supplied_terms:
+      - term: "Daguerreotypes"
+        source_id: media-source-001-loc-record
+    related_sources:
+      - media-source-001-loc-record
+    source_lineage: []
+    responsible_organizations: []
+    organizational_context: null
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - analysts
+    intended_purpose: Candidate structured representation of externally supplied media terms.
+    sensitivity:
+      level: public
+      categories: []
+      basis: source-added-for-testbed
+    external_identifiers:
+      - loc:item:2004664436
+      - loc:resource:ppmsca.40464
+      - loc:handle:https://hdl.loc.gov/loc.pnp/ppmsca.40464
+      - loc:item-url:https://www.loc.gov/pictures/item/2004664436/
+      - loc:call-number:DAG no. 1255 (Cabinet A)
+      - loc:reproduction-number:LC-DIG-ppmsca-40464
+
+  interpretive:
+    concepts:
+      - visual-scene
+      - external-catalog-context
+    themes:
+      - media-baseline
+      - provenance-linkage
+    entities: []
+    analytical_categories:
+      - media-testbed
+      - context-pressure
+    relationships:
+      - target_id: media-source-001-loc-record
+        relationship_type: described_by
+        notes: External LOC catalog record linked from JPEG-embedded handle URI (http://hdl.loc.gov/loc.pnp/ppmsca.40464; canonical item https://www.loc.gov/pictures/item/2004664436/).
+    interpretive_notes:
+      - Variant G introduces candidate context.supplied_terms grounded in the external LOC catalog record.
+    corpus_role: variant-g
+    extensions: {}

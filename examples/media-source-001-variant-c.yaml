@@ -1,0 +1,64 @@
+metarci_record:
+  profile: ../profiles/media.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: media-source-001
+    original_filename: media-source-001.jpg
+    source_uri: null
+    file_format: jpg
+    mime_type: image/jpeg
+    file_size_bytes: 418191
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: "2026-08-07"
+    stated_title: media-source-001 image sample
+    stated_author: null
+    stated_version: null
+    ingestion_timestamp: "2026-08-07T01:00:00+00:00"
+    parser_name: media-parser
+    parser_version: "0.1.0"
+    extraction_status: success
+    visual_dimensions:
+      width_pixels: 872
+      height_pixels: 1024
+
+  context:
+    preferred_title: media-source-001 image sample
+    alternate_titles: []
+    domains:
+      - visual-media
+    categories:
+      - image
+    origin_date: null
+    period_covered: null
+    related_sources: []
+    source_lineage: []
+    responsible_organizations: []
+    organizational_context: Image baseline source for media profile testbed.
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - analysts
+    intended_purpose: Variant C evaluates mechanically recoverable image dimensions as a Reference-layer candidate field.
+    sensitivity:
+      level: public
+      categories: []
+      basis: source-added-for-testbed
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - visual-scene
+    themes:
+      - media-baseline
+    entities: []
+    analytical_categories:
+      - media-testbed
+    relationships: []
+    interpretive_notes:
+      - Variant C tests mechanically recoverable visual dimensions as a proposed Reference custom field.
+    corpus_role: variant-c
+    extensions: {}

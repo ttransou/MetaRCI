@@ -22,6 +22,146 @@ metarci_profile:
     interpretive: {}
 
   custom_fields:
-    reference: {}
-    context: {}
-    interpretive: {}
+    reference:
+      visual_dimensions:
+        type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Mechanically recoverable pixel dimensions of visual media.
+        properties:
+          width_pixels:
+            type: integer
+            requirement: required
+            nullable: false
+            description: >
+              Width of the visual source in pixels.
+          height_pixels:
+            type: integer
+            requirement: required
+            nullable: false
+            description: >
+              Height of the visual source in pixels.
+
+    context:
+      supplied_descriptions:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Descriptive text supplied by an external source rather than
+          inferred from the media signal itself.
+        item_properties:
+          text:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Externally supplied descriptive text associated with the
+              media source.
+          source_id:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Identifier for the external source that supplied the
+              description.
+
+      supplied_attributions:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Creator or contributor attribution supplied by an external
+          source rather than mechanically recovered from the media source
+          itself.
+        item_properties:
+          name:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Name of the person, organization, or other named agent
+              attributed by the external source.
+          source_id:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Identifier for the external source that supplied the
+              attribution.
+
+      supplied_terms:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Descriptive or classificatory terms supplied by an external
+          source rather than inferred from the media signal itself.
+        item_properties:
+          term:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Externally supplied descriptive or classificatory term
+              associated with the media source.
+          source_id:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Identifier for the external source that supplied the term.
+
+    interpretive:
+      generated_descriptions:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Descriptive text produced by a model, algorithm, analytical
+          workflow, or other interpretive process applied to the media
+          source.
+        item_properties:
+          text:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Generated descriptive text associated with the media source.
+          generator:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Identifier or name for the model, tool, analytical process,
+              or other mechanism that produced the description.
+
+      generated_terms:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Descriptive or classificatory terms produced by a model,
+          algorithm, analytical workflow, or other interpretive process
+          applied to the media source.
+        item_properties:
+          term:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Generated descriptive or classificatory term associated
+              with the media source.
+          generator:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Identifier or name for the model, tool, analytical process,
+              or other mechanism that produced the term.

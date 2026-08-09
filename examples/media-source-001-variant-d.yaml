@@ -1,0 +1,81 @@
+metarci_record:
+  profile: ../profiles/media.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: media-source-001
+    original_filename: media-source-001.jpg
+    source_uri: null
+    file_format: jpg
+    mime_type: image/jpeg
+    file_size_bytes: 418191
+    checksum: null
+    page_count: null
+    creation_date: null
+    modification_date: null
+    review_date: "2026-08-07"
+    stated_title: media-source-001 image sample
+    stated_author: null
+    stated_version: null
+    ingestion_timestamp: "2026-08-07T01:00:00+00:00"
+    parser_name: media-parser
+    parser_version: "0.1.0"
+    extraction_status: success
+    visual_dimensions:
+      width_pixels: 872
+      height_pixels: 1024
+
+  context:
+    preferred_title: "[Robert Cornelius, self-portrait; believed to be the earliest extant American portrait photo]"
+    alternate_titles: []
+    domains:
+      - visual-media
+    categories:
+      - image
+    origin_date: null
+    period_covered: null
+    related_sources:
+      - media-source-001-loc-record
+    source_lineage: []
+    responsible_organizations: []
+    organizational_context: null
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - analysts
+    intended_purpose: Context-tier external catalog enrichment test for media-source-001 using Library of Congress item metadata linked from the embedded handle URI.
+    sensitivity:
+      level: public
+      categories: []
+      basis: source-added-for-testbed
+    external_identifiers:
+      - loc:item:2004664436
+      - loc:resource:ppmsca.40464
+      - loc:handle:https://hdl.loc.gov/loc.pnp/ppmsca.40464
+      - loc:item-url:https://www.loc.gov/pictures/item/2004664436/
+      - loc:call-number:DAG no. 1255 (Cabinet A)
+      - loc:reproduction-number:LC-DIG-ppmsca-40464
+
+  interpretive:
+    concepts:
+      - visual-scene
+      - external-catalog-context
+    themes:
+      - media-baseline
+      - provenance-linkage
+    entities: []
+    analytical_categories:
+      - media-testbed
+      - context-pressure
+    relationships:
+      - target_id: media-source-001-loc-record
+        relationship_type: described_by
+        notes: External LOC catalog record linked from JPEG-embedded handle URI (http://hdl.loc.gov/loc.pnp/ppmsca.40464; canonical item https://www.loc.gov/pictures/item/2004664436/).
+    interpretive_notes:
+      - LOC creator attribution, subject headings, and format headings are externally supplied context and remain unstructured in the current contract.
+      - LOC uncertain creation-date expression (1839 [Oct. or Nov.]) is intentionally left unmapped; it does not cleanly fit period_covered and cannot be losslessly represented in the current origin_date field shape.
+      - LOC cataloging/stewardship organization data is intentionally left unmapped in responsible_organizations and organizational_context pending clearer base-field semantics for object responsibility versus external descriptive source roles.
+      - LOC summary narrative, catalog notes, rights statement, access restriction, and additional reproduction identifiers are externally supplied and only partially represented through lightweight identifiers and relationship notes.
+      - LOC assertions are treated as external contextual metadata and are not promoted to Reference-tier facts.
+    corpus_role: variant-d
+    extensions: {}

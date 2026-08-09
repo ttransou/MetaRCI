@@ -1078,6 +1078,598 @@ class MetaRCIValidatorTests(unittest.TestCase):
         self.assertIn("Missing required fields in context tier", result.stdout)
         self.assertIn("media_duration_seconds", result.stdout)
 
+    def test_media_visual_dimensions_missing_width_fails(self) -> None:
+        """Visual dimensions must include required width_pixels."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["reference"]["visual_dimensions"] = {
+            "height_pixels": 1024,
+        }
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("reference.visual_dimensions", result.stdout)
+        self.assertIn("width_pixels", result.stdout)
+
+    def test_media_visual_dimensions_missing_height_fails(self) -> None:
+        """Visual dimensions must include required height_pixels."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["reference"]["visual_dimensions"] = {
+            "width_pixels": 872,
+        }
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("reference.visual_dimensions", result.stdout)
+        self.assertIn("height_pixels", result.stdout)
+
+    def test_media_visual_dimensions_width_type_is_enforced(self) -> None:
+        """Visual dimension width should enforce integer type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["reference"]["visual_dimensions"] = {
+            "width_pixels": "872",
+            "height_pixels": 1024,
+        }
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "reference.visual_dimensions.width_pixels",
+            result.stdout,
+        )
+        self.assertIn("must be type 'integer'", result.stdout)
+
+    def test_media_visual_dimensions_height_type_is_enforced(self) -> None:
+        """Visual dimension height should enforce integer type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["reference"]["visual_dimensions"] = {
+            "width_pixels": 872,
+            "height_pixels": "1024",
+        }
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "reference.visual_dimensions.height_pixels",
+            result.stdout,
+        )
+        self.assertIn("must be type 'integer'", result.stdout)
+
+    def test_media_supplied_descriptions_missing_text_fails(self) -> None:
+        """Supplied descriptions must include required text."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_descriptions"] = [
+            {
+                "source_id": "media-source-001-loc-record",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.supplied_descriptions[0]", result.stdout)
+        self.assertIn("text", result.stdout)
+
+    def test_media_supplied_descriptions_missing_source_id_fails(self) -> None:
+        """Supplied descriptions must identify their external source."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_descriptions"] = [
+            {
+                "text": "Externally supplied description.",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.supplied_descriptions[0]", result.stdout)
+        self.assertIn("source_id", result.stdout)
+
+    def test_media_supplied_descriptions_text_type_is_enforced(self) -> None:
+        """Supplied description text should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_descriptions"] = [
+            {
+                "text": 101,
+                "source_id": "media-source-001-loc-record",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.supplied_descriptions[0].text",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_media_supplied_descriptions_source_id_type_is_enforced(self) -> None:
+        """Supplied description source identifiers should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_descriptions"] = [
+            {
+                "text": "Externally supplied description.",
+                "source_id": 101,
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.supplied_descriptions[0].source_id",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_media_supplied_attributions_missing_name_fails(self) -> None:
+        """Supplied attributions must include required name."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_attributions"] = [
+            {
+                "source_id": "media-source-001-loc-record",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.supplied_attributions[0]", result.stdout)
+        self.assertIn("name", result.stdout)
+
+    def test_media_supplied_attributions_missing_source_id_fails(self) -> None:
+        """Supplied attributions must identify their external source."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_attributions"] = [
+            {
+                "name": "Cornelius, Robert, 1809-1893",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.supplied_attributions[0]", result.stdout)
+        self.assertIn("source_id", result.stdout)
+
+    def test_media_supplied_attributions_name_type_is_enforced(self) -> None:
+        """Supplied attribution names should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_attributions"] = [
+            {
+                "name": 101,
+                "source_id": "media-source-001-loc-record",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.supplied_attributions[0].name",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_media_supplied_attributions_source_id_type_is_enforced(self) -> None:
+        """Supplied attribution source identifiers should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_attributions"] = [
+            {
+                "name": "Cornelius, Robert, 1809-1893",
+                "source_id": 101,
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.supplied_attributions[0].source_id",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_media_supplied_terms_missing_term_fails(self) -> None:
+        """Supplied terms must include required term."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_terms"] = [
+            {
+                "source_id": "media-source-001-loc-record",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.supplied_terms[0]", result.stdout)
+        self.assertIn("term", result.stdout)
+
+    def test_media_supplied_terms_missing_source_id_fails(self) -> None:
+        """Supplied terms must identify their external source."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_terms"] = [
+            {
+                "term": "Daguerreotypes",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("context.supplied_terms[0]", result.stdout)
+        self.assertIn("source_id", result.stdout)
+
+    def test_media_supplied_terms_term_type_is_enforced(self) -> None:
+        """Supplied terms should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_terms"] = [
+            {
+                "term": 101,
+                "source_id": "media-source-001-loc-record",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.supplied_terms[0].term",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_media_supplied_terms_source_id_type_is_enforced(self) -> None:
+        """Supplied term source identifiers should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["context"]["supplied_terms"] = [
+            {
+                "term": "Daguerreotypes",
+                "source_id": 101,
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "context.supplied_terms[0].source_id",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_media_generated_descriptions_missing_text_fails(self) -> None:
+        """Generated descriptions must include required text."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["generated_descriptions"] = [
+            {
+                "generator": "example-vision-model",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("interpretive.generated_descriptions[0]", result.stdout)
+        self.assertIn("text", result.stdout)
+
+    def test_media_generated_descriptions_missing_generator_fails(self) -> None:
+        """Generated descriptions must identify their generator."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["generated_descriptions"] = [
+            {
+                "text": "Black-and-white portrait of a seated man facing the camera.",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("interpretive.generated_descriptions[0]", result.stdout)
+        self.assertIn("generator", result.stdout)
+
+    def test_media_generated_descriptions_text_type_is_enforced(self) -> None:
+        """Generated description text should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["generated_descriptions"] = [
+            {
+                "text": 101,
+                "generator": "example-vision-model",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "interpretive.generated_descriptions[0].text",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_media_generated_descriptions_generator_type_is_enforced(self) -> None:
+        """Generated description generators should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["generated_descriptions"] = [
+            {
+                "text": "Black-and-white portrait of a seated man facing the camera.",
+                "generator": 101,
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "interpretive.generated_descriptions[0].generator",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_media_generated_terms_missing_term_fails(self) -> None:
+        """Generated terms must include required term."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["generated_terms"] = [
+            {
+                "generator": "example-vision-model",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("interpretive.generated_terms[0]", result.stdout)
+        self.assertIn("term", result.stdout)
+
+    def test_media_generated_terms_missing_generator_fails(self) -> None:
+        """Generated terms must identify their generator."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["generated_terms"] = [
+            {
+                "term": "portrait",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn("interpretive.generated_terms[0]", result.stdout)
+        self.assertIn("generator", result.stdout)
+
+    def test_media_generated_terms_term_type_is_enforced(self) -> None:
+        """Generated term values should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["generated_terms"] = [
+            {
+                "term": 101,
+                "generator": "example-vision-model",
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "interpretive.generated_terms[0].term",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
+    def test_media_generated_terms_generator_type_is_enforced(self) -> None:
+        """Generated term generators should enforce string type."""
+        self.stage_profile_and_record(
+            SOURCE_FILES["media_profile"],
+            SOURCE_FILES["media_record"],
+        )
+
+        record = self.load_yaml(self.record_path)
+        record["metarci_record"]["interpretive"]["generated_terms"] = [
+            {
+                "term": "portrait",
+                "generator": 101,
+            }
+        ]
+
+        self.save_yaml(self.record_path, record)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Record-value validation", result.stdout)
+        self.assertIn(
+            "interpretive.generated_terms[0].generator",
+            result.stdout,
+        )
+        self.assertIn("must be type 'string'", result.stdout)
+
     def test_composite_profile_required_custom_field_is_enforced(self) -> None:
         """A required custom field from the composite profile should be enforced."""
         self.stage_profile_and_record(
