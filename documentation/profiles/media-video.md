@@ -104,6 +104,24 @@ Potential examples include:
 
 The mechanism producing the assertion does not determine the tier by itself. The evidentiary basis of the resulting assertion does.
 
+### Temporal Segments and Interpretive Relationships
+
+Video testing confirmed a need to address time-bounded portions of temporal media without embedding interpretation directly into the locator.
+
+The media profile therefore defines `temporal_segments` as a list of identified time intervals. Each segment contains a `segment_id`, `start_milliseconds`, and `end_milliseconds`. The segment itself functions only as a locator within the media source and does not assert what occurs within that interval.
+
+Interpretive assertions about a segment are represented separately through the base `relationships` field. A relationship may reference a `segment_id` through `target_id`, allowing one temporal locator to support multiple analytical or descriptive assertions without duplicating its timestamps.
+
+This structure supersedes the earlier experimental `segment_references` approach. That candidate combined temporal location and descriptive interpretation within the same object. Separating locator identity from interpretive assertion preserves a clearer distinction between where something occurs in temporal media and what an implementation concludes about that portion of the source.
+
+The resulting pattern is:
+
+* `temporal_segments` establishes temporal location;
+* `segment_id` provides a stable local reference;
+* `relationships` attaches one or more interpretive assertions to that reference.
+
+Testing confirmed that multiple relationships can target the same temporal segment, permitting reuse of a single locator across different analytical assertions.
+
 ---
 
 ## Historical Evidence

@@ -78,11 +78,32 @@ metarci_record:
       - audiovisual-sequence
     themes:
       - video-reference-testing
-    entities: []
+    entities:
+      - Yokota Air Base
+      - U.S. Air Force
     analytical_categories:
       - media-testbed
       - reference-candidate
-    relationships: []
+    relationships:
+      - target_id: temporal-segment-001
+        relationship_type: describes
+        notes: Opening portion of the recruiting seminar video.
     interpretive_notes:
       - Candidate duration_seconds field should fail until added to the media profile contract.
-    corpus_role: variant-a
+    generated_descriptions:
+      - text: Short informational video about a U.S. Air Force recruiting seminar at Yokota Air Base.
+        generator: human-review-test
+    generated_terms:
+      - term: recruiting seminar
+        generator: human-review-test
+    temporal_segments:
+      - segment_id: temporal-segment-001
+        start_milliseconds: 0
+        end_milliseconds: 12000
+    relationships:
+      - target_id: temporal-segment-001
+        relationship_type: describes
+        notes: Opening portion of the recruiting seminar video.
+      - target_id: temporal-segment-001
+        relationship_type: classifies
+        notes: Recruiting-context segment.
