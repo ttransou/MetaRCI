@@ -1,0 +1,88 @@
+metarci_record:
+  profile: ../profiles/media.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: media-source-006
+    original_filename: Recruit_the_Recruiters_No_Graphics_Version_(1006955).webm
+    source_uri: null
+    file_format: webm
+    mime_type: video/webm
+    file_size_bytes: 6186437
+    checksum: null
+    page_count: null
+    creation_date: "2026-05-15"
+    modification_date: null
+    review_date: "2026-08-10"
+    stated_title: Recruit the Recruiters No Graphics Version
+    stated_author: null
+    stated_version: null
+    ingestion_timestamp: "2026-08-10T14:58:00+00:00"
+    parser_name: ffprobe
+    parser_version: null
+    extraction_status: success
+    duration_milliseconds: 29996
+    visual_dimensions:
+      width_pixels: 1920
+      height_pixels: 1080
+    stream_types:
+      - video
+      - audio
+    video_codec: av1
+    audio_codec: opus
+
+  context:
+    preferred_title: Recruit the Recruiters No Graphics Version
+    alternate_titles: []
+    supplied_descriptions:
+      - text: "Yokota Air Base hosted the Recruit the Recruiters seminar to brief personnel on special-duty-assignment updates."
+        source_id: media-source-006-dvids-record
+    supplied_attributions:
+      - name: "Airman Ethan Manalastas"
+        source_id: media-source-006-dvids-record
+    supplied_terms:
+      - term: "Recruit the Recruiters"
+        source_id: media-source-006-dvids-record
+    domains:
+      - audiovisual-media
+    categories:
+      - video
+    origin_date: "2026-05-05"
+    period_covered: null
+    related_sources:
+      - "DVIDS:1006955"
+      - "WikimediaCommons:Recruit_the_Recruiters_No_Graphics_Version_(1006955).webm"
+    source_lineage:
+      - "Derived from DVIDS:1006955"
+    responsible_organizations:
+      - "U.S. Air Force"
+    organizational_context: "Yokota Air Base"
+    geographic_context:
+      - "Yokota Air Base, Japan"
+    jurisdictional_context:
+      - "United States"
+    intended_audiences:
+      - "U.S. Air Force personnel"
+    intended_purpose: Inform U.S. Air Force personnel about special-duty assignment recruiting opportunities and updates.
+    sensitivity:
+      level: public
+      categories: []
+      basis: Publicly distributed U.S. Air Force audiovisual material.
+    rights_status: Public domain in the United States
+    external_identifiers: 
+      - "DVIDS:1006955"
+      - "VIRIN:260506-F-CV036-1001"
+
+  interpretive:
+    concepts:
+      - audiovisual-sequence
+    themes:
+      - video-reference-testing
+    entities: []
+    analytical_categories:
+      - media-testbed
+      - reference-candidate
+    relationships: []
+    interpretive_notes:
+      - Candidate duration_seconds field should fail until added to the media profile contract.
+    corpus_role: variant-a

@@ -321,6 +321,14 @@ metarci:
                 Explanation, policy, authority, or profile supporting the
                 sensitivity assignment.
 
+        rights_status:
+          type: string
+          requirement: conditional
+          nullable: true
+          description: >
+            Externally established copyright, licensing, public-domain,
+            or other rights status governing use of the source.
+
         external_identifiers:
           type: list
           item_type: string
@@ -427,3 +435,4 @@ metarci:
           description: >
             Implementation-specific interpretive metadata that is not yet
             represented by a formal base-schema or profile field.
+

@@ -43,6 +43,35 @@ metarci_profile:
             description: >
               Height of the visual source in pixels.
 
+      duration_milliseconds:
+        type: integer
+        requirement: conditional
+        nullable: true
+        description: >
+          Mechanically recoverable duration of temporal media in milliseconds.
+
+      stream_types:
+        type: list
+        item_type: string
+        requirement: conditional
+        nullable: true
+        description: >
+          Mechanically recoverable media stream types present in the source.
+ 
+      video_codec:
+        type: string
+        requirement: conditional
+        nullable: true
+        description: >
+          Mechanically recoverable codec identifier for a video stream.
+
+      audio_codec:
+        type: string
+        requirement: conditional
+        nullable: true
+        description: >
+          Mechanically recoverable codec identifier for an audio stream.
+    
     context:
       supplied_descriptions:
         type: list
