@@ -324,3 +324,253 @@ For analysts and documentation-heavy workflows, the following editor helpers can
 * Rainbow Indent extension for visual indentation guidance in nested YAML/Markdown structures.
 
 These helpers are optional and not required by the MetaRCI contract or validator behavior.
+
+## Future Enhancements
+
+### Relational Structured Data
+
+The current MetaRCI **Structured Data** profile has been evaluated primarily against flat or tabular source structures such as delimited files and spreadsheets. A future evaluation should determine whether the same profile can represent **relational data** without requiring relational sources to become a separate top-level structural profile.
+
+The working hypothesis is that relational data belongs within Structured Data.
+
+Both flat/tabular and relational sources organize information through explicitly structured fields and records. Relational sources, however, expose additional structural semantics that may not exist in a CSV, TSV, or ordinary spreadsheet:
+
+* database and schema identity;
+* table and view identity;
+* declared column types;
+* column nullability;
+* primary keys;
+* foreign keys;
+* uniqueness constraints;
+* other declared constraints;
+* relationships among tables;
+* and potentially the distinction between stored tables, views, and query results.
+
+These properties create additional metadata pressure, but they do not necessarily represent a different fundamental source structure. The purpose of future testing is therefore to determine whether they can be modeled as a **relational specialization of Structured Data** while preserving the common MetaRCI tier architecture.
+
+### Architectural Question
+
+The principal question is not:
+
+> Should MetaRCI create a SQL profile?
+
+Instead, it is:
+
+> Does relational structure introduce reusable structural requirements that belong within the existing Structured Data profile, and if so, how should those requirements be represented without making flat/tabular sources unnecessarily complex?
+
+A likely conceptual distinction is:
+
+```text
+Structured Data
+├── Flat / Tabular
+│   ├── CSV
+│   ├── TSV
+│   └── Spreadsheet
+│
+└── Relational
+    ├── Tables
+    ├── Views
+    └── Query Results
+```
+
+This is a proposed structural distinction only. It does not yet imply profile inheritance, subprofiles, new YAML contracts, or validator behavior.
+
+### Epistemic Considerations
+
+Relational testing should continue to apply the same Reference / Context / Interpretive distinction used elsewhere in MetaRCI.
+
+For example, database-native schema declarations such as a column type, primary-key declaration, foreign-key constraint, or nullable flag may qualify as **Reference** metadata when they can be recovered directly from the database schema.
+
+External descriptions of what a table represents, business definitions for columns, data-steward assignments, organizational ownership, or controlled subject classifications may instead belong in **Context**.
+
+Analytical conclusions about functional meaning, inferred entities, semantic equivalence among fields, inferred relationships not declared by the database, or mappings into a domain knowledge model may belong in **Interpretive**.
+
+This distinction is particularly important for relational data because a database schema can describe structural relationships without necessarily establishing their complete business or semantic meaning.
+
+### Candidate Testbeds
+
+Future evaluation should use more than one relational source so that a single database design does not define the MetaRCI contract.
+
+**Candidate 1: MySQL Sakila**
+
+The MySQL Sakila sample database is a strong initial testbed because it provides an explicitly documented relational schema containing tables, views, stored procedures, functions, triggers, keys, and other database-native structures.
+
+Sakila could be used to test:
+
+* database/schema identity;
+* tables and columns;
+* declared data types;
+* nullability;
+* primary and foreign keys;
+* table relationships;
+* views;
+* constraints;
+* and the boundary between database-native structure and externally supplied semantic context.
+
+Its breadth makes it useful for discovering relational metadata pressure without beginning with an enterprise-scale database.
+
+**Candidate 2: Microsoft AdventureWorksLT**
+
+AdventureWorksLT provides a second relational testbed from a different database ecosystem and with a different schema design.
+
+It could test whether candidate relational fields derived from Sakila remain reusable across implementations rather than reflecting MySQL-specific behavior.
+
+A second testbed should be used primarily as a **portability challenge**: fields promoted into the Structured Data contract should survive materially different relational examples without requiring vendor-specific assumptions.
+
+### Proposed Evaluation Sequence
+
+Relational evaluation should remain evidence-driven:
+
+1. Preserve the current Structured Data contract as the baseline.
+2. Inspect a bounded relational specimen without adding fields in advance.
+3. Record structural information that the current profile cannot represent cleanly.
+4. Classify each candidate datum by MetaRCI tier.
+5. Distinguish genuinely relational structure from vendor-specific database features.
+6. Test recurring candidate fields against a second relational source.
+7. Promote only reusable structural requirements into the profile.
+8. Defer database-engine-specific or deeply technical properties unless retrieval, governance, interoperability, or provenance requirements justify them.
+
+The objective is not to model the complete semantics of SQL or database management systems.
+
+It is to determine the **minimum relational structure MetaRCI needs to preserve source identity, structural provenance, relationships, and downstream usability without abandoning the domain-agnostic Structured Data profile**.
+
+---
+
+### Composite Sources
+
+The current MetaRCI profile architecture treats **Document**, **Structured Data**, and **Media** as structural descriptions of source material. A future evaluation should reconsider whether **Composite** belongs as a peer structural profile or instead represents a **composition mechanism** for logical sources whose meaningful internal components span multiple structural types.
+
+The working definition is:
+
+> **Composite represents the whole/part structure of a logical source whose independently meaningful components may use different MetaRCI structural profiles while remaining components of a single coherent parent source.**
+
+Under this definition, Composite does not describe another information structure in the same sense as Document, Structured Data, or Media. It describes how multiple information structures participate in one source.
+
+A presentation provides a useful example. A PowerPoint file may contain slide text, speaker notes, images, video, tables, charts, and chart data. Those components do not necessarily share one structural model:
+
+* slide text and notes may be Document-like;
+* images, audio, and video may use Media;
+* tables and chart data may use Structured Data;
+* the presentation as a whole must preserve parent identity, component membership, ordering, containment, and relationships among those parts.
+
+This creates composition pressure that differs from the structural concerns addressed by the existing profiles.
+
+### Architectural Question
+
+The principal question is not:
+
+> Should MetaRCI create a PowerPoint or compound-file profile?
+
+Instead, it is:
+
+> Does MetaRCI need a reusable composition mechanism for representing a logical source whose meaningful components use different structural profiles?
+
+A possible conceptual distinction is:
+
+```text
+Source Structure
+├── Document
+├── Structured Data
+└── Media
+
+Composition
+└── Parent source
+    ├── Component → Document
+    ├── Component → Media
+    └── Component → Structured Data
+```
+
+This is a proposed architectural distinction only. It does not yet imply a new schema, composition layer, manifest structure, profile inheritance model, or validator behavior.
+
+### Composition Versus Packaging
+
+Physical packaging alone should not make a source Composite.
+
+Formats such as PPTX, DOCX, XLSX, ODP, and EPUB may internally contain multiple files or resources. A ZIP archive may contain many unrelated files. Those implementation details do not necessarily establish meaningful composition at the MetaRCI level.
+
+The relevant question is whether the logical source contains **independently meaningful components whose identity or structure should be preserved for retrieval, provenance, governance, or interpretation**.
+
+For example, an internal presentation theme or package relationship file may not warrant an independent MetaRCI record, while an embedded video, speaker-note sequence, or chart dataset may.
+
+Future evaluation should therefore determine when a component becomes meaningful enough to model independently rather than reproducing the internal packaging structure of a file format.
+
+### Epistemic Considerations
+
+Composition should preserve the same Reference / Context / Interpretive architecture used elsewhere in MetaRCI.
+
+A parent source may have its own R/C/I metadata, while independently modeled components may also have their own metadata records.
+
+For example:
+
+* package structure, component identifiers, ordering, and mechanically recoverable relationships may qualify as **Reference**;
+* externally supplied descriptions of component roles, publication context, ownership, or intended use may belong in **Context**;
+* inferred relationships, analytical roles, semantic connections among components, or judgments about component significance may belong in **Interpretive**.
+
+Composition therefore introduces an additional question of **metadata scope**: whether a claim belongs to the parent source, an individual component, or a relationship among components.
+
+Possible inheritance of parent metadata by components should remain an open question rather than an assumed behavior.
+
+### Candidate Testbeds
+
+Future evaluation should use more than one compound source format so that the internal architecture of a single packaging standard does not define the MetaRCI composition model.
+
+**Candidate 1: PowerPoint Presentation (`.pptx`)**
+
+PPTX is a strong initial testbed because one logical presentation can combine ordered slides, text, notes, images, audiovisual media, tables, charts, chart data, and embedded objects.
+
+It could be used to test:
+
+* parent and component identity;
+* ordered membership;
+* containment;
+* heterogeneous component structures;
+* component roles;
+* parent-level versus component-level metadata;
+* and relationships among components.
+
+The initial specimen should be deliberately bounded but contain enough heterogeneous material to exercise Document, Media, and Structured Data within the same parent source.
+
+**Candidate 2: OpenDocument Presentation (`.odp`)**
+
+ODP provides a useful portability test for the presentation case.
+
+It represents a similar logical source using a different document and packaging ecosystem. Testing ODP after PPTX could determine whether candidate composition semantics describe presentations generally rather than reflecting Office Open XML implementation details.
+
+**Candidate 3: EPUB (`.epub`)**
+
+EPUB provides a materially different composition challenge.
+
+An EPUB publication can contain multiple content documents, images and other media, publication-level metadata, resource membership, and explicit reading order.
+
+It could test whether composition concepts such as parent identity, membership, ordering, component role, and metadata scope remain reusable outside presentation formats.
+
+### Boundary Cases
+
+Other packaged formats may later provide useful boundary tests.
+
+DOCX can contain images, charts, tables, and embedded objects while still functioning primarily as a Document source. XLSX can contain worksheets, charts, media, and embedded objects while remaining primarily Structured Data-like. ZIP files can contain arbitrary collections without representing one coherent logical source.
+
+These cases may help determine when heterogeneous internal structure actually requires composition rather than merely existing inside a package.
+
+They should not be used to define Composite simply because their file formats contain multiple internal resources.
+
+### Proposed Evaluation Sequence
+
+Composite evaluation should remain evidence-driven:
+
+1. Treat the current Composite profile as draft scaffolding rather than a settled peer profile.
+2. Preserve the current Document, Structured Data, and Media contracts as the baseline.
+3. Inspect a bounded PPTX specimen without defining composition fields in advance.
+4. Identify components that are independently meaningful at the MetaRCI level.
+5. Determine whether existing structural profiles can describe those components.
+6. Record parent/component, ordering, containment, role, and relationship requirements that the current model cannot represent cleanly.
+7. Test recurring requirements against an ODP specimen.
+8. Challenge the resulting concepts with a structurally different compound source such as EPUB.
+9. Promote only recurring, format-independent composition semantics.
+10. Decide from that evidence whether Composite should remain a structural profile, become a separate composition mechanism, or be represented through another part of the MetaRCI architecture.
+
+The objective is not to reproduce the complete internal structure of compound file formats.
+
+It is to determine the **minimum composition semantics MetaRCI needs to preserve heterogeneous source components as parts of a coherent parent source without collapsing those components into one structural type or confusing logical composition with physical packaging**.
+
+
