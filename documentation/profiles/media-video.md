@@ -214,13 +214,13 @@ segment_references:
     description: Main content segment.
 ```
 
-The candidate failed validation because `interpretive.segment_references` was not part of the media profile contract.
+At the time of that testbed, the candidate failed validation because `interpretive.segment_references` was not part of the media profile contract.
 
 The failed candidate nevertheless exposed a legitimate structural pressure: assertions about temporally structured media may need a machine-readable way to identify a particular location or interval within the source.
 
 The historical experiment does not establish `segment_references` as the correct solution.
 
-The original candidate is **not accepted as the current contract shape**.
+The original candidate remains **superseded** by the current locator-plus-relationship pattern.
 
 ### Historical Findings Carried Forward
 
@@ -230,7 +230,7 @@ The surviving NASA video evidence supports the following conclusions:
 2. Existing relationship structures can preserve links to transcript and segmentation artifacts.
 3. Existing structures do not provide strongly typed transcript semantics.
 4. Temporal interval addressing is a genuine structural pressure exposed by the video testbed.
-5. The historical `segment_references` candidate requires reassessment before contractization.
+5. The historical `segment_references` candidate was superseded by `interpretive.temporal_segments` plus base `relationships`.
 6. The historical testbed does not establish video-specific Reference properties beyond the inherited file and ingestion metadata recorded in the baseline.
 
 The NASA source therefore remains evidence for video representation and temporal-semantic pressure, while subsequent bounded specimens are required to investigate video-specific Reference metadata.
@@ -263,8 +263,8 @@ Current guidance:
 
 * preserve the historical need for temporal addressing;
 * do not restore `interpretive.segment_references` unchanged;
-* evaluate temporal location separately from the assertion attached to that location;
-* determine whether video requires a reusable temporal-locator structure before introducing a contract field.
+* keep temporal location separate from interpretive assertion;
+* continue using `interpretive.temporal_segments` for locators and base `relationships` for interpretive attachment.
 
 ---
 
@@ -502,17 +502,25 @@ These properties remain valid extraction evidence but are not first-class MetaRC
 
 ---
 
-## Open Architectural Question: Temporal Location
+## Temporal Location Contract and Open Questions
 
-The primary unresolved architectural question inherited from the historical video testbed is:
+Current contract:
+
+* Temporal location is represented through `interpretive.temporal_segments` with:
+  * `segment_id`
+  * `start_milliseconds`
+  * `end_milliseconds`
+* Interpretive meaning for a segment is attached separately through base `relationships`.
+
+Open question:
+
+* The primary unresolved architectural question inherited from the historical video testbed is:
 
 > How should MetaRCI identify a location or interval within temporally structured media without conflating the locator with the assertion attached to it?
 
-This question should be resolved through evidence before transcript, caption, scene, or segment structures are contractized.
+This question should continue to be evaluated before adding richer transcript, caption, scene, or segment-semantic structures.
 
-A useful temporal-location model may eventually support multiple assertion types and multiple RCI tiers.
-
-No executable shape is accepted yet.
+A useful temporal-location model may eventually support richer assertion types and cross-tier reuse beyond the current locator-only shape.
 
 ---
 

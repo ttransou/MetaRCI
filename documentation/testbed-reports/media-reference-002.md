@@ -149,7 +149,7 @@ Current evidence:
 
 * JPEG, PNG, and TIFF support this shape.
 * Existing positive validation and negative regression coverage support the current executable contract.
-* The full MetaRCI validator suite currently passes 65 tests.
+* At report execution time, the full MetaRCI validator suite passed 65 tests.
 
 ## Closure
 
@@ -173,5 +173,5 @@ No new field is proposed in this report.
 ## Validation State
 
 * Command: python -m unittest discover -s tests -v
-* Ran 65 tests
+* Result at report execution time: Ran 65 tests
 * OK

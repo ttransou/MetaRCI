@@ -113,11 +113,14 @@ Evidence-based status deltas:
 | How to represent machine-generated and human-curated descriptions without ambiguity | Comparison of representation patterns and reviewer outcomes | Ambiguity eliminated in repeated reviews | Current guidance or Proposed change | Possibly new fields and validation expectations |
 | Whether to encode region/time segmentation in profile fields or extensions | Extension vs profile reuse analysis | Structural need is broad enough to justify core profile inclusion | Proposed change or Current guidance | Profile YAML changes if promoted |
 
-### Media Evidence Update (2026-08-07)
+### Media Evidence Update (2026-08-10)
 
 Evidence source:
 
 * documentation/testbed-reports/media-semantics-001.md
+* documentation/testbed-reports/media-static-003.md
+* documentation/testbed-reports/media-reference-002.md
+* documentation/profiles/media-video.md
 
 Observed execution results:
 
@@ -125,14 +128,28 @@ Observed execution results:
 * Baseline pass: examples/media-source-002-record.yaml
 * Variant A pass: examples/media-source-001-variant-a.yaml
 * Variant A pass: examples/media-source-002-variant-a.yaml
-* Variant B fail: examples/media-source-001-variant-b.yaml (unknown interpretive field generated_descriptions)
-* Variant B fail: examples/media-source-002-variant-b.yaml (unknown interpretive field segment_references)
+* Historical Variant B fail retained as superseded evidence:
+   * examples/media-source-001-variant-b.yaml (pre-contract generated_descriptions candidate)
+   * examples/media-source-002-variant-b.yaml (pre-contract segment_references candidate)
+* Current media profile contract now includes:
+   * interpretive.generated_descriptions
+   * interpretive.generated_terms
+   * interpretive.temporal_segments
+   * context.supplied_descriptions
+   * context.supplied_attributions
+   * context.supplied_terms
+   * reference.duration_milliseconds
+   * reference.stream_types
+   * reference.video_codec
+   * reference.audio_codec
 
 Evidence-based status deltas:
 
-* Generated-description provenance now has two-source evidence and is ready as a Proposed change candidate.
-* Caption or transcript structure now has two-source evidence and is ready as a Proposed change candidate.
-* Segment-reference representation has source-backed evidence and is ready as a Proposed change candidate.
+* Generated-description provenance is now Current contract via interpretive.generated_descriptions.
+* Generated-term representation is now Current contract via interpretive.generated_terms.
+* Temporal location is now Current contract via interpretive.temporal_segments, with interpretive meaning attached through base relationships.
+* Historical segment_references material remains superseded design evidence.
+* Caption/transcript structural modeling beyond existing fields remains Open question.
 
 ## Composite Profile
 

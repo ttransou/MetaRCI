@@ -103,6 +103,11 @@ Current contract:
 * Each profile exists as an executable YAML file under the profiles directory.
 * Each profile currently declares draft status and base-version alignment to 0.1.0.
 
+Current guidance:
+
+* `composite` remains intentionally boundary-first and deferred for further structural evaluation.
+* Current composite behavior should be treated as draft scaffolding, not a mature membership-completeness contract.
+
 ## Profile Selection
 
 Current guidance:

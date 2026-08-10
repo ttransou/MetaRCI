@@ -56,7 +56,7 @@ Deferred:
 * Color space, bit depth, channel count, or similar technical properties.
 * Format-specific encoding properties such as JPEG JFIF markers, PNG IHDR codes, and TIFF tag-level technical values.
 * Codec and compression details.
-* Video frame rate, duration, tracks, and stream structure.
+* Video frame rate and deeper audiovisual technical properties.
 * Audio-specific technical properties.
 * Semantic visual properties such as objects, scenes, subjects, dominant colors, or OCR-derived content.
 
@@ -69,7 +69,7 @@ Current guidance:
 - The source of a supplied description should be preserved explicitly so that the contextual assertion remains attributable.
 - External descriptive metadata should be modeled by semantic role rather than by source-specific field names or catalog vocabularies.
 
-Current decision:
+Current contract:
 
 - Externally supplied descriptive text is a reusable Context-tier concept for media.
 - The media profile should represent this concept through `context.supplied_descriptions`.
@@ -83,7 +83,7 @@ Current evidence:
 - The current base Context contract can preserve linkage and selected identifiers, but rich externally supplied descriptive text remains materially under-structured.
 - This evidence demonstrates the need for a reusable Context structure without requiring LOC-specific field names or catalog semantics.
 
-Proposed executable shape:
+Current contract:
 
 - `context.supplied_descriptions` as a conditional, nullable `list<object>`.
 - Each item requires:
@@ -120,7 +120,7 @@ Current guidance:
 - Attribution inferred from analysis of the media signal belongs in Interpretive.
 - Attribution should be modeled by its reusable semantic function rather than by source-specific field names or descriptive standards.
 
-Current decision:
+Current contract:
 
 - Externally supplied attribution is a reusable Context-tier concept for media.
 - The media profile should represent this concept through `context.supplied_attributions`.
@@ -135,7 +135,7 @@ Current evidence:
 - The Library of Congress example demonstrates the general attribution pattern but does not define the MetaRCI vocabulary or schema.
 - Comparable attribution assertions may originate from archival catalogs, museum systems, digital asset management systems, content management systems, bibliographic metadata, repository records, or descriptive standards such as Dublin Core.
 
-Proposed executable shape:
+Current contract:
 
 - `context.supplied_attributions` as a conditional, nullable `list<object>`.
 - Each item requires:
@@ -174,7 +174,7 @@ Current guidance:
 - When external descriptive terms are available, MetaRCI should preserve them without assuming that they belong to a controlled vocabulary, taxonomy, or formal classification system.
 - Externally supplied terms should remain distinguishable from terms generated through analysis of the media signal.
 
-Current decision:
+Current contract:
 
 - Externally supplied descriptive or classificatory terms are a reusable Context-tier concept for media.
 - The media profile should represent this concept through `context.supplied_terms`.
@@ -190,7 +190,7 @@ Current evidence:
 - The Library of Congress example demonstrates the general externally supplied term pattern but does not define the MetaRCI vocabulary or schema.
 - Media acquired outside curated repositories may contain little or no comparable contextual terminology.
 
-Proposed executable shape:
+Current contract:
 
 - `context.supplied_terms` as a conditional, nullable `list<object>`.
 - Each item requires:
@@ -238,7 +238,7 @@ Current guidance:
 - A single authoritative catalog may demonstrate a useful pattern, but it should not define the media profile vocabulary by itself.
 - Cross-source testing should determine whether existing Context structures remain semantically usable without source-specific customization.
 
-Current decision:
+Current contract:
 
 - The current media Context structures should be tested against an external metadata source that differs materially from the Library of Congress catalog model.
 - Wikimedia Commons is suitable as a second exemplar because its media metadata may originate from community-contributed descriptions, source inheritance, embedded metadata, structured statements, licensing data, categories, and external institutional records.
@@ -286,13 +286,13 @@ Current guidance:
 - A generated description must remain distinguishable from text mechanically recovered from the source and from description supplied by an external source.
 - The epistemic basis of the description determines its tier, not the fact that all three may contain similar natural-language text.
 
-Current decision:
+Current contract:
 
 - The media profile supports `interpretive.generated_descriptions` for descriptive text produced by a model, algorithm, analytical workflow, or other interpretive process.
 - Multiple generated descriptions may be retained when different generators, workflows, or interpretations are relevant.
 - Each generated description must identify both the descriptive assertion and the generator responsible for producing it.
 
-Current shape:
+Current contract:
 
 ```yaml
 generated_descriptions:
@@ -357,13 +357,13 @@ Current guidance:
 - Generated terms must remain distinguishable from terms mechanically recovered from the source and from terms supplied by an external source.
 - The epistemic basis of the term determines its tier, not the term value itself.
 
-Current decision:
+Current contract:
 
 - The media profile supports `interpretive.generated_terms` for discrete terms produced by a model, algorithm, analytical workflow, or other interpretive process.
 - Multiple generated terms may be retained when they represent separate analytical assertions about the media source.
 - Each generated term must identify both the term itself and the generator responsible for producing it.
 
-Current shape:
+Current contract:
 
 ```yaml
 generated_terms:
@@ -431,42 +431,75 @@ Deferred:
 
 
 
+## Rights and Context Boundary
+
+Current contract:
+
+* The base Context schema includes `rights_status` as a conditional, nullable string.
+
+Current guidance:
+
+* In v0.1, `rights_status` remains intentionally shallow.
+* Rights metadata is related to, but distinct from, `sensitivity` and `jurisdictional_context`.
+* Rights expresses use/licensing status; sensitivity expresses handling constraints; jurisdiction expresses legal or policy context.
+
+Deferred:
+
+* Structured rights and licensing models with richer authority, scope, and policy semantics.
+
 ## Profile Emphasis
 
 Current contract:
 
 * The current YAML declares no profile-specific overrides.
-* The media profile currently defines `reference.visual_dimensions` as its first profile-specific custom field.
-* Other media behavior remains inherited from the base schema unless explicitly declared by the profile.
+* The media profile currently declares the following custom fields:
+  * `reference.visual_dimensions`
+  * `reference.duration_milliseconds`
+  * `reference.stream_types`
+  * `reference.video_codec`
+  * `reference.audio_codec`
+  * `context.supplied_descriptions`
+  * `context.supplied_attributions`
+  * `context.supplied_terms`
+  * `interpretive.generated_descriptions`
+  * `interpretive.generated_terms`
+  * `interpretive.temporal_segments`
 
 Current guidance:
 
-* Keep one initial media profile for image/audio/video unless structural divergence is demonstrated.
+* Keep one media profile for image/audio/video unless repeated evidence shows structural divergence requiring profile split.
 
 ## Rationale for Current Fields
 
 Current contract:
 
-* The profile currently adds one media-specific Reference structure: `reference.visual_dimensions`.
-* The field is conditional, so media records without meaningful raster pixel dimensions may continue to validate using inherited base fields.
-* Current testbed evidence demonstrates the field across JPEG, PNG, and TIFF raster sources.
+* Raster media support is contractized through `reference.visual_dimensions`.
+* Initial temporal-media support is contractized through `duration_milliseconds`, `stream_types`, `video_codec`, and `audio_codec`.
+* Externally supplied context is contractized through `supplied_descriptions`, `supplied_attributions`, and `supplied_terms`.
+* Generated interpretive metadata is contractized through `generated_descriptions` and `generated_terms`.
+* Temporal locators are contractized through `temporal_segments` with `segment_id`, `start_milliseconds`, and `end_milliseconds`.
 
 Current guidance:
 
-* Boundary-first design avoids premature commitment to one media annotation model.
-* The image Reference extraction helper is evidence infrastructure rather than schema authority; extracted technical properties are not automatically MetaRCI fields.
+* Treat `temporal_segments` as locator-only structure.
+* Attach interpretive meaning about segments through base `interpretive.relationships`, not by embedding interpretation into the segment object.
+* Treat extractor output as evidence, not automatic schema authority.
+
+Deferred:
+
+* Frame rate and deeper AV technical properties.
+* Vector-native geometry normalization.
+* Rich rights/licensing structure.
+* Segment-locator referential-integrity checks beyond structural validation.
 
 ## Relevant Design Questions
 
 Open question:
 
 * How should captions, transcripts, and accessibility descriptions be represented structurally?
-* How should model-generated descriptions record provenance and review state?
-* How should region/frame/time-segment references be represented?
 * Which additional mechanically recoverable media properties are reusable and structurally significant enough for first-class Reference representation?
 * Which vector-native geometry properties, if any, should receive first-class Reference representation in a future revision?
-* How to represent machine-generated and human-curated descriptions without ambiguity.
-* Whether to encode region/time segmentation in profile fields or extensions.
+* How should temporal segment referential integrity be validated semantically (for example, relationship targets resolving to declared segment IDs)?
 
 ## Current Decisions Supported by YAML
 
@@ -474,20 +507,16 @@ Current contract:
 
 * Status is draft.
 * No profile-specific override behavior is declared.
-* `reference.visual_dimensions` is declared as a conditional, nullable object.
-* `visual_dimensions.width_pixels` is required, non-nullable, and integer when the object is present.
-* `visual_dimensions.height_pixels` is required, non-nullable, and integer when the object is present.
-
-Current evidence:
-
-* JPEG, PNG, and TIFF testbed sources validate the raster pixel-dimension model.
-* Regression tests enforce required width and height properties and integer value types.
-* The current validator suite passes 65 tests.
+* The media custom fields listed in this document are implemented in `profiles/media.yaml`.
+* `interpretive.temporal_segments` uses the current locator-only shape:
+  * required `segment_id` string
+  * required `start_milliseconds` integer
+  * required `end_milliseconds` integer
 
 Current guidance:
 
-* Add additional media custom fields only after a reusable cross-source pattern is demonstrated.
-* Do not treat all properties emitted by the media Reference extraction helper as profile-contract fields.
+* Preserve historical `segment_references` material as superseded design evidence.
+* Do not reintroduce `segment_references` as a contract field unless new evidence demonstrates a better pattern than locator-plus-relationships.
 
 ## Boundaries with Other Profiles
 
@@ -495,7 +524,7 @@ Current guidance:
 
 * Prefer document when text structure is primary even if embedded media exists.
 * Prefer structured-data when schema/table structure is primary.
-* Prefer composite when the described source unit is a bundle containing multiple meaningful members.
+* Prefer composite only when the source unit is a meaningful aggregation of multiple components.
 
 ## Example Applications
 
@@ -506,43 +535,3 @@ Current guidance:
 Deferred:
 
 * Splitting media into separate image/audio/video structural profiles.
-* Normalized vector geometry for SVG and other vector-native formats.
-
-## Closure Candidate Pass (No Implementation)
-
-Current guidance:
-
-* Close as guidance now: keep a single media structural profile in 0.1 while image/audio/video differences remain mostly technical rather than structurally distinct.
-* Close as guidance now: media records should continue to use inherited base fields and relationship metadata except where reusable media-specific structures have been demonstrated and contractized.
-* Close as guidance now: tier placement should default to Reference for source-native or mechanically recoverable technical properties, Context for externally supplied or curated situating assertions, and Interpretive for inferred or analytical assertions.
-* Close as current contract: mechanically recoverable raster pixel dimensions are sufficiently reusable and structurally meaningful for first-class Reference representation through `reference.visual_dimensions`.
-* Close as guidance now: JPEG, PNG, and TIFF provide sufficient cross-format evidence for the raster `visual_dimensions` contract in v0.1.
-* Defer: SVG and other vector-native geometry should not be coerced into `width_pixels` and `height_pixels`; vector geometry remains a future enhancement.
-
-Open question:
-
-* Keep open: standardized representation of captions, transcripts, accessibility descriptions, and model-generated description provenance in profile YAML.
-* Keep open: standardized region/frame/time-segment representation in profile YAML.
-* Keep open: which additional technical media properties warrant first-class Reference representation beyond raster pixel dimensions.
-
-## Recommended Code Change (Proposal Only)
-
-Proposed change:
-
-* Introduce one optional media custom field in profile YAML to capture reusable generated-description provenance, for example:
-
-  * `interpretive.generated_descriptions` as `list<object>` with minimal child properties such as generator, generated_at, review_status, and text.
-
-Current guidance:
-
-* Do not implement `interpretive.generated_descriptions` yet.
-* Implement generated-description provenance only after sufficient evidence demonstrates a reusable structure that cannot be represented clearly with current base fields and extensions.
-* Defer confidence scoring until its semantics and source are sufficiently defined.
-* Defer vector-native geometry representation until a reusable SVG/vector model is established.
-
-If `interpretive.generated_descriptions` is later approved, its implementation bundle should include:
-
-* profile YAML update in `profiles/media.yaml`;
-* example update in `examples/media-record.yaml`;
-* positive/negative regression tests in `tests/test_validate.py` for nested generated-description validation;
-* documentation updates in this file and `documentation/profile-question-matrix.md`.

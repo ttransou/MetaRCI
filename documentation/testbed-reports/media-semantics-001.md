@@ -1,5 +1,14 @@
 # Testbed Report
 
+## Status
+
+Deferred:
+
+* This report is preserved as historical evidence from an earlier contract state.
+* Variant-B failures in this report should not be read as current contract behavior.
+* The current media contract now includes `interpretive.generated_descriptions` and locator-only `interpretive.temporal_segments`.
+* The historical `segment_references` candidate remains superseded.
+
 ## Header
 
 * Testbed name: media-semantics-001
@@ -51,6 +60,12 @@
 * Weaknesses:
   * candidate fields are not in the current media profile contract.
 
+Historical note:
+
+* At the time of this testbed, both candidate fields were outside the executable contract.
+* `generated_descriptions` was later adopted into the media profile contract.
+* `segment_references` was not adopted; temporal location is now represented by `temporal_segments` plus base `relationships`.
+
 ## Evidence Summary by Question
 
 For question: captions and transcript representation
@@ -98,3 +113,8 @@ For question: region/frame/time-segment representation
   * elevate generated_descriptions and segment_references candidates to Proposed change based on this two-source evidence packet.
 * Required next evidence step:
   * add one image-region annotation source and verify whether segment_references should become a more general spatial or temporal reference model.
+
+Superseded update:
+
+* The proposed `segment_references` direction was superseded by the locator-only `temporal_segments` contract.
+* Remaining forward pressure concerns richer transcript/caption/region semantics and segment-relationship integrity checks.

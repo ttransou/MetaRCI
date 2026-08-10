@@ -28,15 +28,18 @@
 
 ## Prose and YAML Inconsistencies Found
 
-* Prior prose implied rich profile-specific field sets for structured-data, media, and composite; current profile YAML for these profiles declares no overrides and no custom fields.
-* Prior prose implied some media/composite behaviors as if settled; current executable contract does not enforce those details.
-* Current executable document profile includes only three requirement-strengthening overrides; prior prose read broader than executable constraints.
+* Prior prose implied rich profile-specific field sets before they were contractized; current executable YAML now includes substantial custom-field sets for structured-data and media.
+* Composite remains intentionally boundary-first with no profile-specific custom fields and no profile-specific overrides.
+* Current executable document profile includes three requirement-strengthening overrides plus `reference.document_subdivisions`.
 
 ## Unsupported Architectural Claims Identified
 
-* Claims that generated-description provenance is structurally supported in profile YAML are not currently contract-enforced.
 * Claims that composite expected/present membership and completeness are structurally represented are not currently contract-enforced.
-* Claims that structured-data schema modeling shape is settled are not currently contract-enforced.
+
+Current contract note:
+
+* Generated-description provenance and generated terms are now contract-enforced in `profiles/media.yaml`.
+* Structured-data field identity, contextual field assertions, and interpretive field assertions are now contract-enforced in `profiles/structured-data.yaml`.
 
 ## Unresolved Questions
 

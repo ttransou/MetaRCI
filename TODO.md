@@ -45,7 +45,20 @@ Develop MetaRCI as a domain-agnostic, three-tier metadata model with:
 * [x] Document extension boundaries for implementation-specific metadata.
 * [x] Document the composite-profile guidance and its extension boundary questions.
 * [x] Implement structured-data v0.1 field-level representation across Reference, Context, and Interpretive tiers (`source_fields`, `field_context`, `field_interpretations`).
-* [x] Confirm validator suite currently passes with 61 tests.
+* [x] Confirm validator suite currently passes.
+
+### Composite Status Clarification
+
+Current contract:
+
+* `profiles/composite.yaml` exists and validates structurally.
+* `examples/composite-record.yaml` exists and validates structurally.
+* Composite is currently a draft, boundary-first scaffold with no composite-specific custom fields.
+
+Current guidance:
+
+* Structural validation or artifact existence for composite is not, by itself, evidence of substantive profile closure or release readiness.
+* Substantive composite-profile evaluation remains deferred pending additional testbed evidence.
 
 ---
 
@@ -148,13 +161,13 @@ Invalid examples should normally be generated within the automated test suite ra
 
 After drafting the profiles and example records, determine whether fields currently in the base schema are genuinely universal.
 
-* [x] Identify fields used consistently across all four profiles.
+* [x] Identify fields used consistently across current profile examples (including composite as draft scaffolding).
 * [x] Identify fields that appear overly specific to one profile.
 * [x] Identify profile fields that may instead belong in the base.
 
 Current findings:
 
-* The four example records consistently use the core Reference, Context, and Interpretive fields that describe identity, ingestion, organizational context, and relationships.
+* Current profile examples (document, structured-data, media, and composite scaffolding) consistently use core Reference, Context, and Interpretive fields describing identity, ingestion, organizational context, and relationships.
 * `page_count` appears document-skewed. It applies to paginated sources, and `null` is appropriate when the source is not paginated.
 * `review_date` appears more governance-oriented than mechanically extracted and may need clearer placement or scope.
 * No base-schema edits are proposed yet; the current evidence is enough to identify candidates, not enough to move them.
@@ -211,6 +224,10 @@ After the four profiles and their valid example records establish the working co
 * [x] Confirm profile-specific field types are enforced.
 * [x] Confirm profile-specific nested structures are enforced.
 
+Current guidance:
+
+* Composite validation here confirms structural contract behavior only; it does not imply substantive composite-profile maturity or closure.
+
 After adding the tests:
 
 * [x] Update the documented test count.
@@ -226,7 +243,7 @@ Regression-test kickoff:
 * [x] Avoid moving fields based on one profile alone.
 * [x] Confirm the base remains a minimum shared contract.
 * [x] Confirm profiles specialize rather than redefine the base.
-* [x] Confirm the three-tier distinction remains meaningful across all profiles.
+* [x] Confirm the three-tier distinction remains meaningful across active profile examples; composite substantive interpretation remains deferred.
 * [x] Record proposed base-schema changes before implementing them.
 
 ---
@@ -391,7 +408,7 @@ Execution protocol:
 * Use [documentation/testbed-report-template.md](documentation/testbed-report-template.md) for evidence capture.
 * Track required source provisioning in [documentation/testbed-source-intake.md](documentation/testbed-source-intake.md).
 
-Morning (08/07-08) pickup checklist:
+Testbed Source Status:
 
 * [ ] Place source files in [testbed-sources/](testbed-sources) using the existing intake folders:
   * [x] `testbed-sources/document/doc-source-001/`
@@ -437,12 +454,14 @@ Testbeds should be introduced only after the corresponding generic profile and e
 
 Before considering MetaRCI 0.1.0 ready:
 
-* [ ] All four structural profiles exist.
-* [ ] All four profiles validate.
-* [ ] Each profile has at least one valid example record.
-* [ ] The base schema has been reviewed against all four profiles.
-* [ ] Profile-contract regression tests pass.
-* [ ] Profile-specific validation tests pass.
+* [x] All four structural profile YAML artifacts exist.
+* [x] All four profiles validate structurally with current examples.
+* [x] Each profile has at least one valid example record.
+* [x] The base schema has been reviewed against current profile examples.
+* [x] Profile-contract regression tests pass.
+* [x] Profile-specific validation tests pass.
+* [ ] Document, structured-data, and media profiles remain substantively evaluated and documented as current v0.1 profile maturity.
+* [ ] Composite profile remains explicitly documented as draft scaffolding with substantive evaluation deferred.
 * [x] CI passes on the default branch.
 * [ ] Core documentation is internally consistent.
 * [x] Extension boundaries are documented.
@@ -470,6 +489,50 @@ These ideas are intentionally deferred until there is evidence they are necessar
 * Ontology alignment.
 * Automatic profile selection.
 * Record transformation between profile versions.
+
+---
+
+## Normalization Follow-Ups (2026-08-10)
+
+These items are evidence-backed follow-up work from the document/structured-data/media normalization pass. They are intentionally deferred unless marked as implementation/documentation maintenance.
+
+### Composite (Deferred Structural Evaluation)
+
+* [ ] Add at least one additional independent composite testbed beyond `composite-membership-001` to evaluate whether membership/completeness fields are structurally reusable.
+  * Evidence: current composite profile remains draft scaffolding with no custom fields; existing guidance identifies membership pressure but not closure.
+  * Affected area: composite profile/testbeds/documentation.
+
+### Base Schema Pressure
+
+* [ ] Evaluate whether `context.organizational_context` shows cardinality pressure that warrants future structured representation.
+  * Evidence: recurring use as a single string with potentially multi-organization semantics in cross-profile examples.
+  * Affected area: base schema and cross-profile guidance.
+
+* [ ] Evaluate whether `context.rights_status` needs structured expansion beyond shallow string in a future revision.
+  * Evidence: media/video guidance confirms current shallow status is useful but limited for richer rights-authority metadata.
+  * Affected area: base schema and cross-profile rights guidance.
+
+### Media Deferred Technical Depth
+
+* [ ] Reassess deferred AV technical properties (frame rate, deeper codec/stream metadata) only after cross-source evidence demonstrates reusable retrieval or interoperability value.
+  * Evidence: media-video and media-reference findings kept these properties deferred despite mechanical extractability.
+  * Affected area: media profile and media testbeds.
+
+* [ ] Evaluate validator-side referential-integrity checks for temporal segment usage.
+  * Evidence: current contract supports locator-only `interpretive.temporal_segments` and relationship attachment, but does not verify that relationship targets resolve to declared segment IDs.
+  * Affected area: validator logic, media profile semantics, and tests.
+
+### Architecture and Composition
+
+* [ ] Keep profile-composition questions deferred unless new evidence demonstrates net clarity over the current base-plus-profile model.
+  * Evidence: profile-to-profile inheritance is already tracked in Deferred Ideas and remains unnecessary for current contracts.
+  * Affected area: profile model and governance docs.
+
+### Documentation and Coverage Maintenance
+
+* [ ] Add an explicit documentation maintenance check ensuring historical testbed reports that capture superseded candidates are labeled as historical/superseded to avoid contract drift.
+  * Evidence: media-semantics historical `segment_references` candidate required explicit superseded labeling.
+  * Affected area: testbed-report authoring workflow and profile docs cross-references.
 
 Deferral does not imply rejection. It preserves the scope of MetaRCI 0.1.
 
