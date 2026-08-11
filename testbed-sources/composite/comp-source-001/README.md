@@ -3,7 +3,7 @@
 ## Source
 
 * Source type: synthetic PowerPoint presentation
-* File: `comp-source-001-generic-testbed.pptx`
+* File: `comp-source-001.pptx`
 * Profile target: `composite`
 * Intake ID: `comp-source-001`
 

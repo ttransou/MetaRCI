@@ -3,7 +3,7 @@
 ## Source
 
 - Source type: synthetic OpenDocument Presentation
-- File: `comp-source-002-generic-testbed.odp`
+- File: `comp-source-002.odp`
 - Profile target: `composite`
 - Intake ID: `comp-source-002`
 

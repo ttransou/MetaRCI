@@ -3,7 +3,7 @@
 ## Source
 
 - Source type: synthetic EPUB publication
-- File: `comp-source-003-generic-testbed.epub`
+- File: `comp-source-003.epub`
 - Profile target: `composite`
 - Intake ID: `comp-source-003`
 
