@@ -6,11 +6,12 @@ metarci_profile:
   base_version: "0.1.0"
 
   description: >
-    Structural profile for source units made up of multiple
-    independently meaningful components such as packages, case files,
-    research corpora, or multimodal bundles. This initial version
-    establishes the composite boundary before any override refinements
-    are introduced.
+    Structural profile for logical source units whose independently
+    meaningful components may require different structural treatment
+    while remaining parts of a single coherent parent source. This
+    initial version establishes a boundary for evaluating whole-part
+    identity, containment, ordering, and component relationships before
+    any composite-specific fields or override refinements are introduced.
 
   implementation:
     domain: null

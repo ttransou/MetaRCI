@@ -1,1 +1,26 @@
+metarci_profile:
+  name: structured-data-relational
+  version: "0.1.0"
+  status: draft
+  extends: ../schemas/metarci-base.yaml
+  base_version: "0.1.0"
 
+  description: >
+    Structural specialization for relational structured-data sources
+    whose organization includes explicit schema relationships such as
+    tables, columns, keys, constraints, and related database structures.
+
+  implementation:
+    domain: null
+    corpus: null
+    use_case: null
+
+  tier_overrides:
+    reference: {}
+    context: {}
+    interpretive: {}
+
+  custom_fields:
+    reference: {}
+    context: {}
+    interpretive: {}
