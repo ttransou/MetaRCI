@@ -14,7 +14,9 @@ A passing validator result is treated as evidence of structural validity only. S
 
 ## Questions Covered
 
-* Should section/chapter/clause structures be represented directly in profile custom fields?* How should documents with significant embedded media be represented when both document and media structure matter?* How much edition/version relationship structure should be explicit versus relationship-based?
+* Should section/chapter/clause structures be represented directly in profile custom fields?
+* How should documents with significant embedded media be represented when both document and media structure matter?
+* How much edition/version relationship structure should be explicit versus relationship-based?
 
 ---
 
@@ -22,9 +24,11 @@ A passing validator result is treated as evidence of structural validity only. S
 
 * Record paths:
 
-* `examples/doc-source-001-record.yaml`* `examples/doc-source-002-record.yaml`* Why baseline reflects the current contract:
-
-* both records use fields permitted by the current draft document profile;* neither baseline requires an additional candidate structure to validate.* Validator result:
+* `examples/doc-source-001-record.yaml`* `examples/doc-source-002-record.yaml`
+* Why baseline reflects the current contract:
+* both records use fields permitted by the current draft document profile;
+* neither baseline requires an additional candidate structure to validate.
+* Validator result:
 
 * doc-source-001: pass* doc-source-002: pass
 
@@ -32,11 +36,14 @@ A passing validator result is treated as evidence of structural validity only. S
 
 For doc-source-001:
 
-* `stated_title` and `stated_author` are directly source-grounded.* contextual and interpretive values are manually supplied for the testbed.* ingestion timestamps, parser identifiers, analytical categories, and corpus-role labels include test scaffolding.
+* `stated_title` and `stated_author` are directly source-grounded.
+* contextual and interpretive values are manually supplied for the testbed.
+* ingestion timestamps, parser identifiers, analytical categories, and corpus-role labels include test scaffolding.
 
 For doc-source-002:
 
-* title, author, page count, file properties, and document structure can be mechanically inspected from the PDF using Poppler tooling.* contextual and interpretive values remain separately curated or test-derived.
+* title, author, page count, file properties, and document structure can be mechanically inspected from the PDF using Poppler tooling.
+* contextual and interpretive values remain separately curated or test-derived.
 
 ---
 
@@ -50,7 +57,8 @@ Test whether the current relationship model can represent document-structure and
 
 doc-source-001:
 
-* uses a related representation and interpretive notes as an indirect way to discuss document structure;* does not directly encode intrinsic source subdivisions.
+* uses a related representation and interpretive notes as an indirect way to discuss document structure;
+* does not directly encode intrinsic source subdivisions.
 
 doc-source-002:
 
@@ -58,15 +66,22 @@ doc-source-002:
 
 ### Validator Result
 
-* `examples/doc-source-001-variant-a.yaml`: pass* `examples/doc-source-002-variant-a.yaml`: pass
+* `examples/doc-source-001-variant-a.yaml`: pass
+* `examples/doc-source-002-variant-a.yaml`: pass
 
 ### Strengths
 
-* Fully executable under the current contract.* Reuses the general relationship model.* Provides a workable mechanism for linking independently meaningful source units.* Avoids requiring the document profile to model the internal metadata of another profile.
+* Fully executable under the current contract.
+* Reuses the general relationship model.
+* Provides a workable mechanism for linking independently meaningful source units.
+* Avoids requiring the document profile to model the internal metadata of another profile.
 
 ### Weaknesses
 
-* Relationship placeholders are not equivalent to intrinsic source-native subdivisions.* Document subdivisions remain indirect and less machine-queryable.* Relationship-only representation does not itself provide a stable inventory of document-native structure.* Embedded-object location may require descriptive notes unless locator behavior is formalized elsewhere.
+* Relationship placeholders are not equivalent to intrinsic source-native subdivisions.
+* Document subdivisions remain indirect and less machine-queryable.
+* Relationship-only representation does not itself provide a stable inventory of document-native structure.
+* Embedded-object location may require descriptive notes unless locator behavior is formalized elsewhere.
 
 ---
 
@@ -80,7 +95,9 @@ Test candidate explicit representations while preserving source-grounding constr
 
 doc-source-001:
 
-* does not assert invented chapter or section structure;* keeps narrative segmentation in the Interpretive tier;* treats opening, escalation, ending, and similar narrative divisions as interpretive segmentation rather than intrinsic document structure.
+* does not assert invented chapter or section structure;
+* keeps narrative segmentation in the Interpretive tier;
+* treats opening, escalation, ending, and similar narrative divisions as interpretive segmentation rather than intrinsic document structure.
 
 doc-source-002:
 
@@ -94,11 +111,15 @@ doc-source-002:
 
 ### Strengths
 
-* Preserves the distinction between source-native structure and interpretive segmentation.* Demonstrates that inability to exercise a question with one source is a valid testbed result.* Tests a dedicated embedded-object representation without silently adding it to the document contract.
+* Preserves the distinction between source-native structure and interpretive segmentation.
+* Demonstrates that inability to exercise a question with one source is a valid testbed result.
+* Tests a dedicated embedded-object representation without silently adding it to the document contract.
 
 ### Weaknesses
 
-* doc-source-001 cannot legitimately exercise intrinsic document subdivision structure.* `embedded_media_index` introduces a document-specific indexing mechanism that overlaps with existing relationship behavior.* A dedicated embedded-media index also raises classification ambiguity for objects such as tables, diagrams, and extracted structured data.
+* doc-source-001 cannot legitimately exercise intrinsic document subdivision structure.
+* `embedded_media_index` introduces a document-specific indexing mechanism that overlaps with existing relationship behavior.
+* A dedicated embedded-media index also raises classification ambiguity for objects such as tables, diagrams, and extracted structured data.
 
 ---
 
@@ -114,7 +135,15 @@ doc-source-002 provides mechanically recoverable source-native structure through
 
 Examples include:
 
-* Executive Summary* Part 1: Foundational Information* 1 Framing Risk* 2 Audience* 3 AI Risks and Trustworthiness* 4 Effectiveness of the AI RMF* Part 2: Core and Profiles* 5 AI RMF Core* 6 AI RMF Profiles* Appendix A through Appendix D
+* Executive Summary* Part 1: Foundational Information
+* 1 Framing Risk
+* 2 Audience
+* 3 AI Risks and Trustworthiness
+* 4 Effectiveness of the AI RMF
+* Part 2: Core and Profiles
+* 5 AI RMF Core
+* 6 AI RMF Profiles
+* Appendix A through Appendix D
 
 Page references are also mechanically available for at least some subdivisions.
 
@@ -124,7 +153,9 @@ The current relationship model can point to a separate representation of documen
 
 The document profile therefore retains `document_subdivisions` as a lightweight Reference-tier structure consisting of:
 
-* `kind` — the source-grounded subdivision type;* `label` — the human-readable subdivision label represented by the source;* `source_locator` — an optional source-specific locator identifying the subdivision.
+* `kind` — the source-grounded subdivision type;
+* `label` — the human-readable subdivision label represented by the source;
+* `source_locator` — an optional source-specific locator identifying the subdivision.
 
 The NIST source provides direct evidence that this minimum shape can represent intrinsic document structure such as parts, numbered sections, and appendices.
 
@@ -136,7 +167,12 @@ Intrinsic source-native document structure belongs in the **Reference tier** bec
 
 This includes structures such as:
 
-* parts;* chapters;* sections;* clauses;* appendices;* comparable source-native subdivisions.
+* parts;
+* chapters;
+* sections;
+* clauses;
+* appendices;
+* comparable source-native subdivisions.
 
 Analyst-imposed or interpretive segmentation does not become document structure merely because it can be represented as sections. Such segmentation remains in the Interpretive tier.
 
@@ -146,13 +182,18 @@ Tier placement follows the nature and grounding of the metadata, not merely whet
 
 The following are deferred rather than blockers for the v0.1 contract:
 
-* whether later evidence requires explicit hierarchy or parent/child relationships among subdivisions;* whether `source_locator` should eventually receive a normalized structure;* whether a controlled vocabulary for `kind` would improve interoperability;* whether Table-of-Contents evidence alone is sufficient for mechanical extraction or should be confirmed against body headings.
+* whether later evidence requires explicit hierarchy or parent/child relationships among subdivisions;
+* whether `source_locator` should eventually receive a normalized structure;
+* whether a controlled vocabulary for `kind` would improve interoperability;
+* whether Table-of-Contents evidence alone is sufficient for mechanical extraction or should be confirmed against body headings.
 
 These questions do not prevent use of the current minimum shape.
 
 #### Reusability Across Sources
 
-* doc-source-001 does not supply qualifying intrinsic-structure evidence.* doc-source-002 supplies direct source-native evidence for `kind`, `label`, and `source_locator`.* the synthetic canonical document example demonstrates the intended shape but does not count as independent testbed evidence.
+* doc-source-001 does not supply qualifying intrinsic-structure evidence.
+* doc-source-002 supplies direct source-native evidence for `kind`, `label`, and `source_locator`.
+* the synthetic canonical document example demonstrates the intended shape but does not count as independent testbed evidence.
 
 #### Closure Outcome
 
@@ -160,7 +201,9 @@ These questions do not prevent use of the current minimum shape.
 
 `document_subdivisions` is retained in the document profile under the Reference tier with the following v0.1 minimum shape:
 
-* required `kind` string;* required `label` string;* conditional, nullable `source_locator` string.
+* required `kind` string;
+* required `label` string;
+* conditional, nullable `source_locator` string.
 
 More complex hierarchy and locator structures are deferred until supported by additional evidence.
 
@@ -176,13 +219,18 @@ A dedicated `embedded_media_index` is not required to express the basic boundary
 
 #### Tier-Placement Impact
 
-* related-source pointers remain available in Context;* relationships remain available in Interpretive;* metadata intrinsic to the externalized object belongs to that object's own profile and record.
+* related-source pointers remain available in Context;
+* relationships remain available in Interpretive;
+* metadata intrinsic to the externalized object belongs to that object's own profile and record.
 
 #### Profile-Boundary Finding
 
 A dedicated document-specific media index risks requiring the document profile to classify objects that may instead be:
 
-* media;* structured data;* another document;* or another independently meaningful source unit.
+* media;
+* structured data;
+* another document;
+* or another independently meaningful source unit.
 
 The relationship model avoids that profile leakage.
 
@@ -214,7 +262,10 @@ Existing fields can express lightweight version and lineage information without 
 
 Relevant fields include:
 
-* `reference.stated_version`* `context.source_lineage`* `context.related_sources`* `interpretive.relationships`
+* `reference.stated_version`
+* `context.source_lineage`
+* `context.related_sources`
+* `interpretive.relationships`
 
 #### Source-Grounding Constraint
 
@@ -246,19 +297,30 @@ No additional document-specific edition/version object is required for v0.1.
 
 #### Directly Source-Grounded
 
-* `reference.stated_title`* `reference.stated_author`* Gutenberg source identifier where verified against the acquired source
+* `reference.stated_title`
+* `reference.stated_author`
+* Gutenberg source identifier, verified against the acquired source
 
 #### Externally Curated or Contextual
 
-* `context.domains`* `context.categories`* `context.intended_audiences`* externally established source lineage or publication context
+* `context.domains`
+* `context.categories`
+* `context.intended_audiences`
+* externally established source lineage or publication context
 
 #### Interpretively Derived
 
-* `interpretive.themes`* `interpretive.concepts`* narrative segmentation language* interpretive relationship notes
+* `interpretive.themes`
+* `interpretive.concepts`
+* narrative segmentation language
+* interpretive relationship notes
 
 #### Test Scaffolding
 
-* test-specific `ingestion_timestamp`* `parser_name` and `parser_version` when supplied only for fixture execution* testbed `analytical_categories`* testbed `corpus_role`* test-oriented `intended_purpose`
+* test-specific `ingestion_timestamp`
+* `parser_name` and `parser_version` when supplied only for fixture execution
+* testbed `analytical_categories`
+* testbed `corpus_role`* test-oriented `intended_purpose`
 
 ---
 
@@ -268,21 +330,36 @@ No additional document-specific edition/version object is required for v0.1.
 
 Using `pdfinfo` and `pdftotext`, the source exposes:
 
-* stated title;* stated author;* 48-page extent;* PDF file properties;* source-native headings;* Table-of-Contents structure;* page references associated with subdivisions.
+* stated title;
+* stated author;
+* 48-page extent;
+* PDF file properties;
+* source-native headings;
+* Table-of-Contents structure;
+* page references associated with subdivisions.
 
 The mechanical extraction pass also recovered file-level properties suitable for Reference metadata.
 
 #### Externally Curated or Contextual
 
-* domain and category assignments;* audience characterization where not explicitly stated;* contextual lineage assertions;* related-source assignments;* organizational interpretation beyond mechanically stated source metadata.
+* domain and category assignments;
+* audience characterization where not explicitly stated;
+* contextual lineage assertions;
+* related-source assignments;
+* organizational interpretation beyond mechanically stated source metadata.
 
 #### Interpretively Derived
 
-* analytical categories;* interpretive relationship notes;* interpretive concepts and themes.
+* analytical categories;
+* interpretive relationship notes;
+* interpretive concepts and themes.
 
 #### Test Scaffolding
 
-* testbed-specific ingestion timestamps;* fixture-specific parser identifiers where not recording the actual extraction tool;* corpus-role labels used only to differentiate test variants;* test-oriented intended-purpose values.
+* testbed-specific ingestion timestamps;
+* fixture-specific parser identifiers where not recording the actual extraction tool;
+* corpus-role labels used only to differentiate test variants;
+* test-oriented intended-purpose values.
 
 ---
 
@@ -294,17 +371,37 @@ The PDF was inspected using Poppler utilities.
 
 Mechanically available properties included:
 
-* Title: Artificial Intelligence Risk Management Framework (AI RMF 1.0)* Author: National Institute of Standards and Technology* Pages: 48* PDF version: 1.7* File size: 1,946,127 bytes* Creation date present in PDF metadata* Modification date present in PDF metadata
+* Title: Artificial Intelligence Risk Management Framework (AI RMF 1.0)
+* Author: National Institute of Standards and Technology
+* Pages: 48
+* PDF version: 1.7
+* File size: 1,946,127 bytes
+* Creation date present in PDF metadata
+* Modification date present in PDF metadata
 
 ### `pdftotext`
 
 The extracted Table of Contents and textual content exposed source-native structural labels including:
 
-* Executive Summary* Part 1: Foundational Information* 1 Framing Risk* 2 Audience* 3 AI Risks and Trustworthiness* 4 Effectiveness of the AI RMF* Part 2: Core and Profiles* 5 AI RMF Core* 6 AI RMF Profiles* Appendix A* Appendix B* Appendix C* Appendix D
+* Executive Summary
+* Part 1: Foundational Information
+* 1 Framing Risk
+* 2 Audience
+* 3 AI Risks and Trustworthiness
+* 4 Effectiveness of the AI RMF
+* Part 2: Core and Profiles
+* 5 AI RMF Core
+* 6 AI RMF Profiles
+* Appendix A
+* Appendix B
+* Appendix C
+* Appendix D
 
 Mechanically available locators include page references such as:
 
-* Executive Summary → page 1* Part 1: Foundational Information → page 4* Part 2: Core and Profiles → page 20
+* Executive Summary → page 1
+* Part 1: Foundational Information → page 4
+* Part 2: Core and Profiles → page 20
 
 This evidence establishes that intrinsic subdivision metadata can be mechanically grounded for at least one real document source.
 
@@ -326,7 +423,9 @@ Current v0.1 shape:
 
 doc-source-002 provides source-native examples for all three properties:
 
-* subdivision kinds such as part, section, and appendix;* human-readable labels represented directly by the source;* source-specific locators based on page references.
+* subdivision kinds such as part, section, and appendix;
+* human-readable labels represented directly by the source;
+* source-specific locators based on page references.
 
 This evidence supports both the inclusion of intrinsic document subdivisions in the document profile and the usefulness of the current minimum representation.
 
@@ -334,11 +433,18 @@ This evidence supports both the inclusion of intrinsic document subdivisions in 
 
 The v0.1 document profile uses a flat subdivision list containing:
 
-* `kind`* `label`* `source_locator`
+* `kind`
+* `label`
+* `source_locator`
 
 The profile does not currently require:
 
-* subdivision identifiers;* explicit nesting;* parent/child references;* hierarchy levels;* controlled values for `kind`;* structured locator objects.
+* subdivision identifiers;
+* explicit nesting;
+* parent/child references;
+* hierarchy levels;
+* controlled values for `kind`;
+* structured locator objects.
 
 These features are deferred because the current evidence does not demonstrate that their additional complexity is necessary.
 
