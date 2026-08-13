@@ -2,7 +2,11 @@
 
 ## Header
 
-* Testbed name: document-structure-001* Profile: document* Date: 2026-08-07* Author: GitHub Copilot* Source set summary: doc-source-001 (narrative baseline) and doc-source-002 (richly structured document)
+* Testbed name: document-structure-001
+* Profile: document
+* Date: 2026-08-07
+* Author: GitHub Copilot, T. Transou
+* Source set summary: doc-source-001 (narrative baseline) and doc-source-002 (richly structured document)
 
 ### Playbook Alignment
 
