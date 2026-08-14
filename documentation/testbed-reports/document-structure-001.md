@@ -35,7 +35,8 @@ A passing validator result is treated as evidence of structural validity only. S
 * neither baseline requires an additional candidate structure to validate.
 * Validator result:
 
-* doc-source-001: pass* doc-source-002: pass
+* doc-source-001: pass
+* doc-source-002: pass
 
 ### Source-Grounding Quality
 
