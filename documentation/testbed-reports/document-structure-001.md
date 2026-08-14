@@ -28,7 +28,8 @@ A passing validator result is treated as evidence of structural validity only. S
 
 * Record paths:
 
-* `examples/doc-source-001-record.yaml`* `examples/doc-source-002-record.yaml`
+* `examples/doc-source-001-record.yaml`
+* `examples/doc-source-002-record.yaml`
 * Why baseline reflects the current contract:
 * both records use fields permitted by the current draft document profile;
 * neither baseline requires an additional candidate structure to validate.
@@ -324,7 +325,8 @@ No additional document-specific edition/version object is required for v0.1.
 * test-specific `ingestion_timestamp`
 * `parser_name` and `parser_version` when supplied only for fixture execution
 * testbed `analytical_categories`
-* testbed `corpus_role`* test-oriented `intended_purpose`
+* testbed `corpus_role`
+* test-oriented `intended_purpose`
 
 ---
 
@@ -417,11 +419,19 @@ This evidence establishes that intrinsic subdivision metadata can be mechanicall
 
 Current location:
 
-```textprofiles/document.yamlcustom_fields.reference.document_subdivisions```
+```text
+profiles/document.yaml
+custom_fields.reference.document_subdivisions
+```
 
 Current v0.1 shape:
 
-```textlist[object]→ kind→ label→ source_locator```
+```text
+list[object]
+→ kind
+→ label
+→ source_locator
+```
 
 ### Evidence Supporting the Contract
 
@@ -468,11 +478,17 @@ The minimum `document_subdivisions` shape is considered sufficient for the curre
 
 Retain:
 
-```textcustom_fields.reference.document_subdivisions```
+```text
+custom_fields.reference.document_subdivisions
+```
 
 with the v0.1 minimum structure:
 
-```textkindlabelsource_locator```
+```text
+kind
+label
+source_locator
+```
 
 Intrinsic source-native document structure belongs in Reference.
 
@@ -508,7 +524,11 @@ No additional document-specific version structure is required for v0.1.
 
 The document-profile decisions exercised by this testbed are synchronized with the current v0.1 implementation:
 
-* `document_subdivisions` is declared under the Reference tier;* the canonical document record uses the Reference-tier subdivision path;* document-subdivision regression tests validate the Reference-tier path and nested field requirements;* no dedicated embedded-content field is added;* no additional document-specific edition/version field is added.
+* `document_subdivisions` is declared under the Reference tier;
+* the canonical document record uses the Reference-tier subdivision path;
+* document-subdivision regression tests validate the Reference-tier path and nested field requirements;
+* no dedicated embedded-content field is added;
+* no additional document-specific edition/version field is added.
 
 The validator and unit-test suite pass after these changes.
 
