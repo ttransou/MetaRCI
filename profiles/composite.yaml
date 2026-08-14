@@ -9,9 +9,9 @@ metarci_profile:
     Structural profile for logical source units whose independently
     meaningful components may require different structural treatment
     while remaining parts of a single coherent parent source. This
-    initial version establishes a boundary for evaluating whole-part
-    identity, containment, ordering, and component relationships before
-    any composite-specific fields or override refinements are introduced.
+    version evaluates whole-part identity, containment, ordering, and
+    component relationships while introducing only evidence-supported
+    composite-specific fields.
 
   implementation:
     domain: null
@@ -24,6 +24,39 @@ metarci_profile:
     interpretive: {}
 
   custom_fields:
-    reference: {}
+    reference:
+      components:
+        type: list
+        item_type: object
+        requirement: conditional
+        nullable: true
+        description: >
+          Source-declared meaningful components of a Composite source,
+          including mechanically recoverable whole-part relationships
+          such as membership, containment, and ordering.
+        item_properties:
+          component_id:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Source-grounded identifier for the meaningful component.
+
+          relationship_type:
+            type: string
+            requirement: required
+            nullable: false
+            description: >
+              Source-declared relationship between the Composite parent
+              and the component.
+
+          order:
+            type: integer
+            requirement: optional
+            nullable: true
+            description: >
+              Source-declared component order when sequence is intrinsic
+              to the source.
+
     context: {}
     interpretive: {}

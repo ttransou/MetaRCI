@@ -1,0 +1,96 @@
+metarci_record:
+  profile: ../profiles/composite.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: comp-source-001
+    original_filename: comp-source-001.pptx
+    source_uri: null
+    file_format: pptx
+    mime_type: application/vnd.openxmlformats-officedocument.presentationml.presentation
+    file_size_bytes: null
+    checksum: null
+    page_count: 5
+    creation_date: null
+    modification_date: null
+    review_date: null
+    stated_title: null
+    stated_author: null
+    stated_version: null
+    ingestion_timestamp: "2026-08-13T17:47:00-04:00"
+    parser_name: null
+    parser_version: null
+    extraction_status: success
+    components:
+      - component_id: slide-1
+        relationship_type: contains
+        order: 1
+      - component_id: slide-2
+        relationship_type: contains
+        order: 2
+      - component_id: slide-3
+        relationship_type: contains
+        order: 3
+      - component_id: slide-4
+        relationship_type: contains
+        order: 4
+      - component_id: slide-5
+        relationship_type: contains
+        order: 5
+
+  context:
+    preferred_title: MetaRCI Composite PPTX Testbed
+    alternate_titles: []
+    domains:
+      - metarci-testbed
+    categories:
+      - composite
+      - presentation
+    origin_date: null
+    period_covered: null
+    related_sources:
+      - chart1
+      - workbook1
+    source_lineage:
+      - synthetic-testbed
+    responsible_organizations: []
+    organizational_context: null
+    geographic_context: []
+    jurisdictional_context: []
+    intended_audiences:
+      - metarci-evaluation
+    intended_purpose: >
+      Evaluate whole-part structure and heterogeneous component
+      relationships in a PPTX source.
+    sensitivity:
+      level: public
+      categories: []
+      basis: synthetic-testbed
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - whole-part-composition
+    themes:
+      - heterogeneous-components
+    entities: []
+    analytical_categories:
+      - composite-testbed
+    relationships:
+      - target_id: chart1
+        relationship_type: supporting-evidence
+        notes: >
+          The chart is interpreted as supporting evidence within the
+          presentation rather than merely as a visual decoration.
+      - target_id: workbook1
+        relationship_type: data-source-for
+        notes: >
+          The embedded workbook is interpreted as the structured data
+          source underlying the chart.
+    interpretive_notes:
+      - >
+        These relationships are analytical assertions about component
+        significance and should remain distinct from source-declared
+        Reference-level composition relationships.
+    corpus_role: testbed
+    extensions: {}
