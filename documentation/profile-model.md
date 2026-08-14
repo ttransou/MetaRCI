@@ -1,286 +1,49 @@
 # MetaRCI Profile Model
 
-## Overview
+## Core Structure
 
-MetaRCI profiles define how the base schema is specialized for different source structures while preserving one shared three-tier model.
+MetaRCI uses one structural chain:
 
-Profiles are structural classifications, not domain templates.
+Base schema -> Structural profile -> Record
 
-## Position in the MetaRCI Model
+Profiles are structural classes, not domain templates.
 
-Current contract:
+## Epistemic Rule
 
-```text
-Base schema → Structural profile → Record
-```
+Tier placement is based on evidentiary basis, not tool, person, or workflow origin.
 
-Current contract:
+- Reference: source-native or mechanically recoverable claims
+- Context: externally supplied or curated situating claims
+- Interpretive: analytical, inferred, or evaluative claims
 
-* The base schema defines shared fields and validation expectations.
-* A structural profile may constrain or extend that shared model.
-* A record must validate against the effective schema produced from base plus profile.
+## v0.1 Primary Structural Profiles
 
-Current guidance:
+The current primary v0.1 profiles are:
 
-* Domain, organizational, and corpus-specific behavior should be represented through implementation extensions, not through new structural profiles.
+- document
+- structured-data
+- media
+- composite
 
-## Tier Provenance and Epistemic Basis
+These profiles are peers in the v0.1 model.
 
-Current guidance:
+## Profile Behavior in v0.1
 
-* Tier placement is determined by the epistemic basis of a metadata value, not by the tool, parser, model, or person that produced it.
-* Parser output does not automatically belong in the Reference tier.
-* The same extraction or enrichment process may produce values for more than one tier, but those values must retain the distinction between source-grounded fact, contextual inference, and interpretation.
+- Profiles extend the base schema directly.
+- Profiles may strengthen constraints and add profile-specific reusable fields.
+- Profiles may not redefine base field structure through shallow overrides.
+- Validation enforces exact version alignment between base, profile, and record.
 
-Current guidance:
+## Testbed Role
 
-### Reference
+Testbeds evaluate the model. They do not define the model by default.
 
-* Reference metadata describes facts directly present in or mechanically derivable from the source artifact.
-* Reference values should be reproducibly grounded in observable source evidence where the source format permits it.
-* Mechanical extraction may include source identity, file properties, stated metadata, intrinsic structure, counts, locators, or comparable source-native facts.
-* A manually entered value may still belong in Reference when it records a fact directly grounded in the source artifact.
+A passing validator result confirms structural validity. It does not establish semantic truth, source authority, or interpretive correctness.
 
-### Context
+## Deferred Scope
 
-* Context metadata situates the source within a corpus, domain, organization, jurisdiction, historical setting, intended use, or other external frame.
-* Context values may be curated, externally supplied, or inferred by tooling.
-* Parser- or model-assisted inference may populate Context fields when appropriate, but inferred Context must not be treated as mechanically authoritative merely because tooling produced it.
-* Context should not be used to relocate mechanically source-grounded facts simply because those facts require human review or manual entry.
+Structured-Data-Relational is explicitly deferred beyond v0.1. It is not part of v0.1 completion claims for Structured Data.
 
-### Interpretive
+## Extension Boundary
 
-* Interpretive metadata contains analytical, relational, evaluative, significance-bearing, or otherwise inferential assertions about the source.
-* Interpretive values may be produced by people, models, or other analytical processes.
-* A mechanically detected feature does not acquire interpretive significance until that significance is asserted separately.
-
-Current guidance:
-
-```text
-Reference   → What is observably present in or mechanically derivable from the source?
-Context     → What situates the source beyond those mechanically grounded facts?
-Interpretive → What is inferred, evaluated, related, or judged about the source?
-```
-
-Current guidance:
-
-* Mechanical extraction should establish source-grounded facts without silently assigning contextual or interpretive significance.
-* Contextual and interpretive enrichment are implementation- and use-case-dependent and may remain partially or entirely user-curated.
-* Profiles should preserve these provenance boundaries when defining overrides and custom fields.
-
-## Why Profiles Exist
-
-Current guidance:
-
-* Different source structures require different metadata behavior.
-* Profiles allow controlled specialization without fragmenting the base model.
-* Profiles keep the base schema stable and reusable across implementations.
-
-## Structural Classification
-
-Current contract:
-
-* Profiles are identified by source structure and metadata behavior.
-* Profiles are not keyed to subject domain.
-
-Current guidance:
-
-* Domain-specific terminology and local policy should stay out of core profile definitions unless structurally required across implementations.
-
-## MetaRCI 0.1 Profile Set
-
-Current contract:
-
-```text
-document
-structured-data
-media
-composite
-```
-
-Current contract:
-
-* Each profile exists as an executable YAML file under the profiles directory.
-* Each profile currently declares draft status and base-version alignment to 0.1.0.
-
-Current guidance:
-
-* `composite` remains intentionally boundary-first and deferred for further structural evaluation.
-* Current composite behavior should be treated as draft scaffolding, not a mature membership-completeness contract.
-
-## Profile Selection
-
-Current guidance:
-
-```text
-Primarily bounded textual artifact?        → document
-Meaning depends on explicit data schema?   → structured-data
-Primarily visual/audio/audiovisual source? → media
-Aggregation of meaningful components?      → composite
-```
-
-Current guidance:
-
-* File format alone should not determine profile choice.
-* A container such as PDF or ZIP may still map to different structural profiles depending on what the source unit is.
-
-## Profile Declaration
-
-Current contract:
-
-* A profile document uses the metarci_profile root.
-* A record document uses the metarci_record root.
-* The validator enforces exact profile/base version linkage for the loaded documents.
-
-Current contract:
-
-```text
-profile.base_version == base.version
-record.profile_version == profile.version
-```
-
-Current contract:
-
-* The record profile path must match the loaded profile path during validation.
-
-## Overrides and Custom Fields
-
-Current contract:
-
-* Profiles may define tier_overrides and custom_fields in reference, context, and interpretive tiers.
-* Override targets must exist in the base schema.
-* Custom fields must not shadow base fields.
-
-Current contract:
-
-* Permitted shallow override attributes are:
-
-```text
-requirement
-nullable
-description
-allowed_values
-```
-
-Current contract:
-
-* Structural attributes such as type, item_type, properties, and item_properties are not overridable in MetaRCI 0.1.
-* Requirement weakening is invalid.
-* Making a non-nullable base field nullable is invalid.
-* allowed_values may be narrowed but not expanded beyond base declarations.
-
-Current guidance:
-
-* Custom fields should be added only when structurally reusable for a profile class.
-* Implementation-only fields should be added through extensions.
-* Profile custom fields may include nested object structures that support cross-tier association patterns, such as lightweight field locators reused across Reference, Context, and Interpretive assertions.
-
-## Inheritance Model
-
-Current contract:
-
-* Current executable profiles extend only the base schema.
-
-Current guidance:
-
-* Profile-to-profile inheritance is deferred in MetaRCI 0.1 to avoid conflict-resolution complexity.
-
-Deferred:
-
-* Multi-level profile inheritance.
-
-## Effective-Schema Resolution
-
-Current contract:
-
-```text
-1. Base fields
-2. Profile overrides
-3. Profile custom fields
-```
-
-Current contract:
-
-* Resolution is deterministic and validated before record value checks run.
-
-## Profile Constraints
-
-Current contract:
-
-* A profile cannot remove MetaRCI tiers.
-* A profile cannot remove base fields through overrides.
-* A profile cannot weaken base requirement/nullability constraints.
-* A profile cannot structurally redefine base fields through shallow overrides.
-
-Current guidance:
-
-* Profile definitions should remain implementation-agnostic and avoid local policy coupling.
-
-## Lifecycle
-
-Current contract:
-
-* Profiles declare lifecycle status using allowed base values.
-* Current profile YAML files are all draft.
-
-Current guidance:
-
-* Lifecycle transitions should be tied to evidence from profile usage and validation outcomes.
-
-## Versioning
-
-Current contract:
-
-* Profile version matching is exact in current validator behavior.
-
-Current guidance:
-
-* Profile version should change when overrides, custom fields, or validation obligations change.
-
-Deferred:
-
-* Semantic-version compatibility ranges for profile matching.
-
-## Candidate-Profile Governance
-
-Current guidance:
-
-* A new profile proposal should include structural justification, reusable field rationale, and expected validation behavior.
-* Convenience for one implementation is insufficient justification for a new profile.
-
-Open question:
-
-* What minimum evidence threshold should be required before adding a fifth structural profile?
-
-## Relationship to Implementation Extensions
-
-Current contract:
-
-```text
-Base schema → Structural profile → Record
-```
-
-Current contract:
-
-* Extensions are subordinate to the structural contract and must not silently override it.
-
-Current guidance:
-
-* Keep implementation-specific vocabularies, policy rules, authority linkages, and local validation in extension documentation.
-* See documentation/extensions.md for current extension guidance.
-
-## Unresolved Architecture Items
-
-Open question:
-
-* Which profile-specific guidance should graduate into executable profile fields in a future revision?
-
-Proposed change:
-
-* Any proposal to move currently profile-specific concerns into the base schema requires explicit evidence review and human approval.
-
-Deferred:
-
-* Deep profile inheritance.
-* Automatic profile selection.
-* Model-enforced extension-schema validation.
+Implementation-specific policy, local vocabularies, and use-case rules belong in implementation extensions unless they are proven profile-reusable across evidence.

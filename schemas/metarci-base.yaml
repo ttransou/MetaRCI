@@ -1,7 +1,7 @@
 metarci:
   name: MetaRCI Base Schema
   version: "0.1.0"
-  status: draft
+  status: active
 
   description: >
     A domain-agnostic metadata model organized into Reference,

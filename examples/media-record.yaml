@@ -62,6 +62,6 @@ metarci_record:
         relationship_type: illustrates
         notes: Example diagram accompanying a document source.
     interpretive_notes:
-      - Demonstrates a media record before profile-specific overrides are introduced.
+      - Demonstrates a baseline media record using inherited fields.
     corpus_role: illustration
     extensions: {}

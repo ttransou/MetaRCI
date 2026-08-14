@@ -71,6 +71,6 @@ metarci_record:
         relationship_type: contains
         notes: Structured-data member included in the composite package.
     interpretive_notes:
-      - Demonstrates a composite record before profile-specific overrides are introduced.
+      - Demonstrates a baseline composite record using inherited Context and Interpretive fields.
     corpus_role: package
     extensions: {}

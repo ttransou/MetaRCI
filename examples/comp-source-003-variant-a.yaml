@@ -1,0 +1,85 @@
+metarci_record:
+  profile: ../profiles/composite.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: comp-source-003
+    original_filename: comp-source-003.epub
+    file_format: epub
+    mime_type: application/epub+zip
+    page_count: null
+    ingestion_timestamp: "2026-08-14T12:15:00-04:00"
+    extraction_status: success
+    components:
+      - component_id: chap1
+        relationship_type: contains
+        order: 1
+      - component_id: chap2
+        relationship_type: contains
+        order: 2
+      - component_id: chap3
+        relationship_type: contains
+        order: 3
+
+  context:
+    preferred_title: MetaRCI Composite EPUB Testbed
+    alternate_titles: []
+
+    domains:
+      - metarci-testbed
+
+    categories:
+      - composite
+      - presentation
+
+    origin_date: null
+    period_covered: null
+
+    related_sources: []
+
+    source_lineage:
+      - synthetic-testbed
+
+    responsible_organizations: []
+    organizational_context: null
+    geographic_context: []
+    jurisdictional_context: []
+
+    intended_audiences:
+      - metarci-evaluation
+
+    intended_purpose: >
+      Evaluate whole-part structure, heterogeneous component
+      relationships, and cross-format portability in an EPUB source.
+
+    sensitivity:
+      level: public
+      categories: []
+      basis: synthetic-testbed
+
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - whole-part-composition
+      - cross-format-portability
+
+    themes:
+      - heterogeneous-components
+
+    entities: []
+
+    analytical_categories:
+      - composite-testbed
+
+    relationships: []
+
+    interpretive_notes:
+      - >
+        The EPUB source independently exposes source-declared chapter
+        membership and ordering through sequential XHTML elements.
+        This provides cross-format evidence for the Reference-level
+        components structure introduced during PPTX evaluation.
+
+    corpus_role: testbed
+    extensions: {}
