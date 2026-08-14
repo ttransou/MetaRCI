@@ -1,0 +1,96 @@
+metarci_record:
+  profile: ../profiles/composite.yaml
+  profile_version: "0.1.0"
+
+  reference:
+    source_id: comp-source-002
+    original_filename: comp-source-002.odp
+    file_format: odp
+    mime_type: application/vnd.oasis.opendocument.presentation
+    page_count: 5
+    ingestion_timestamp: "2026-08-14T12:02:00-04:00"
+    extraction_status: success
+
+    components:
+      - component_id: page1
+        relationship_type: contains
+        order: 1
+
+      - component_id: page2
+        relationship_type: contains
+        order: 2
+
+      - component_id: page3
+        relationship_type: contains
+        order: 3
+
+      - component_id: page4
+        relationship_type: contains
+        order: 4
+
+      - component_id: page5
+        relationship_type: contains
+        order: 5
+
+  context:
+    preferred_title: MetaRCI Composite ODP Testbed
+    alternate_titles: []
+
+    domains:
+      - metarci-testbed
+
+    categories:
+      - composite
+      - presentation
+
+    origin_date: null
+    period_covered: null
+
+    related_sources: []
+
+    source_lineage:
+      - synthetic-testbed
+
+    responsible_organizations: []
+    organizational_context: null
+    geographic_context: []
+    jurisdictional_context: []
+
+    intended_audiences:
+      - metarci-evaluation
+
+    intended_purpose: >
+      Evaluate whole-part structure, heterogeneous component
+      relationships, and cross-format portability in an ODP source.
+
+    sensitivity:
+      level: public
+      categories: []
+      basis: synthetic-testbed
+
+    external_identifiers: []
+
+  interpretive:
+    concepts:
+      - whole-part-composition
+      - cross-format-portability
+
+    themes:
+      - heterogeneous-components
+
+    entities: []
+
+    analytical_categories:
+      - composite-testbed
+
+    relationships: []
+
+    interpretive_notes:
+      - >
+        The ODP source independently exposes source-declared slide
+        membership and ordering through sequential draw:page elements.
+        This provides cross-format evidence for the Reference-level
+        components structure introduced during PPTX evaluation.
+
+    corpus_role: testbed
+    extensions: {}

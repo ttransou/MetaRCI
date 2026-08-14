@@ -718,3 +718,244 @@ Closure status:
 
 * `comp-source-001.pptx` is closed as the initial Composite PPTX testbed.
 * PPTX findings should now be challenged against `comp-source-002.odp` before `reference.components` or any broader composition semantics are treated as portable Composite requirements.
+
+### ODP Evidence Checkpoint 1: Presentation-Level Membership and Ordering
+
+Observed in `comp-source-002.odp`:
+
+* The main presentation structure is contained in `content.xml`.
+* `content.xml` declares five `<draw:page>` elements in sequence:
+
+  * `page1`
+  * `page2`
+  * `page3`
+  * `page4`
+  * `page5`
+* Each page contains substantive slide content rather than acting only as a package placeholder.
+* ODP therefore preserves slide membership and slide ordering directly within the source content structure.
+
+Current interpretation:
+
+* ODP represents presentation composition differently from PPTX, but exposes the same underlying Composite concepts.
+* PPTX expresses ordered slide membership through presentation relationships and separate slide parts.
+* ODP expresses ordered slide membership through sequential `draw:page` elements within `content.xml`.
+* The implementation mechanism differs, but parent/component identity and intrinsic ordering remain mechanically recoverable.
+* These facts therefore constitute Reference-level composition evidence.
+
+Current schema implication:
+
+* ODP independently supports the PPTX-derived `reference.components` concept.
+* No ODP-specific field or relationship mechanism is justified by this evidence.
+* The current minimal candidate grammar remains sufficient for this checkpoint:
+
+  * `component_id`;
+  * `relationship_type`;
+  * optional source-declared `order`.
+* This provides initial cross-format evidence that `reference.components` represents a composition concept rather than an Office Open XML implementation detail.
+
+Current status:
+
+* PPTX-derived component membership and ordering semantics survive the first ODP portability test.
+* Further ODP component inspection is required before the Reference structure can be considered portable across the full testbed.
+
+### ODP Evidence Checkpoint 2: Embedded Image as a Meaningful Child Component
+
+Observed in `comp-source-002.odp`:
+
+* Slide 2 (`draw:page draw:name="page2"`) contains a `draw:frame` identified as `Image 0`.
+* Within that frame, `draw:image` explicitly references:
+
+  * `Pictures/10000000000004B0000002D072EB7ADB.png`
+* The relationship is expressed through source-native ODF attributes including:
+
+  * `xlink:href`
+  * `xlink:show="embed"`
+  * `draw:mime-type="image/png"`
+* The PNG therefore exists as a separately stored package resource that is explicitly embedded by the slide rather than merely co-located within the ODP package.
+
+Current interpretation:
+
+* ODP independently confirms that meaningful embedded media can be mechanically associated with a parent slide.
+* The source mechanism differs from PPTX relationship files, but the underlying whole-part relationship is equivalent.
+* The image remains a meaningful child component of the slide and presentation rather than a package resource inferred only from file proximity.
+* This relationship is mechanically recoverable and therefore belongs at the Reference tier.
+
+Current schema implication:
+
+* The existing `reference.components` concept remains sufficient.
+* No image-specific Composite field is justified.
+* ODP provides cross-format evidence that meaningful child components may be identified through format-native relationship mechanisms without requiring those mechanisms to be represented directly in the MetaRCI contract.
+
+Current status:
+
+* Embedded-image composition survives the ODP portability test.
+* This strengthens the case that `reference.components` models source composition rather than PPTX-specific packaging behavior.
+
+ODP Evidence Checkpoint 3: Speaker Notes as Distinct Slide-Associated Content
+
+Observed in comp-source-002.odp:
+
+Slide 2 contains a presentation:notes element.
+Within that notes structure, a dedicated draw:frame is marked with presentation:class="notes".
+The speaker note text is stored separately inside its own draw:text-box.
+The note is therefore structurally distinct from the visible slide body while remaining explicitly associated with the slide.
+
+Current interpretation:
+
+ODP preserves speaker notes as a meaningful source-native child structure rather than flattening them into ordinary slide text.
+This independently confirms the PPTX finding that notes may have their own metadata scope while remaining components of the parent slide and presentation.
+The association is mechanically recoverable and therefore constitutes Reference-level composition evidence.
+
+Current schema implication:
+
+No note-specific Composite field is justified.
+The existing reference.components concept remains sufficient to represent the presence of meaningful child components without encoding ODP-specific presentation markup.
+Component-specific metadata scope remains a separate concern from the parent-level composition relationship.
+
+Current status:
+
+Speaker-note composition survives the ODP portability test.
+ODP and PPTX now independently support the same parent/component distinction for notes.
+
+ODP Evidence Checkpoint 4: Native Table Structure
+
+Observed in comp-source-002.odp:
+
+Slide 3 contains a native <table:table> element within the presentation content.
+The table includes source-native structural elements such as:
+<table:table-column>;
+<table:table-row>;
+<table:table-cell>.
+Cell values are represented within the table structure rather than only as visually positioned text.
+The ODP therefore preserves the table as structured content rather than flattening it into an image or drawing approximation.
+
+Current interpretation:
+
+ODP independently confirms that structured tabular content may remain a meaningful child component inside a presentation source.
+The implementation differs from PPTX DrawingML table markup, but the underlying Composite relationship is equivalent.
+The table’s presence and internal structure are mechanically recoverable and therefore constitute Reference-level evidence.
+
+Current schema implication:
+
+No table-specific Composite field is justified.
+The existing reference.components concept remains sufficient to represent the presence of a meaningful structured child component.
+Structural treatment of the table itself may belong to the Structured Data profile if evaluated independently, while its membership within the presentation remains a Composite concern.
+
+Current status:
+
+Native-table composition survives the ODP portability test.
+ODP and PPTX now independently support structured tabular content as a meaningful component within a coherent presentation source.
+
+ODP Evidence Checkpoint 5: Native Chart as an Embedded Structured Object
+
+Observed in comp-source-002.odp:
+
+Slide 4 contains a draw:object reference to ./Object 1.
+The embedded object has its own content.xml.
+That object contains native chart structure, including chart-specific elements such as:
+<chart:chart>;
+<chart:plot-area>;
+chart series and associated structured data elements.
+A separate replacement/preview representation also exists, but the chart is not represented only as an image.
+
+Current interpretation:
+
+ODP preserves the chart as an independently structured embedded component rather than flattening it into a visual approximation.
+The implementation differs from PPTX, where the chart and backing workbook were connected through OOXML relationship files, but the same Composite principle holds: the presentation contains a meaningful structured child whose internal representation can be inspected independently.
+The existence and containment of the chart are mechanically recoverable and therefore constitute Reference-level composition evidence.
+
+Current schema implication:
+
+No chart-specific Composite field is justified.
+The existing reference.components structure remains sufficient to represent the chart as a meaningful child component.
+The chart’s internal structural treatment may be handled separately from its Composite membership.
+ODP further supports the distinction between composition relationship and component-internal schema.
+
+Current status:
+
+Native-chart composition survives the ODP portability test.
+ODP and PPTX now independently support meaningful embedded structured objects within a coherent presentation source.
+
+ODP Evidence Checkpoint 6: Embedded Audiovisual Media
+
+Observed in comp-source-002.odp:
+
+Slide 5 contains a draw:frame identified as Media 0.
+Within that frame, a draw:plugin explicitly references:
+ppt/media/media-5-1.mp4
+The plugin declares:
+xlink:show="embed"
+draw:mime-type="video/mp4"
+The same frame also contains a separate preview image:
+Pictures/MediaPreview1.png
+The ODP therefore preserves both the actual temporal-media component and a distinct visual preview representation.
+
+Current interpretation:
+
+The MP4 is explicitly embedded as a source-native media component rather than inferred from package co-location.
+The preview image is structurally separate from the actual audiovisual content.
+ODP independently confirms the PPTX finding that temporal media can remain a meaningful child component of a presentation.
+The containment relationship is mechanically recoverable and therefore constitutes Reference-level composition evidence.
+
+Current schema implication:
+
+No audiovisual-specific Composite field is justified.
+The existing reference.components concept remains sufficient to represent the media as a meaningful child component.
+The Media profile may govern the component’s own temporal-media metadata if evaluated independently, while Composite governs its membership within the parent presentation.
+
+Current status:
+
+Embedded audiovisual composition survives the ODP portability test.
+PPTX and ODP now independently support ordered slides, embedded images, notes, native tables, structured chart objects, and temporal media as meaningful components of a coherent presentation source.
+
+### ODP YAML Validation Checkpoint: Cross-Format Portability of `reference.components`
+
+A Composite record for `comp-source-002.odp` was created using the existing `profiles/composite.yaml` contract without modification.
+
+The ODP variant represented the five source-declared presentation pages through the existing Reference-level `components` structure:
+
+* `page1`
+* `page2`
+* `page3`
+* `page4`
+* `page5`
+
+Each component used:
+
+* `component_id`;
+* `relationship_type: contains`;
+* source-declared `order`.
+
+The record also retained existing base Context and Interpretive structures without introducing ODP-specific fields.
+
+Validation result:
+
+* `comp-source-002-variant-a.yaml` passed validation against:
+
+  * `schemas/metarci-base.yaml`
+  * `profiles/composite.yaml`
+* No Composite profile changes were required.
+
+Current interpretation:
+
+* The `reference.components` structure introduced during PPTX evaluation is not dependent on OOXML-specific relationship mechanics.
+* ODP exposes equivalent whole-part semantics through different native structures, including sequential `draw:page` elements and format-native embedded-object references.
+* Different source formats may therefore supply different native component identifiers while remaining representable through the same MetaRCI composition contract.
+* The successful ODP validation provides cross-format evidence that `reference.components` represents a reusable structural concept rather than a PPTX-specific accommodation.
+
+Current schema implication:
+
+* The existing minimal `reference.components` grammar remains sufficient:
+
+  * required `component_id`;
+  * required `relationship_type`;
+  * optional `order`.
+* No additional Reference fields are justified by the ODP testbed.
+* No Composite-specific Context or Interpretive fields are justified by the ODP testbed.
+* More specialized component semantics should remain within the relevant component profile or Interpretive layer rather than expanding the parent Composite contract prematurely.
+
+Current status:
+
+* ODP successfully validates the Composite composition model derived from PPTX.
+* `reference.components` now has supporting evidence from two independently structured presentation formats.
+* Further portability evaluation should focus on a structurally different Composite source rather than another presentation package.
