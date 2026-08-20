@@ -176,3 +176,223 @@ Research history, testbeds, and development artifacts may remain available separ
 ### Distribution Principle
 
 Ship the contract and what is required to use it; do not make the development history a dependency.
+
+---
+
+## Repository-to-Distribution Mapping
+
+The v0.1 distribution should be derived from the development repository without reproducing the repository wholesale.
+
+The distribution branch should contain only the artifacts required to implement, validate, understand, and version the MetaRCI contract, plus a minimal set of representative examples.
+
+### Include in the Distribution
+
+- base schema;
+- released v0.1 structural profiles;
+- supported validation tooling;
+- version metadata;
+- representative conforming examples;
+- implementation/integration documentation;
+- distribution documentation;
+- license and essential project metadata;
+- a concise README oriented toward implementers.
+
+### Retain in the Main Repository as Supporting Evidence
+
+- testbed source files;
+- detailed testbed reports;
+- exploratory evaluation notes;
+- development chronology;
+- profile-review working documents;
+- research commentary;
+- evidence used to justify schema/profile decisions;
+- broader project documentation not required to implement MetaRCI.
+
+These materials remain important to the transparency and research basis of MetaRCI, but they should not become implementation dependencies.
+
+### Exclude From the v0.1 Distribution
+
+- temporary files;
+- obsolete agent instructions;
+- experimental artifacts not part of the released contract;
+- deferred profile work;
+- Structured-Data-Relational implementation material;
+- local development or environment artifacts;
+- redundant examples used only during evaluation;
+- internal notes that do not contribute to implementation.
+
+### Distribution-Branch Principle
+
+The distribution branch should be a curated projection of the MetaRCI repository, not a second development tree.
+
+Changes to the MetaRCI model should originate in the main development workflow and be deliberately promoted into the distribution branch once they are part of a released contract.
+
+The distribution branch should therefore answer:
+
+> **What does an implementer actually need to use this version of MetaRCI?**
+
+---
+
+## Proposed Distribution Layout
+
+The v0.1 distribution branch should present MetaRCI as a compact, implementation-oriented package rather than reproduce the structure of the development repository.
+
+The layout should make the contract easy to locate, inspect, validate against, and integrate into another system.
+
+A proposed distribution structure is:
+
+```text
+metarci/
+├── README.md
+├── LICENSE
+├── VERSION
+├── schemas/
+│   └── metarci-base.yaml
+├── profiles/
+│   ├── document.yaml
+│   ├── structured-data.yaml
+│   ├── media.yaml
+│   └── composite.yaml
+├── examples/
+│   ├── document-record.yaml
+│   ├── structured-data-record.yaml
+│   ├── media-record.yaml
+│   └── composite-record.yaml
+├── validation/
+│   └── [supported validation tooling]
+└── documentation/
+    ├── implementation.md
+    └── distribution.md
+````
+
+This structure is provisional. Final filenames and package organization may change when the distribution mechanism and programmatic API are defined.
+
+### Root-Level Material
+
+The distribution root should contain only essential release and orientation material.
+
+#### `README.md`
+
+The distribution README should be oriented toward implementers rather than toward the full research and development history of MetaRCI.
+
+It should provide:
+
+* a concise description of MetaRCI;
+* the three-tier model;
+* the four supported v0.1 structural profiles;
+* basic implementation flow;
+* validation instructions;
+* links to the implementation and distribution documentation;
+* version information;
+* a pointer to the main MetaRCI repository for testbed evidence, research history, and broader documentation.
+
+#### `LICENSE`
+
+The applicable project license should travel with the distribution.
+
+#### `VERSION`
+
+The distribution should expose the MetaRCI release version in a simple, inspectable form.
+
+The exact mechanism may later be replaced or supplemented by package metadata, but consumers should not need to infer the distribution version from repository history.
+
+### `schemas/`
+
+The `schemas/` directory should contain the released MetaRCI base schema required to construct and validate conforming records.
+
+Only schemas that are part of the published distribution contract should be included.
+
+Experimental or deferred schema work should remain in the development repository.
+
+### `profiles/`
+
+The `profiles/` directory should contain the released structural profiles associated with the distribution version.
+
+For v0.1, these are:
+
+* `document.yaml`
+* `structured-data.yaml`
+* `media.yaml`
+* `composite.yaml`
+
+Profile files should remain machine-readable and independently inspectable.
+
+Deferred or experimental profiles should not be included.
+
+### `examples/`
+
+The `examples/` directory should contain a small set of representative conforming records.
+
+The objective is to demonstrate the contract, not to reproduce the full testbed collection.
+
+Each primary structural profile should have at least one concise example showing:
+
+* profile declaration;
+* Reference metadata;
+* Context metadata;
+* Interpretive metadata;
+* profile-specific structures where applicable;
+* valid use of optional and nullable values.
+
+Examples should be maintained as validation-tested artifacts.
+
+### `validation/`
+
+The distribution should provide the supported validation capability required to check a MetaRCI record against the base schema and selected structural profile.
+
+The exact organization of this directory should be determined when the programmatic and packaging contracts are defined.
+
+The distribution should avoid requiring consumers to reconstruct validation behavior from documentation alone.
+
+### `documentation/`
+
+The distribution documentation should focus on implementation rather than research chronology.
+
+At minimum, it should include:
+
+* the MetaRCI integration contract;
+* the distribution contract and implementation guidance necessary to understand the shipped artifacts.
+
+Additional documentation should be included only where it materially helps a consumer implement the released contract.
+
+Detailed testbed reports, exploratory notes, development history, and deferred design work should remain available from the main repository rather than being duplicated into the distribution.
+
+### Separation From the Development Repository
+
+The proposed distribution layout intentionally omits substantial parts of the development repository.
+
+The absence of those materials does not make them unimportant.
+
+The main repository remains the authoritative location for:
+
+* testbed evidence;
+* schema and profile development;
+* research rationale;
+* historical design decisions;
+* deferred work;
+* experimental artifacts;
+* future-version development.
+
+The distribution branch represents a released projection of that work for implementation purposes.
+
+Conceptually:
+
+```text
+Main MetaRCI repository
+        │
+        ├── research
+        ├── testbeds
+        ├── development
+        ├── evidence
+        └── released contract
+                 ↓
+        curated distribution
+                 ↓
+             consumer
+```
+
+### Layout Principle
+
+> **The distribution should make the MetaRCI contract easier to consume without creating a second place to design MetaRCI.**
+
+
